@@ -907,7 +907,7 @@ class VideoDetailFragment :
         tabContentDescriptions.clear()
 
         if (shouldShowComments()) {
-            pageAdapter.addFragment(getInstance(serviceId, url), COMMENTS_TAB_TAG)
+            pageAdapter.addFragment(EmptyFragment.newInstance(false), COMMENTS_TAB_TAG)
             tabIcons.add(R.drawable.ic_comment)
             tabContentDescriptions.add(R.string.comments_tab_description)
         }
@@ -1059,6 +1059,10 @@ class VideoDetailFragment :
     }
 
     private fun updateTabs(info: StreamInfo) {
+        if (shouldShowComments()) {
+            pageAdapter.updateItem(COMMENTS_TAB_TAG, getInstance(info.serviceId, info.url))
+        }
+
         if (showRelatedItems && !isTournesolTab) {
             when (val relatedItemsLayout = binding.relatedItemsLayout) {
                 // phone
