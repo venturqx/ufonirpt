@@ -94,7 +94,6 @@ import kotlin.math.abs
 import kotlin.math.roundToInt
 import org.schabi.newpipe.R
 import org.schabi.newpipe.fragments.detail.COMPACT_MAIN_CRITERION_ID
-import org.schabi.newpipe.fragments.detail.CompareComparisonVideo
 import org.schabi.newpipe.fragments.detail.CompareCriterion
 import org.schabi.newpipe.fragments.detail.ComparePairSelection
 import org.schabi.newpipe.fragments.detail.CompareSideLabel
@@ -107,7 +106,6 @@ import org.schabi.newpipe.fragments.detail.SCORE_MAX
 import org.schabi.newpipe.fragments.detail.SCORE_MIN
 import org.schabi.newpipe.fragments.detail.SuggestedVideoThumbnail
 import org.schabi.newpipe.fragments.detail.TournesolLoginDialog
-import org.schabi.newpipe.fragments.detail.TournesolUid
 import org.schabi.newpipe.fragments.detail.dimensionScore
 import org.schabi.newpipe.fragments.detail.tightBorderGlow
 
@@ -235,34 +233,10 @@ internal fun CompareCompactScreen(
     val suggestedLeftUploader = state.suggestedLeft?.uploader.orEmpty()
     val suggestedRightTitle = state.suggestedRight?.title.orEmpty()
     val suggestedRightUploader = state.suggestedRight?.uploader.orEmpty()
-    fun suggestionServiceId(video: CompareComparisonVideo): Int? {
-        return video.serviceId ?: TournesolUid.parse(video.uid)?.serviceId
-    }
     val currentPairSelection = if (hasSuggestedLeft && hasSuggestedRight) {
-        val leftUrl = state.suggestedLeft.videoUrl
-        val rightUrl = state.suggestedRight.videoUrl
-        val leftServiceId = suggestionServiceId(state.suggestedLeft)
-        val rightServiceId = suggestionServiceId(state.suggestedRight)
-        if (leftUrl != null && rightUrl != null && leftServiceId != null && rightServiceId != null && state.suggestedLeft.uid != state.suggestedRight.uid) {
-            ComparePairSelection(
-                leftServiceId = leftServiceId,
-                leftUrl = leftUrl,
-                rightServiceId = rightServiceId,
-                rightUrl = rightUrl
-            )
-        } else {
-            null
-        }
-    } else if (selectedHistoryEntryLeft != null &&
-        selectedHistoryEntryRight != null &&
-        !(
-            selectedHistoryEntryLeft.streamEntity.serviceId ==
-                selectedHistoryEntryRight.streamEntity.serviceId &&
-                selectedHistoryEntryLeft.streamEntity.url ==
-                selectedHistoryEntryRight.streamEntity.url
-            )
-    ) {
-        ComparePairSelection(
+        suggestedPair(state.suggestedLeft, state.suggestedRight)
+    } else if (selectedHistoryEntryLeft != null && selectedHistoryEntryRight != null) {
+        historyPair(
             leftServiceId = selectedHistoryEntryLeft.streamEntity.serviceId,
             leftUrl = selectedHistoryEntryLeft.streamEntity.url,
             rightServiceId = selectedHistoryEntryRight.streamEntity.serviceId,

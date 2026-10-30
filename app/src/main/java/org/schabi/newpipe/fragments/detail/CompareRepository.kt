@@ -19,6 +19,10 @@ import org.schabi.newpipe.extractor.NewPipe
 import org.schabi.newpipe.extractor.exceptions.ExtractionException
 import org.schabi.newpipe.extractor.linkhandler.LinkHandlerFactory
 
+enum class SubmitOutcome { CREATED, ALREADY_EXISTS }
+
+enum class SaveResult { CREATED, UPDATED }
+
 object CompareRepository {
     fun buildTournesolUid(url: String, serviceId: Int): String? {
         if (!TournesolUid.supports(serviceId)) {
@@ -36,33 +40,56 @@ object CompareRepository {
 
     fun submitComparison(
         token: String,
-        lastUid: String,
-        currentUid: String,
+        entityA: String,
+        entityB: String,
         score: Int
-    ): Single<Int> = submitComparisonWithCriteria(
+    ): Single<SaveResult> = submitOrUpdateComparison(
         token = token,
-        lastUid = lastUid,
-        currentUid = currentUid,
+        entityA = entityA,
+        entityB = entityB,
         criteriaScores = listOf(CriteriaScore(CompareJsonParser.COMPARE_CRITERIA, score))
     )
 
+    internal fun submitOrUpdateComparison(
+        token: String,
+        entityA: String,
+        entityB: String,
+        criteriaScores: List<CriteriaScore>
+    ): Single<SaveResult> = submitComparisonWithCriteria(
+        token,
+        entityA,
+        entityB,
+        criteriaScores
+    ).flatMap { outcome ->
+        when (outcome) {
+            SubmitOutcome.CREATED -> Single.just(SaveResult.CREATED)
+
+            SubmitOutcome.ALREADY_EXISTS -> patchComparison(
+                token,
+                entityA,
+                entityB,
+                criteriaScores
+            ).map { SaveResult.UPDATED }
+        }
+    }
+
     internal fun submitComparisonWithCriteria(
         token: String,
-        lastUid: String,
-        currentUid: String,
+        entityA: String,
+        entityB: String,
         criteriaScores: List<CriteriaScore>
-    ): Single<Int> = Single.fromCallable {
-        val payload = buildComparisonPayloadJson(lastUid, currentUid, criteriaScores)
+    ): Single<SubmitOutcome> = Single.fromCallable {
+        val payload = buildComparisonPayloadJson(entityA, entityB, criteriaScores)
         val response = send(comparisonsUrl(), token) { post(payload.toJsonBody()) }
-        resolveSubmitStatusRes(response.code, response.body)
+        resolveSubmitOutcome(response.code, response.body)
     }.subscribeOn(Schedulers.io())
 
-    internal fun resolveSubmitStatusRes(httpCode: Int, responseBody: String): Int {
+    internal fun resolveSubmitOutcome(httpCode: Int, responseBody: String): SubmitOutcome {
         if (httpCode in 200..299) {
-            return R.string.compare_submitted
+            return SubmitOutcome.CREATED
         }
         if (httpCode == 400 && responseBody.contains("already compared")) {
-            return R.string.compare_already_submitted
+            return SubmitOutcome.ALREADY_EXISTS
         }
         throw httpError(httpCode, responseBody)
     }
@@ -82,12 +109,12 @@ object CompareRepository {
 
     internal fun patchComparison(
         token: String,
-        lastUid: String,
-        currentUid: String,
+        entityA: String,
+        entityB: String,
         criteriaScores: List<CriteriaScore>
     ): Single<Int> = Single.fromCallable {
         val payload = buildPatchPayloadJson(criteriaScores)
-        val url = comparisonsUrl(lastUid, currentUid, TRAILING_SLASH)
+        val url = comparisonsUrl(entityA, entityB, TRAILING_SLASH)
         send(url, token) { patch(payload.toJsonBody()) }.bodyOrThrow()
         R.string.compare_more_submitted
     }.subscribeOn(Schedulers.io())
@@ -104,14 +131,14 @@ object CompareRepository {
     }.subscribeOn(Schedulers.io())
 
     internal fun buildComparisonPayloadJson(
-        lastUid: String,
-        currentUid: String,
+        entityA: String,
+        entityB: String,
         criteriaScores: List<CriteriaScore>
     ): String = JsonWriter.string()
         .`object`()
         .value("pollName", COMPARE_POLL)
-        .`object`("entity_a").value("uid", lastUid).end()
-        .`object`("entity_b").value("uid", currentUid).end()
+        .`object`("entity_a").value("uid", entityA).end()
+        .`object`("entity_b").value("uid", entityB).end()
         .writeCriteriaScores(criteriaScores)
         .end()
         .done()

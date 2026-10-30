@@ -10,7 +10,9 @@ import org.junit.Test
 class CompareScoreStoreTest {
     private class FakeBackend(
         var submitted: Set<String> = emptySet(),
-        var scores: String? = null
+        var scores: String? = null,
+        val legacySubmitted: Set<String> = emptySet(),
+        val legacyScores: String? = null
     ) : CompareScoreBackend {
         var submittedWrites = 0
         var scoresWrites = 0
@@ -28,6 +30,12 @@ class CompareScoreStoreTest {
             scoresWrites++
             scores = json
         }
+
+        override fun hasCurrentData() = submitted.isNotEmpty() || scores != null
+
+        override fun readLegacySubmitted() = legacySubmitted
+
+        override fun readLegacyScores() = legacyScores
     }
 
     @Test
@@ -206,6 +214,72 @@ class CompareScoreStoreTest {
 
         assertEquals(1, backend.submittedWrites)
         assertEquals(2, backend.scoresWrites)
+    }
+
+    @Test
+    fun `legacy data is migrated once with swapped keys and unchanged scores`() {
+        val backend = FakeBackend(
+            legacySubmitted = setOf(PLAIN_STORED),
+            legacyScores = """{"$PLAIN_STORED":{"mainScore":-7,"extraScores":{"reliability":3}}}"""
+        )
+
+        val store = CompareScoreStore(backend)
+        val swapped = CompareKey(PLAIN_KEY.entityB, PLAIN_KEY.entityA)
+
+        assertTrue(store.isSubmitted(swapped))
+        assertFalse(store.isSubmitted(PLAIN_KEY))
+        assertEquals(
+            ComparisonScores(-7, mapOf("reliability" to 3)),
+            store.scoresFor(swapped)
+        )
+        assertNull(store.scoresFor(PLAIN_KEY))
+
+        val reloaded = CompareScoreStore(backend)
+        assertTrue(reloaded.isSubmitted(swapped))
+        assertFalse(reloaded.isSubmitted(PLAIN_KEY))
+        assertEquals(1, backend.submittedWrites)
+        assertEquals(1, backend.scoresWrites)
+    }
+
+    @Test
+    fun `migration leaves the legacy data untouched`() {
+        val legacyScores = """{"$PLAIN_STORED":{"mainScore":10}}"""
+        val backend = FakeBackend(
+            legacySubmitted = setOf(PLAIN_STORED),
+            legacyScores = legacyScores
+        )
+
+        CompareScoreStore(backend)
+
+        assertEquals(setOf(PLAIN_STORED), backend.legacySubmitted)
+        assertEquals(legacyScores, backend.legacyScores)
+    }
+
+    @Test
+    fun `a current store is not swapped again`() {
+        val backend = FakeBackend(
+            submitted = setOf(PLAIN_STORED),
+            scores = """{"$PLAIN_STORED":{"mainScore":10}}""",
+            legacySubmitted = setOf(SLASH_STORED),
+            legacyScores = """{"$SLASH_STORED":{"mainScore":1}}"""
+        )
+
+        val store = CompareScoreStore(backend)
+
+        assertTrue(store.isSubmitted(PLAIN_KEY))
+        assertFalse(store.isSubmitted(SLASH_KEY))
+        assertEquals(0, backend.submittedWrites)
+        assertEquals(0, backend.scoresWrites)
+    }
+
+    @Test
+    fun `an empty store is a no-op`() {
+        val backend = FakeBackend()
+
+        CompareScoreStore(backend)
+
+        assertEquals(0, backend.submittedWrites)
+        assertEquals(0, backend.scoresWrites)
     }
 
     private companion object {

@@ -10,7 +10,7 @@ import com.grack.nanojson.JsonWriter
 import okio.ByteString.Companion.decodeBase64
 import okio.ByteString.Companion.encodeUtf8
 
-internal data class CompareKey(val lastUid: String, val currentUid: String)
+internal data class CompareKey(val entityA: String, val entityB: String)
 
 internal data class ComparisonScores(
     val mainScore: Int? = null,
@@ -25,6 +25,12 @@ internal interface CompareScoreBackend {
     fun readScores(): String?
 
     fun writeScores(json: String)
+
+    fun hasCurrentData(): Boolean
+
+    fun readLegacySubmitted(): Set<String>
+
+    fun readLegacyScores(): String?
 }
 
 internal class CompareScorePrefs(
@@ -44,13 +50,27 @@ internal class CompareScorePrefs(
         prefs.edit().putString(PREF_COMPARISON_SCORES, json).apply()
     }
 
+    override fun hasCurrentData(): Boolean = prefs.contains(PREF_SUBMITTED_COMPARISONS) || prefs.contains(PREF_COMPARISON_SCORES)
+
+    override fun readLegacySubmitted(): Set<String> {
+        return prefs.getStringSet(LEGACY_PREF_SUBMITTED_COMPARISONS, emptySet()).orEmpty()
+    }
+
+    override fun readLegacyScores(): String? = prefs.getString(LEGACY_PREF_COMPARISON_SCORES, null)
+
     private companion object {
-        const val PREF_SUBMITTED_COMPARISONS = "compare_submitted_pairs_v1"
-        const val PREF_COMPARISON_SCORES = "compare_submitted_scores_v1"
+        const val PREF_SUBMITTED_COMPARISONS = "compare_submitted_pairs_v2"
+        const val PREF_COMPARISON_SCORES = "compare_submitted_scores_v2"
+        const val LEGACY_PREF_SUBMITTED_COMPARISONS = "compare_submitted_pairs_v1"
+        const val LEGACY_PREF_COMPARISON_SCORES = "compare_submitted_scores_v1"
     }
 }
 
 internal class CompareScoreStore(private val backend: CompareScoreBackend) {
+    init {
+        migrateLegacyKeyOrder(backend)
+    }
+
     private val submitted = backend.readSubmitted()
         .mapNotNullTo(LinkedHashSet<CompareKey>(), ::parseCompareKey)
     private val scores = parseScores(backend.readScores()).toMutableMap()
@@ -108,8 +128,25 @@ internal class CompareScoreStore(private val backend: CompareScoreBackend) {
     }
 }
 
+private fun CompareKey.swapped(): CompareKey = CompareKey(entityB, entityA)
+
+private fun migrateLegacyKeyOrder(backend: CompareScoreBackend) {
+    if (backend.hasCurrentData()) {
+        return
+    }
+    val legacyPairs = backend.readLegacySubmitted()
+    val legacyScores = backend.readLegacyScores()
+    if (legacyPairs.isEmpty() && legacyScores.isNullOrBlank()) {
+        return
+    }
+    backend.writeSubmitted(
+        legacyPairs.mapNotNull(::parseCompareKey).map { it.swapped().toStorage() }.toSet()
+    )
+    backend.writeScores(serializeScores(parseScores(legacyScores).mapKeys { it.key.swapped() }))
+}
+
 private fun CompareKey.toStorage(): String {
-    return "${lastUid.encodeUtf8().base64()}|${currentUid.encodeUtf8().base64()}"
+    return "${entityA.encodeUtf8().base64()}|${entityB.encodeUtf8().base64()}"
 }
 
 private fun parseCompareKey(value: String): CompareKey? {
@@ -117,9 +154,9 @@ private fun parseCompareKey(value: String): CompareKey? {
     if (parts.size != 2) {
         return null
     }
-    val lastUid = parts[0].decodeBase64()?.utf8() ?: return null
-    val currentUid = parts[1].decodeBase64()?.utf8() ?: return null
-    return CompareKey(lastUid, currentUid)
+    val entityA = parts[0].decodeBase64()?.utf8() ?: return null
+    val entityB = parts[1].decodeBase64()?.utf8() ?: return null
+    return CompareKey(entityA, entityB)
 }
 
 private fun parseScores(raw: String?): Map<CompareKey, ComparisonScores> {

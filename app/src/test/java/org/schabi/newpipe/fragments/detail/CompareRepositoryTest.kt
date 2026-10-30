@@ -21,6 +21,7 @@ import org.junit.Assert.assertTrue
 import org.junit.Test
 import org.schabi.newpipe.DownloaderImpl
 import org.schabi.newpipe.R
+import org.schabi.newpipe.extractor.ServiceList
 
 class CompareRepositoryTest {
 
@@ -86,7 +87,7 @@ class CompareRepositoryTest {
 
         val status = CompareRepository.submitComparison("tok", "yt:a", "yt:b", 30).blockingGet()
 
-        assertEquals(R.string.compare_submitted, status)
+        assertEquals(SaveResult.CREATED, status)
         assertEquals("POST", api.request.method)
         assertEquals(
             "https://api.tournesol.app/users/me/comparisons/videos",
@@ -106,12 +107,34 @@ class CompareRepositoryTest {
     }
 
     @Test
-    fun `submitComparison treats an existing comparison as already submitted`() {
-        serve(code = 400, body = """{"detail":"already compared"}""")
+    fun `submitComparison patches the existing comparison when the server says already compared`() {
+        val requests = mutableListOf<Request>()
+        DownloaderImpl.init(
+            OkHttpClient.Builder().addInterceptor { chain ->
+                requests.add(chain.request())
+                val alreadyCompared = chain.request().method == "POST"
+                Response.Builder()
+                    .request(chain.request())
+                    .protocol(Protocol.HTTP_1_1)
+                    .code(if (alreadyCompared) 400 else 200)
+                    .message("fake")
+                    .body((if (alreadyCompared) """{"detail":"already compared"}""" else "{}").toResponseBody())
+                    .build()
+            }
+        )
 
-        val status = CompareRepository.submitComparison("tok", "yt:a", "yt:b", 30).blockingGet()
+        val result = CompareRepository.submitComparison("tok", "yt:a", "yt:b", 30).blockingGet()
 
-        assertEquals(R.string.compare_already_submitted, status)
+        assertEquals(SaveResult.UPDATED, result)
+        assertEquals(listOf("POST", "PATCH"), requests.map { it.method })
+        assertEquals(
+            "https://api.tournesol.app/users/me/comparisons/videos/yt:a/yt:b/",
+            requests[1].url.toString()
+        )
+        val patched = JsonParser.`object`().from(requests[1].bodyText())
+            .getArray("criteria_scores").getObject(0)
+        assertEquals("largely_recommended", patched.getString("criteria"))
+        assertEquals(30, patched.getInt("score"))
     }
 
     @Test
@@ -232,28 +255,28 @@ class CompareRepositoryTest {
     }
 
     @Test
-    fun `resolveSubmitStatusRes covers the 2xx bounds and reports status and body`() {
-        assertEquals(R.string.compare_submitted, CompareRepository.resolveSubmitStatusRes(200, ""))
-        assertEquals(R.string.compare_submitted, CompareRepository.resolveSubmitStatusRes(299, ""))
+    fun `resolveSubmitOutcome covers the 2xx bounds and reports status and body`() {
+        assertEquals(SubmitOutcome.CREATED, CompareRepository.resolveSubmitOutcome(200, ""))
+        assertEquals(SubmitOutcome.CREATED, CompareRepository.resolveSubmitOutcome(299, ""))
 
         val rejected = assertThrows(IOException::class.java) {
-            CompareRepository.resolveSubmitStatusRes(400, "invalid")
+            CompareRepository.resolveSubmitOutcome(400, "invalid")
         }
         assertEquals("HTTP 400 invalid", rejected.message)
 
         assertThrows(IOException::class.java) {
-            CompareRepository.resolveSubmitStatusRes(300, "")
+            CompareRepository.resolveSubmitOutcome(300, "")
         }
         assertThrows(IOException::class.java) {
-            CompareRepository.resolveSubmitStatusRes(409, "already compared")
+            CompareRepository.resolveSubmitOutcome(409, "already compared")
         }
     }
 
     @Test
     fun `buildComparisonPayloadJson serializes entity pair and criteria scores`() {
         val rawJson = CompareRepository.buildComparisonPayloadJson(
-            lastUid = "yt:abc12345678",
-            currentUid = "yt:xyz98765432",
+            entityA = "yt:abc12345678",
+            entityB = "yt:xyz98765432",
             criteriaScores = listOf(
                 CriteriaScore("largely_recommended", 45),
                 CriteriaScore("reliability", -20)
@@ -383,17 +406,54 @@ class CompareRepositoryTest {
     }
 
     @Test
-    fun `resolveSubmitStatusRes maps HTTP statuses and throws on unexpected errors`() {
+    fun `resolveSubmitOutcome maps HTTP statuses and throws on unexpected errors`() {
+        assertEquals(SubmitOutcome.CREATED, CompareRepository.resolveSubmitOutcome(201, "{}"))
         assertEquals(
-            R.string.compare_submitted,
-            CompareRepository.resolveSubmitStatusRes(201, "{}")
-        )
-        assertEquals(
-            R.string.compare_already_submitted,
-            CompareRepository.resolveSubmitStatusRes(400, """{"detail":"already compared"}""")
+            SubmitOutcome.ALREADY_EXISTS,
+            CompareRepository.resolveSubmitOutcome(400, """{"detail":"already compared"}""")
         )
         assertThrows(IOException::class.java) {
-            CompareRepository.resolveSubmitStatusRes(500, "Internal Server Error")
+            CompareRepository.resolveSubmitOutcome(500, "Internal Server Error")
         }
+    }
+
+    @Test
+    fun `buildTournesolUid prefixes the stream id for urls that resolve offline`() {
+        assertEquals(
+            "yt:dQw4w9WgXcQ",
+            CompareRepository.buildTournesolUid(
+                "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+                ServiceList.YouTube.serviceId
+            )
+        )
+        assertEquals(
+            "peertube:9c9de5e8-0a1e-484a-b099-e80766180a6d",
+            CompareRepository.buildTournesolUid(
+                "https://framatube.org/videos/watch/9c9de5e8-0a1e-484a-b099-e80766180a6d",
+                ServiceList.PeerTube.serviceId
+            )
+        )
+    }
+
+    @Test
+    fun `buildTournesolUid is null for unsupported services and invalid urls`() {
+        assertNull(
+            CompareRepository.buildTournesolUid(
+                "https://example.bandcamp.com/track/a",
+                ServiceList.Bandcamp.serviceId
+            )
+        )
+        assertNull(
+            CompareRepository.buildTournesolUid(
+                "https://example.com/nope",
+                ServiceList.YouTube.serviceId
+            )
+        )
+        assertNull(
+            CompareRepository.buildTournesolUid(
+                "https://example.com/nope",
+                ServiceList.SoundCloud.serviceId
+            )
+        )
     }
 }

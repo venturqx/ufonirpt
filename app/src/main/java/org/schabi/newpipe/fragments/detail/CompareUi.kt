@@ -172,8 +172,8 @@ internal fun dimensionScore(state: CompareUiState, criterion: CompareCriterion):
 @Composable
 internal fun CompareComparisonRow(item: CompareRecommendationItem, index: Int = 0) {
     val score = item.largelyRecommendedScore
-    val leftWins = score != null && score > 0
-    val rightWins = score != null && score < 0
+    val leftWins = score != null && score < 0
+    val rightWins = score != null && score > 0
     val leftBorderColor = Color(0xFF42A5F5)
     val rightBorderColor = Color(0xFFE57373)
 

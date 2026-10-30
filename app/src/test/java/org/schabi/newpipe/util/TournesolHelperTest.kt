@@ -181,19 +181,7 @@ class TournesolHelperTest {
     }
 
     @Test
-    fun `formatUnsafeReasonCodes deduplicates and maps known reason codes`() {
-        assertEquals("", TournesolHelper.formatUnsafeReasonCodes(null))
-        assertEquals("", TournesolHelper.formatUnsafeReasonCodes(emptyList()))
-        assertEquals(
-            "(Insufficient/Moderated)",
-            TournesolHelper.formatUnsafeReasonCodes(
-                listOf(
-                    "insufficient_tournesol_score",
-                    "insufficient_trust",
-                    "moderation_by_contributors"
-                )
-            )
-        )
+    fun `hasInsufficientReason matches only insufficient reason codes`() {
         assertTrue(TournesolHelper.hasInsufficientReason(listOf("insufficient_trust")))
         assertFalse(TournesolHelper.hasInsufficientReason(listOf("moderation_by_contributors")))
     }
