@@ -400,14 +400,9 @@ public class TournesolScoreCard extends LinearLayout {
     }
 
     private View createDistributionChart(final int[] bins, final int[] distribution) {
-        int maxCount = 0;
-        for (final int count : distribution) {
-            maxCount = Math.max(maxCount, count);
-        }
-        if (maxCount == 0) {
+        if (!DistributionCurve.isDrawable(bins, distribution)) {
             return new View(getContext());
         }
-        final int finalMaxCount = maxCount;
         final int chartHeightPx = dpToPx(CHART_HEIGHT_DP);
         final float strokePx = dpToPx(2) / 3f;
 
@@ -415,6 +410,10 @@ public class TournesolScoreCard extends LinearLayout {
             private final Paint curvePaint = buildCurvePaint();
             private final Paint fillPaint = buildFillPaint();
             private final Paint separatorPaint = buildSeparatorPaint();
+            private final Path curvePath = new Path();
+            private final Path fillPath = new Path();
+            @Nullable
+            private DistributionCurve curve;
 
             private Paint buildCurvePaint() {
                 final Paint p = new Paint(Paint.ANTI_ALIAS_FLAG);
@@ -442,92 +441,44 @@ public class TournesolScoreCard extends LinearLayout {
             }
 
             @Override
-            protected void onDraw(final Canvas canvas) {
-                final int w = getWidth();
-                final int h = getHeight();
-                if (w == 0 || h == 0 || distribution.length == 0) {
+            protected void onSizeChanged(final int w, final int h,
+                                         final int oldw, final int oldh) {
+                super.onSizeChanged(w, h, oldw, oldh);
+                curve = DistributionCurve.of(bins, distribution, w, h);
+                if (curve == null) {
                     return;
                 }
 
-                final int n = distribution.length;
-                final float xMin = bins[0];
-                final float xRange = bins[bins.length - 1] - xMin;
-                final float topPad = h * 0.12f;
+                final float[] xs = curve.getXs();
+                final float[] ys = curve.getYs();
+                final float[] m = curve.getTangents();
+                final int last = xs.length - 1;
 
-                final float[] smoothed = new float[n];
-                smoothed[0] = distribution[0];
-                smoothed[n - 1] = distribution[n - 1];
-                for (int i = 1; i < n - 1; i++) {
-                    smoothed[i] = distribution[i - 1] * 0.25f
-                            + distribution[i] * 0.5f
-                            + distribution[i + 1] * 0.25f;
-                }
-
-                final float[] xs = new float[n];
-                final float[] ys = new float[n];
-                for (int i = 0; i < n; i++) {
-                    final float binCenter = (bins[i] + bins[i + 1]) / 2f;
-                    xs[i] = (binCenter - xMin) / xRange * w;
-                    ys[i] = topPad + (1f - smoothed[i] / (float) finalMaxCount)
-                            * (h - topPad);
-                }
-
-                final float[] dx = new float[n - 1];
-                final float[] dy = new float[n - 1];
-                final float[] slopes = new float[n - 1];
-                for (int i = 0; i < n - 1; i++) {
-                    dx[i] = xs[i + 1] - xs[i];
-                    dy[i] = ys[i + 1] - ys[i];
-                    slopes[i] = dx[i] == 0 ? 0 : dy[i] / dx[i];
-                }
-
-                final float[] m = new float[n];
-                m[0] = slopes[0];
-                m[n - 1] = slopes[n - 2];
-                for (int i = 1; i < n - 1; i++) {
-                    if (slopes[i - 1] * slopes[i] <= 0) {
-                        m[i] = 0;
-                    } else {
-                        m[i] = (slopes[i - 1] + slopes[i]) / 2f;
-                    }
-                }
-
-                for (int i = 0; i < n - 1; i++) {
-                    if (slopes[i] == 0) {
-                        m[i] = 0;
-                        m[i + 1] = 0;
-                    } else {
-                        final float alpha = m[i] / slopes[i];
-                        final float beta = m[i + 1] / slopes[i];
-                        final float mag = alpha * alpha + beta * beta;
-                        if (mag > 9f) {
-                            final float s = 3f / (float) Math.sqrt(mag);
-                            m[i] = s * alpha * slopes[i];
-                            m[i + 1] = s * beta * slopes[i];
-                        }
-                    }
-                }
-
-                final Path path = new Path();
-                path.moveTo(xs[0], ys[0]);
-                for (int i = 0; i < n - 1; i++) {
-                    final float seg = dx[i] / 3f;
-                    path.cubicTo(
+                curvePath.reset();
+                curvePath.moveTo(xs[0], ys[0]);
+                for (int i = 0; i < last; i++) {
+                    final float seg = (xs[i + 1] - xs[i]) / 3f;
+                    curvePath.cubicTo(
                             xs[i] + seg, ys[i] + m[i] * seg,
                             xs[i + 1] - seg, ys[i + 1] - m[i + 1] * seg,
                             xs[i + 1], ys[i + 1]);
                 }
 
-                final Path fill = new Path(path);
-                fill.lineTo(xs[n - 1], h);
-                fill.lineTo(xs[0], h);
-                fill.close();
-                canvas.drawPath(fill, fillPaint);
+                fillPath.set(curvePath);
+                fillPath.lineTo(xs[last], h);
+                fillPath.lineTo(xs[0], h);
+                fillPath.close();
+            }
 
-                canvas.drawPath(path, curvePaint);
-
-                final float zeroX = (0f - xMin) / xRange * w;
-                canvas.drawLine(zeroX, 0f, zeroX, (float) h, separatorPaint);
+            @Override
+            protected void onDraw(final Canvas canvas) {
+                if (curve == null) {
+                    return;
+                }
+                canvas.drawPath(fillPath, fillPaint);
+                canvas.drawPath(curvePath, curvePaint);
+                final float zeroX = curve.getZeroX();
+                canvas.drawLine(zeroX, 0f, zeroX, (float) getHeight(), separatorPaint);
             }
         };
         curveView.setLayoutParams(new LinearLayout.LayoutParams(

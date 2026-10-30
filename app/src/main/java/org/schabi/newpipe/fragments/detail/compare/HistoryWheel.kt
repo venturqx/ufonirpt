@@ -40,7 +40,6 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.util.lerp
 import androidx.compose.ui.zIndex
 import kotlin.math.abs
-import kotlin.math.roundToInt
 import kotlinx.coroutines.launch
 import org.schabi.newpipe.database.history.model.StreamHistoryEntry
 import org.schabi.newpipe.fragments.detail.HistoryCard
@@ -113,85 +112,28 @@ internal fun HistoryWheel(
             .height(itemHeight * 2f)
             .pointerInput(pagerState, pageStepPx, entries.size) {
                 val velocityTracker = VelocityTracker()
-                var startPage = 0
-                var startPosition = 0f
-                var position = 0f
-                var minPage = 0
-                var maxPage = 0
-                var dragDistance = 0f
-                var lastDragTimestamp = 0L
-                var smoothedSpeedPxPerSec = 0f
-                fun positionToPageOffset(currentPosition: Float): Pair<Int, Float> {
-                    var clampedPosition = currentPosition.coerceIn(
-                        minPage.toFloat(),
-                        maxPage.toFloat()
-                    )
-                    var page = clampedPosition.toInt()
-                    var offset = clampedPosition - page
-                    if (offset > 0.5f && page < entries.lastIndex) {
-                        page += 1
-                        offset -= 1f
-                    }
-                    offset = offset.coerceIn(-0.5f, 0.5f)
-                    return page to offset
-                }
+                var dragState = WheelDragState.start(0, 0f, entries.lastIndex)
                 detectDragGestures(
                     onDragStart = {
                         velocityTracker.resetTracking()
-                        startPage = pagerState.currentPage
-                        startPosition = pagerState.currentPage + pagerState.currentPageOffsetFraction
-                        position = startPosition
-                        minPage = (startPage - 1).coerceAtLeast(0)
-                        maxPage = (startPage + 1).coerceAtMost(entries.lastIndex)
-                        dragDistance = 0f
-                        lastDragTimestamp = 0L
-                        smoothedSpeedPxPerSec = 0f
+                        dragState = WheelDragState.start(
+                            pagerState.currentPage,
+                            pagerState.currentPageOffsetFraction,
+                            entries.lastIndex
+                        )
                     },
                     onDrag = { change, dragAmount ->
                         change.consumeAllChanges()
                         velocityTracker.addPosition(change.uptimeMillis, change.position)
-                        val currentTimestamp = change.uptimeMillis
-                        val deltaMs = if (lastDragTimestamp == 0L) {
-                            16L
-                        } else {
-                            (currentTimestamp - lastDragTimestamp).coerceAtLeast(1L)
-                        }
-                        val instantSpeedPxPerSec = abs(dragAmount.y) * 1000f / deltaMs
-                        smoothedSpeedPxPerSec = if (smoothedSpeedPxPerSec == 0f) {
-                            instantSpeedPxPerSec
-                        } else {
-                            smoothedSpeedPxPerSec * 0.75f + instantSpeedPxPerSec * 0.25f
-                        }
-                        lastDragTimestamp = currentTimestamp
-
-                        // Slow drag => finer control; fast swipe => more travel.
-                        val normalizedSpeed =
-                            (smoothedSpeedPxPerSec / (pageStepPx * 10f)).coerceIn(0f, 1f)
-                        val accelerationMultiplier = 0.72f + normalizedSpeed * 0.83f
-                        dragDistance += dragAmount.y * accelerationMultiplier
-                        val rawDelta = -dragDistance / pageStepPx
-                        val absRawDelta = abs(rawDelta)
-                        val visualDelta = if (absRawDelta <= 0.5f) {
-                            rawDelta
-                        } else {
-                            val excess = absRawDelta - 0.5f
-                            val dampingSlope = 0.28f + normalizedSpeed * 0.52f
-                            val damped = 0.5f + excess * dampingSlope
-                            if (rawDelta < 0f) -damped else damped
-                        }
-                        position = (startPosition + visualDelta).coerceIn(
-                            minPage.toFloat(),
-                            maxPage.toFloat()
-                        )
-                        val (targetPage, offset) = positionToPageOffset(position)
+                        dragState = dragState.onDrag(dragAmount.y, change.uptimeMillis, pageStepPx)
+                        val (targetPage, offset) = dragState.pageTarget
                         pagerState.requestScrollToPage(
                             targetPage,
                             offset
                         )
                     },
                     onDragCancel = {
-                        val target = position.roundToInt()
-                            .coerceIn(minPage, maxPage)
+                        val target = dragState.cancelTarget()
                         coroutineScope.launch {
                             pagerState.animateScrollToPage(
                                 target,
@@ -203,24 +145,10 @@ internal fun HistoryWheel(
                         }
                     },
                     onDragEnd = {
-                        val deltaFromStart = -dragDistance / pageStepPx
-                        val velocityY = velocityTracker.calculateVelocity().y
-                        val velocityThreshold = pageStepPx * 2.5f
-                        val minFlingOffset = 0.08f
-                        val swipeThreshold = 0.28f
-                        val minTarget = minPage.coerceIn(0, entries.lastIndex)
-                        val maxTarget = maxPage.coerceIn(0, entries.lastIndex)
-                        val target = when {
-                            deltaFromStart > swipeThreshold -> startPage + 1
-
-                            deltaFromStart < -swipeThreshold -> startPage - 1
-
-                            kotlin.math.abs(velocityY) > velocityThreshold &&
-                                kotlin.math.abs(deltaFromStart) > minFlingOffset ->
-                                if (velocityY < 0f) startPage + 1 else startPage - 1
-
-                            else -> startPage
-                        }.coerceIn(minTarget, maxTarget)
+                        val target = dragState.releaseTarget(
+                            velocityTracker.calculateVelocity().y,
+                            pageStepPx
+                        )
                         coroutineScope.launch {
                             pagerState.animateScrollToPage(
                                 target,

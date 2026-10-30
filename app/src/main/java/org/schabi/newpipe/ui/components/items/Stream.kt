@@ -13,6 +13,7 @@ import org.schabi.newpipe.extractor.stream.StreamType
 import org.schabi.newpipe.util.Localization
 import org.schabi.newpipe.util.NO_SERVICE_ID
 import org.schabi.newpipe.util.ServiceHelper
+import org.schabi.newpipe.util.TournesolCacheEntry
 import org.schabi.newpipe.util.TournesolScoreCache
 import org.schabi.newpipe.util.image.ImageStrategy
 
@@ -35,26 +36,35 @@ class Stream(
 ) : Info(), Parcelable {
 
     constructor(item: StreamInfoItem) : this(
+        item,
+        if (item.tournesolScore == null) TournesolScoreCache.getEntry(item.url) else null
+    )
+
+    private constructor(item: StreamInfoItem, cached: TournesolCacheEntry?) : this(
         item.serviceId, item.url, item.name, item.thumbnails, item.uploaderName.orEmpty(),
         item.streamType, item.uploaderUrl, item.duration, item.detailText,
-        tournesolScore = item.tournesolScore ?: TournesolScoreCache.get(item.url),
+        tournesolScore = item.tournesolScore ?: cached?.score,
         tournesolUnsafeReasons = if (item.tournesolScore != null) {
             item.tournesolUnsafeReasons
         } else {
-            TournesolScoreCache.getEntry(item.url)?.unsafeReasons ?: emptyList()
+            cached?.unsafeReasons ?: emptyList()
         },
         tournesolBestCriteria = item.tournesolBestCriteria,
         tournesolWorstCriteria = item.tournesolWorstCriteria
     )
 
     constructor(entry: StreamStatisticsEntry) : this(
+        entry,
+        TournesolScoreCache.getEntry(entry.streamEntity.url)
+    )
+
+    private constructor(entry: StreamStatisticsEntry, cached: TournesolCacheEntry?) : this(
         entry.streamEntity.serviceId, entry.streamEntity.url, entry.streamEntity.title,
         ImageStrategy.dbUrlToImageList(entry.streamEntity.thumbnailUrl), entry.streamEntity.uploader,
         entry.streamEntity.streamType, entry.streamEntity.uploaderUrl, entry.streamEntity.duration,
         entry.detailText, entry.streamId,
-        tournesolScore = TournesolScoreCache.get(entry.streamEntity.url),
-        tournesolUnsafeReasons = TournesolScoreCache.getEntry(entry.streamEntity.url)?.unsafeReasons
-            ?: emptyList()
+        tournesolScore = cached?.score,
+        tournesolUnsafeReasons = cached?.unsafeReasons ?: emptyList()
     )
 
     fun toStreamInfoItem(): StreamInfoItem {

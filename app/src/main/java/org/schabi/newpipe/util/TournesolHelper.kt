@@ -6,39 +6,6 @@ import java.util.LinkedHashSet
 import java.util.Locale
 import java.util.TimeZone
 
-data class TournesolCacheEntry(val score: Long, val unsafeReasons: List<String>)
-
-class TournesolLruScoreCache(private val maxEntries: Int = 200) {
-    private val cache = LinkedHashMap<String, TournesolCacheEntry>(32, 0.75f, true)
-
-    fun put(url: String, score: Long, unsafeReasons: List<String> = emptyList()) {
-        synchronized(cache) {
-            cache[url] = TournesolCacheEntry(score, unsafeReasons)
-            if (cache.size > maxEntries) {
-                cache.remove(cache.keys.first())
-            }
-        }
-    }
-
-    fun get(url: String): Long? = synchronized(cache) { cache[url]?.score }
-
-    fun getEntry(url: String): TournesolCacheEntry? = synchronized(cache) { cache[url] }
-
-    fun clear() = synchronized(cache) { cache.clear() }
-}
-
-object TournesolScoreCache {
-    private val delegate = TournesolLruScoreCache(maxEntries = 200)
-
-    fun put(url: String, score: Long, unsafeReasons: List<String> = emptyList()) = delegate.put(url, score, unsafeReasons)
-
-    fun get(url: String): Long? = delegate.get(url)
-
-    fun getEntry(url: String): TournesolCacheEntry? = delegate.getEntry(url)
-
-    fun clear() = delegate.clear()
-}
-
 enum class TournesolFilterCriterion(val apiKey: String, val prefKey: String) {
     LARGELY_RECOMMENDED(
         "largely_recommended",

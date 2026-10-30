@@ -29,7 +29,6 @@ import androidx.compose.runtime.MutableIntState
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
@@ -59,7 +58,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import kotlin.math.roundToInt
 import org.schabi.newpipe.R
 import org.schabi.newpipe.fragments.detail.COMPACT_MAIN_CRITERION_ID
 import org.schabi.newpipe.fragments.detail.CompareCriterion
@@ -67,8 +65,6 @@ import org.schabi.newpipe.fragments.detail.CriteriaScore
 import org.schabi.newpipe.fragments.detail.EXTRA_CRITERIA
 import org.schabi.newpipe.fragments.detail.LOLLIPOP_COLORS
 import org.schabi.newpipe.fragments.detail.LollipopDescriptionRow
-import org.schabi.newpipe.fragments.detail.SCORE_MAX
-import org.schabi.newpipe.fragments.detail.SCORE_MIN
 
 @Composable
 internal fun LollipopPicker(
@@ -115,8 +111,7 @@ internal fun LollipopPicker(
     val totalHeight = 160.dp
     val activeIndex = hoistedActiveIndex ?: remember { mutableIntStateOf(-1) }
     val dragScore = hoistedDragScore ?: remember { mutableStateOf<Int?>(null) }
-    val lastTapTime = remember { mutableLongStateOf(0L) }
-    val lastTapIndex = remember { mutableIntStateOf(-1) }
+    val pendingTap = remember { mutableStateOf<PendingTap?>(null) }
     val currentOnScoreChange by rememberUpdatedState(onScoreChange)
     val currentOnMainScoreChange by rememberUpdatedState(onMainScoreChange)
     val labelPaint = remember {
@@ -127,11 +122,6 @@ internal fun LollipopPicker(
     }
     labelPaint.textSize = textSizePx
 
-    fun yToScore(y: Float, drawTop: Float, drawBottom: Float): Int {
-        val ratio = ((drawBottom - y) / (drawBottom - drawTop)).coerceIn(0f, 1f)
-        return (ratio * 200f - 100f).roundToInt().coerceIn(SCORE_MIN, SCORE_MAX)
-    }
-
     Column(modifier = modifier.fillMaxWidth()) {
         Canvas(
             modifier = Modifier
@@ -141,11 +131,13 @@ internal fun LollipopPicker(
                     awaitEachGesture {
                         val down = awaitFirstDown(requireUnconsumed = false)
                         hostView.parent?.requestDisallowInterceptTouchEvent(true)
-                        val n = dimensions.size
-                        val slot = size.width.toFloat() / n
                         val drawTop = topPaddingPx + circleRadius
                         val drawBottom = size.height - bottomPaddingPx - circleRadius
-                        val i = (down.position.x / slot).toInt().coerceIn(0, n - 1)
+                        val i = slotIndexAt(
+                            down.position.x,
+                            size.width.toFloat(),
+                            dimensions.size
+                        )
                         activeIndex.intValue = i
 
                         // Wait for either touch slop (→ drag) or release (→ tap).
@@ -155,20 +147,19 @@ internal fun LollipopPicker(
                         if (slopChange != null) {
                             // Drag: clear any pending single-tap so a subsequent
                             // tap on same bar isn't misread as double-tap.
-                            lastTapTime.longValue = 0L
-                            lastTapIndex.intValue = -1
-                            val initial = yToScore(
+                            pendingTap.value = null
+                            val initial = positionToScore(
                                 slopChange.position.y,
-                                drawTop,
-                                drawBottom
+                                minScoreAt = drawBottom,
+                                maxScoreAt = drawTop
                             )
                             setScoreAt(i, initial)
                             dragScore.value = initial
                             drag(slopChange.id) { change ->
-                                val s = yToScore(
+                                val s = positionToScore(
                                     change.position.y,
-                                    drawTop,
-                                    drawBottom
+                                    minScoreAt = drawBottom,
+                                    maxScoreAt = drawTop
                                 )
                                 setScoreAt(i, s)
                                 dragScore.value = s
@@ -177,16 +168,14 @@ internal fun LollipopPicker(
                             dragScore.value = null
                         } else {
                             // Tap: handle single/double-tap reset.
-                            val now = System.currentTimeMillis()
-                            if (i == lastTapIndex.intValue &&
-                                now - lastTapTime.longValue < 300L
-                            ) {
+                            val releasedAt = currentEvent.changes
+                                .firstOrNull { it.id == down.id }
+                                ?.uptimeMillis
+                                ?: down.uptimeMillis
+                            val tap = registerTap(pendingTap.value, i, releasedAt)
+                            pendingTap.value = tap.pending
+                            if (tap.isDoubleTap) {
                                 setScoreAt(i, 0)
-                                lastTapTime.longValue = 0L
-                                lastTapIndex.intValue = -1
-                            } else {
-                                lastTapTime.longValue = now
-                                lastTapIndex.intValue = i
                             }
                         }
                     }
@@ -212,7 +201,7 @@ internal fun LollipopPicker(
                 val score = scoreAt(i)
                 val color = colors[i]
                 val cx = slotWidth * (i + 0.5f)
-                val cy = drawBottom - ((score + 100) / 200f) * (drawBottom - drawTop)
+                val cy = scoreToPosition(score, minScoreAt = drawBottom, maxScoreAt = drawTop)
 
                 // Bar
                 drawLine(
@@ -461,12 +450,7 @@ private fun LargelyRecommendedSlider(
                         val left = sidePaddingPx
                         val right = size.width - sidePaddingPx
                         val canvasBottom = size.height.toFloat()
-                        fun xToScore(x: Float): Int {
-                            val ratio = ((x - left) / (right - left)).coerceIn(0f, 1f)
-                            return (ratio * 200f - 100f)
-                                .roundToInt()
-                                .coerceIn(SCORE_MIN, SCORE_MAX)
-                        }
+                        fun xToScore(x: Float): Int = positionToScore(x, left, right)
                         val scoreBeforeDrag = currentScore
                         var finalScore = xToScore(down.position.x)
                         isDragging = true
@@ -532,8 +516,7 @@ private fun LargelyRecommendedSlider(
             )
 
             // Fill from center toward thumb, stopping short to leave a gap
-            val ratio = (currentScore + 100) / 200f
-            val thumbX = left + ratio * (right - left)
+            val thumbX = scoreToPosition(currentScore, minScoreAt = left, maxScoreAt = right)
             if (currentScore != 0) {
                 val fillColor = if (currentScore < 0) blue else red
                 val rawFillLeft: Float

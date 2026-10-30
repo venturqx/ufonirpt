@@ -115,14 +115,14 @@ class TournesolHelperTest {
         cache.put("url2", 20L)
 
         // Access url1 so url2 becomes the least-recently-used entry
-        assertEquals(10L, cache.get("url1"))
+        assertEquals(10L, cache.getEntry("url1")?.score)
 
         // Inserting url3 should evict url2
         cache.put("url3", 30L)
 
-        assertEquals(10L, cache.get("url1"))
-        assertNull(cache.get("url2"))
-        assertEquals(30L, cache.get("url3"))
+        assertEquals(10L, cache.getEntry("url1")?.score)
+        assertNull(cache.getEntry("url2"))
+        assertEquals(30L, cache.getEntry("url3")?.score)
         assertEquals(listOf("insufficient_trust"), cache.getEntry("url1")?.unsafeReasons)
     }
 }
