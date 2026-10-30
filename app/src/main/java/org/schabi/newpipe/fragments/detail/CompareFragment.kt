@@ -24,6 +24,7 @@ import io.reactivex.rxjava3.disposables.Disposable
 import io.reactivex.rxjava3.schedulers.Schedulers
 import java.time.OffsetDateTime
 import kotlin.math.abs
+import kotlin.random.Random
 import kotlin.reflect.KMutableProperty0
 import org.schabi.newpipe.R
 import org.schabi.newpipe.database.history.model.StreamHistoryEntry
@@ -31,6 +32,9 @@ import org.schabi.newpipe.database.stream.model.StreamEntity
 import org.schabi.newpipe.extractor.stream.StreamInfo
 import org.schabi.newpipe.fragments.detail.compare.CompareCompactScreen
 import org.schabi.newpipe.fragments.detail.compare.CompareScreen
+import org.schabi.newpipe.fragments.detail.compare.CompareSuggestionPool
+import org.schabi.newpipe.fragments.detail.compare.SuggestionFetch
+import org.schabi.newpipe.fragments.detail.compare.SuggestionSlot
 import org.schabi.newpipe.fragments.detail.compare.entitiesForLeftRight
 import org.schabi.newpipe.ktx.serializable
 import org.schabi.newpipe.local.history.HistoryRecordManager
@@ -82,9 +86,7 @@ class CompareFragment : Fragment() {
     private var suggestedRight by mutableStateOf<CompareComparisonVideo?>(null)
     private var suggestionsLoading by mutableStateOf(false)
     private var suggestionsDisposable: Disposable? = null
-    private val suggestionPool = mutableListOf<CompareComparisonVideo>()
-    private var useHistorySuggestionFallback = false
-    private var pendingHistorySuggestionFallback = false
+    private lateinit var suggestionPool: CompareSuggestionPool
     private var weeklyComparisons by mutableStateOf<Int?>(null)
     private var weeklyStatsDisposable: Disposable? = null
     private var dailyComparisons by mutableStateOf<Int?>(null)
@@ -100,6 +102,11 @@ class CompareFragment : Fragment() {
         externalScroll = arguments?.getBoolean(KEY_EXTERNAL_SCROLL) == true
         currentHistoryEntry = currentInfo?.let { buildCurrentEntry(it) }
         scoreStore = CompareScoreStore.shared(requireContext())
+        suggestionPool = CompareSuggestionPool(
+            historyPairAllowed = useCompactUi && currentInfo == null,
+            random = Random.Default,
+            toVideo = ::buildHistorySuggestion
+        )
     }
 
     override fun onCreateView(
@@ -209,8 +216,8 @@ class CompareFragment : Fragment() {
                             onNavigateToVideo = { serviceId, url, title ->
                                 navigateToVideo(serviceId, url, title)
                             },
-                            onRandomizeLeft = { randomizeLeft() },
-                            onRandomizeRight = { randomizeRight() },
+                            onRandomizeLeft = { randomize(SuggestionSlot.LEFT) },
+                            onRandomizeRight = { randomize(SuggestionSlot.RIGHT) },
                             showGreeting = currentInfo == null,
                             reserveMiniPlayerSpace = !embedInDetail,
                             externalScroll = externalScroll,
@@ -261,9 +268,8 @@ class CompareFragment : Fragment() {
         historyEntries = emptyList()
         recommendations = emptyList()
         recommendationsTotalCount = null
-        suggestedLeft = null
-        suggestedRight = null
         suggestionPool.clear()
+        publishSuggestions()
         compactPairSelection = null
         super.onDestroyView()
     }
@@ -288,6 +294,7 @@ class CompareFragment : Fragment() {
         checkDisposable = null
         suggestionsDisposable?.dispose()
         suggestionsDisposable = null
+        suggestionPool.onFetchAbandoned()
         suggestionsLoading = false
     }
 
@@ -336,9 +343,8 @@ class CompareFragment : Fragment() {
             refreshSubmittedState()
         }
 
-        if (pendingHistorySuggestionFallback && loadRandomHistoryPair()) {
-            pendingHistorySuggestionFallback = false
-        }
+        suggestionPool.onHistoryUpdated(filtered)
+        publishSuggestions()
     }
 
     private fun selectIndex(newIndex: Int) {
@@ -1054,147 +1060,28 @@ class CompareFragment : Fragment() {
     }
 
     private fun prefetchPool() {
-        fetchPoolThen(action = { _ -> })
+        runSuggestionStep(suggestionPool.prefetch())
     }
 
     private fun loadRandomPair() {
-        fetchPoolThen(
-            action = { pool ->
-                if (pool.size >= 2) {
-                    val first = pool.removeAt((Math.random() * pool.size).toInt())
-                    val second = pool.removeAt((Math.random() * pool.size).toInt())
-                    suggestedLeft = first
-                    suggestedRight = second
-                } else if (pool.size == 1) {
-                    suggestedLeft = pool.removeAt(0)
-                }
-            },
-            onMissingToken = {
-                activateHistorySuggestionFallback()
-            }
-        )
+        runSuggestionStep(suggestionPool.requestPair())
     }
 
-    private fun randomizeLeft() {
-        if (useHistorySuggestionFallback) {
-            randomizeHistorySuggestion(isLeft = true)
-            return
-        }
-        val excludeUid = suggestedRight?.uid
-        pickFromPool(
-            excludeUid = excludeUid,
-            onPicked = { video -> suggestedLeft = video },
-            onMissingToken = {
-                activateHistorySuggestionFallback()
-                randomizeHistorySuggestion(isLeft = true)
-            }
-        )
+    private fun randomize(slot: SuggestionSlot) {
+        runSuggestionStep(suggestionPool.randomize(slot, historyEntries))
     }
 
-    private fun randomizeRight() {
-        if (useHistorySuggestionFallback) {
-            randomizeHistorySuggestion(isLeft = false)
-            return
-        }
-        val excludeUid = suggestedLeft?.uid
-        pickFromPool(
-            excludeUid = excludeUid,
-            onPicked = { video -> suggestedRight = video },
-            onMissingToken = {
-                activateHistorySuggestionFallback()
-                randomizeHistorySuggestion(isLeft = false)
-            }
-        )
-    }
-
-    private fun pickFromPool(
-        excludeUid: String?,
-        onPicked: (CompareComparisonVideo) -> Unit,
-        onMissingToken: (() -> Unit)? = null
-    ) {
-        val candidates = if (excludeUid != null) {
-            suggestionPool.filter { it.uid != excludeUid }
-        } else {
-            suggestionPool.toList()
-        }
-        if (candidates.isNotEmpty()) {
-            val picked = candidates[(Math.random() * candidates.size).toInt()]
-            suggestionPool.remove(picked)
-            onPicked(picked)
-            return
-        }
-        fetchPoolThen(
-            action = { pool ->
-                val filtered = if (excludeUid != null) {
-                    pool.filter { it.uid != excludeUid }
-                } else {
-                    pool.toList()
-                }
-                if (filtered.isNotEmpty()) {
-                    val picked = filtered[(Math.random() * filtered.size).toInt()]
-                    pool.remove(picked)
-                    onPicked(picked)
-                }
-            },
-            onMissingToken = onMissingToken
-        )
-    }
-
-    private fun activateHistorySuggestionFallback() {
-        useHistorySuggestionFallback = true
-        suggestionPool.clear()
-        if (loadRandomHistoryPair()) {
-            pendingHistorySuggestionFallback = false
-        } else {
-            pendingHistorySuggestionFallback = true
+    private fun runSuggestionStep(fetch: SuggestionFetch) {
+        publishSuggestions()
+        if (fetch == SuggestionFetch.START) {
+            fetchSuggestions()
         }
     }
 
-    private fun loadRandomHistoryPair(): Boolean {
-        if (!useCompactUi || currentInfo != null) {
-            return false
-        }
-        val candidates = distinctHistoryEntries()
-        if (candidates.size < 2) {
-            return false
-        }
-        val pool = candidates.toMutableList()
-        val first = pool.removeAt((Math.random() * pool.size).toInt())
-        val second = pool.removeAt((Math.random() * pool.size).toInt())
-        suggestedLeft = buildHistorySuggestion(first)
-        suggestedRight = buildHistorySuggestion(second)
-        return true
-    }
-
-    private fun randomizeHistorySuggestion(isLeft: Boolean) {
-        val excludedKeys = LinkedHashSet<String>()
-        historySuggestionKey(if (isLeft) suggestedLeft else suggestedRight)?.let(excludedKeys::add)
-        historySuggestionKey(if (isLeft) suggestedRight else suggestedLeft)?.let(excludedKeys::add)
-        pickRandomHistorySuggestion(excludedKeys)?.let { replacement ->
-            if (isLeft) {
-                suggestedLeft = replacement
-            } else {
-                suggestedRight = replacement
-            }
-        }
-    }
-
-    private fun distinctHistoryEntries(): List<StreamHistoryEntry> {
-        val seen = LinkedHashSet<String>()
-        return historyEntries.filter { entry ->
-            seen.add(historyEntryKey(entry.streamEntity.serviceId, entry.streamEntity.url))
-        }
-    }
-
-    private fun pickRandomHistorySuggestion(excludedKeys: Set<String>): CompareComparisonVideo? {
-        val candidates = distinctHistoryEntries().filter { entry ->
-            historyEntryKey(entry.streamEntity.serviceId, entry.streamEntity.url) !in excludedKeys
-        }
-        if (candidates.isEmpty()) {
-            return null
-        }
-        val picked = candidates[(Math.random() * candidates.size).toInt()]
-        return buildHistorySuggestion(picked)
+    private fun publishSuggestions() {
+        suggestedLeft = suggestionPool.left
+        suggestedRight = suggestionPool.right
+        suggestionsLoading = suggestionPool.fetchInFlight
     }
 
     private fun buildHistorySuggestion(entry: StreamHistoryEntry): CompareComparisonVideo {
@@ -1211,22 +1098,7 @@ class CompareFragment : Fragment() {
         )
     }
 
-    private fun historySuggestionKey(video: CompareComparisonVideo?): String? {
-        val serviceId = video?.serviceId ?: return null
-        val videoUrl = video.videoUrl ?: return null
-        return historyEntryKey(serviceId, videoUrl)
-    }
-
-    private fun historyEntryKey(serviceId: Int, videoUrl: String): String {
-        return "$serviceId::$videoUrl"
-    }
-
-    private fun fetchPoolThen(
-        action: (MutableList<CompareComparisonVideo>) -> Unit,
-        onMissingToken: (() -> Unit)? = null
-    ) {
-        suggestionsLoading = true
-        suggestionsDisposable?.dispose()
+    private fun fetchSuggestions() {
         suggestionsDisposable = TournesolAuthManager.getValidAccessToken(requireContext())
             .orMissingToken()
             .flatMap { token ->
@@ -1235,21 +1107,18 @@ class CompareFragment : Fragment() {
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(
                 { videos ->
-                    suggestionsLoading = false
-                    useHistorySuggestionFallback = false
-                    pendingHistorySuggestionFallback = false
-                    suggestionPool.clear()
-                    suggestionPool.addAll(videos)
-                    action(suggestionPool)
+                    suggestionPool.onFetched(videos)
+                    publishSuggestions()
                 },
                 { throwable ->
-                    suggestionsLoading = false
                     if (throwable is MissingTokenException) {
-                        onMissingToken?.invoke()
+                        suggestionPool.onMissingToken(historyEntries)
+                    } else {
+                        suggestionPool.onFetchAbandoned()
                     }
+                    publishSuggestions()
                 }
             )
-        suggestionsDisposable?.let { disposables.add(it) }
     }
 
     override fun onResume() {

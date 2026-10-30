@@ -1,10 +1,7 @@
 package org.schabi.newpipe.views;
 
 import android.content.Context;
-import android.graphics.Canvas;
 import android.graphics.Color;
-import android.graphics.Paint;
-import android.graphics.Path;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.text.SpannableString;
@@ -14,7 +11,6 @@ import android.util.AttributeSet;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -41,17 +37,18 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
 import io.reactivex.rxjava3.disposables.CompositeDisposable;
 
 public class TournesolScoreCard extends LinearLayout {
 
-    private static final int TOURNESOL_SCORE_COLOR = Color.parseColor("#FFCA1D");
     private static final int CHART_HEIGHT_DP = 28;
 
     private final Map<String, CriterionDistribution> criteriaDistributions = new LinkedHashMap<>();
     private final CompositeDisposable disposables = new CompositeDisposable();
+    private final ScoreCardLoad load = new ScoreCardLoad();
 
     private LinearLayout tournesolInfoSection;
     private LinearLayout tournesolCriteriaSection;
@@ -115,14 +112,29 @@ public class TournesolScoreCard extends LinearLayout {
         criteriaDistributions.clear();
 
         disposables.clear();
-        fetchTournesolInfo();
-        fetchTournesolDistribution();
+        startFetches(load.onBind());
+    }
+
+    @Override
+    protected void onAttachedToWindow() {
+        super.onAttachedToWindow();
+        startFetches(load.onAttached());
     }
 
     @Override
     protected void onDetachedFromWindow() {
         disposables.clear();
+        load.onDetached();
         super.onDetachedFromWindow();
+    }
+
+    private void startFetches(final Set<ScoreCardLoad.Fetch> fetches) {
+        if (fetches.contains(ScoreCardLoad.Fetch.INFO)) {
+            fetchTournesolInfo();
+        }
+        if (fetches.contains(ScoreCardLoad.Fetch.DISTRIBUTION)) {
+            fetchTournesolDistribution();
+        }
     }
 
     private void fetchTournesolInfo() {
@@ -132,6 +144,7 @@ public class TournesolScoreCard extends LinearLayout {
         disposables.add(
                 TournesolEntityApi.fetchRating(streamInfo.getServiceId(), streamInfo.getId())
                 .observeOn(AndroidSchedulers.mainThread())
+                .doOnTerminate(() -> load.onFinished(ScoreCardLoad.Fetch.INFO))
                 .subscribe(
                         this::displayTournesolInfo,
                         throwable -> { /* silently ignore */ }
@@ -179,29 +192,20 @@ public class TournesolScoreCard extends LinearLayout {
     }
 
     private void displayCriteriaScores(final List<CriterionScore> criteriaScores) {
-        final List<CriterionEntry> entries = new ArrayList<>();
-        for (final CriterionScore item : criteriaScores) {
-            final String criteria = item.getCriteria();
-            final TournesolCriterionStyle style = TournesolCriterionStyle.find(criteria);
-            final String label = style != null
-                    ? getContext().getString(style.getLabelRes())
-                    : criteria.replace("_", " ");
-            entries.add(new CriterionEntry(criteria, label, item.getScore()));
-        }
-
-        final List<CriterionEntry> sortedEntries =
-                TournesolCriterionStyle.sortedByCatalogOrder(entries, entry -> entry.id);
+        final List<CriterionScore> sortedEntries = TournesolCriterionStyle.sortedByCatalogOrder(
+                criteriaScores, CriterionScore::getCriteria);
 
         if (!sortedEntries.isEmpty()) {
             createLollipopChart(sortedEntries);
         }
     }
 
-    private List<Drawable> loadRadarIcons(final List<CriterionEntry> entries) {
+    private List<Drawable> loadRadarIcons(final List<CriterionScore> entries) {
         final List<Drawable> icons = new ArrayList<>();
         final int iconSizePx = dpToPx(32);
-        for (final CriterionEntry entry : entries) {
-            final TournesolCriterionStyle style = TournesolCriterionStyle.find(entry.id);
+        for (final CriterionScore entry : entries) {
+            final TournesolCriterionStyle style =
+                    TournesolCriterionStyle.find(entry.getCriteria());
             if (style != null) {
                 final Drawable d = ContextCompat.getDrawable(getContext(), style.getIconRes());
                 if (d != null) {
@@ -215,12 +219,12 @@ public class TournesolScoreCard extends LinearLayout {
         return icons;
     }
 
-    private void createLollipopChart(final List<CriterionEntry> entries) {
+    private void createLollipopChart(final List<CriterionScore> entries) {
         final List<Drawable> icons = loadRadarIcons(entries);
         final int[] colors = new int[entries.size()];
         for (int i = 0; i < entries.size(); i++) {
             final TournesolCriterionStyle style =
-                    TournesolCriterionStyle.find(entries.get(i).id);
+                    TournesolCriterionStyle.find(entries.get(i).getCriteria());
             colors[i] = style != null ? style.getColor() : Color.WHITE;
         }
 
@@ -272,9 +276,14 @@ public class TournesolScoreCard extends LinearLayout {
         wrapper.addView(lollipopView);
         wrapper.addView(descRow);
 
-        lollipopView.setOnDimensionClickListener(index -> {
-            final CriterionEntry entry = entries.get(index);
-            final TournesolCriterionStyle style = TournesolCriterionStyle.find(entry.id);
+        lollipopView.setOnSelectionChangedListener(index -> {
+            if (index == null) {
+                descRow.setVisibility(GONE);
+                return;
+            }
+            final CriterionScore entry = entries.get(index);
+            final TournesolCriterionStyle style =
+                    TournesolCriterionStyle.find(entry.getCriteria());
             if (style != null) {
                 descIcon.setImageResource(style.getIconRes());
                 final String title = getContext().getString(style.getLabelRes());
@@ -287,7 +296,8 @@ public class TournesolScoreCard extends LinearLayout {
                 descRow.setVisibility(VISIBLE);
 
                 miniChartContainer.removeAllViews();
-                final CriterionDistribution data = criteriaDistributions.get(entry.id);
+                final CriterionDistribution data =
+                        criteriaDistributions.get(entry.getCriteria());
                 if (data != null) {
                     final View chart = createDistributionChart(
                             data.getBins(), data.getDistribution());
@@ -314,6 +324,7 @@ public class TournesolScoreCard extends LinearLayout {
         disposables.add(
                 TournesolEntityApi.fetchDistributions(streamInfo.getServiceId(), streamInfo.getId())
                 .observeOn(AndroidSchedulers.mainThread())
+                .doOnTerminate(() -> load.onFinished(ScoreCardLoad.Fetch.DISTRIBUTION))
                 .subscribe(
                         this::displayDistribution,
                         throwable -> { /* silently ignore */ }
@@ -340,86 +351,10 @@ public class TournesolScoreCard extends LinearLayout {
         if (!DistributionCurve.isDrawable(bins, distribution)) {
             return new View(getContext());
         }
-        final int chartHeightPx = dpToPx(CHART_HEIGHT_DP);
-        final float strokePx = dpToPx(2) / 3f;
-
-        final View curveView = new View(getContext()) {
-            private final Paint curvePaint = buildCurvePaint();
-            private final Paint fillPaint = buildFillPaint();
-            private final Paint separatorPaint = buildSeparatorPaint();
-            private final Path curvePath = new Path();
-            private final Path fillPath = new Path();
-            @Nullable
-            private DistributionCurve curve;
-
-            private Paint buildCurvePaint() {
-                final Paint p = new Paint(Paint.ANTI_ALIAS_FLAG);
-                p.setColor(TOURNESOL_SCORE_COLOR);
-                p.setStyle(Paint.Style.STROKE);
-                p.setStrokeWidth(strokePx);
-                p.setStrokeCap(Paint.Cap.ROUND);
-                p.setStrokeJoin(Paint.Join.ROUND);
-                return p;
-            }
-
-            private Paint buildFillPaint() {
-                final Paint p = new Paint(Paint.ANTI_ALIAS_FLAG);
-                p.setColor(Color.argb(55, 0xFF, 0xCA, 0x1D));
-                p.setStyle(Paint.Style.FILL);
-                return p;
-            }
-
-            private Paint buildSeparatorPaint() {
-                final Paint p = new Paint(Paint.ANTI_ALIAS_FLAG);
-                p.setColor(Color.argb(140, 0xFF, 0xFF, 0xFF));
-                p.setStyle(Paint.Style.STROKE);
-                p.setStrokeWidth(strokePx * 0.6f);
-                return p;
-            }
-
-            @Override
-            protected void onSizeChanged(final int w, final int h,
-                                         final int oldw, final int oldh) {
-                super.onSizeChanged(w, h, oldw, oldh);
-                curve = DistributionCurve.of(bins, distribution, w, h);
-                if (curve == null) {
-                    return;
-                }
-
-                final float[] xs = curve.getXs();
-                final float[] ys = curve.getYs();
-                final float[] m = curve.getTangents();
-                final int last = xs.length - 1;
-
-                curvePath.reset();
-                curvePath.moveTo(xs[0], ys[0]);
-                for (int i = 0; i < last; i++) {
-                    final float seg = (xs[i + 1] - xs[i]) / 3f;
-                    curvePath.cubicTo(
-                            xs[i] + seg, ys[i] + m[i] * seg,
-                            xs[i + 1] - seg, ys[i + 1] - m[i + 1] * seg,
-                            xs[i + 1], ys[i + 1]);
-                }
-
-                fillPath.set(curvePath);
-                fillPath.lineTo(xs[last], h);
-                fillPath.lineTo(xs[0], h);
-                fillPath.close();
-            }
-
-            @Override
-            protected void onDraw(final Canvas canvas) {
-                if (curve == null) {
-                    return;
-                }
-                canvas.drawPath(fillPath, fillPaint);
-                canvas.drawPath(curvePath, curvePaint);
-                final float zeroX = curve.getZeroX();
-                canvas.drawLine(zeroX, 0f, zeroX, (float) getHeight(), separatorPaint);
-            }
-        };
+        final View curveView = new DistributionCurveView(
+                getContext(), bins, distribution, dpToPx(2) / 3f);
         curveView.setLayoutParams(new LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT, chartHeightPx));
+                LinearLayout.LayoutParams.MATCH_PARENT, dpToPx(CHART_HEIGHT_DP)));
         return curveView;
     }
 
@@ -433,192 +368,5 @@ public class TournesolScoreCard extends LinearLayout {
         return (int) TypedValue.applyDimension(
                 TypedValue.COMPLEX_UNIT_DIP, dp,
                 getResources().getDisplayMetrics());
-    }
-
-    private interface OnDimensionClickListener {
-        void onDimensionClick(int index);
-    }
-
-    private static class CriterionEntry {
-        final String id;
-        final String label;
-        final double score;
-
-        CriterionEntry(final String id, final String label, final double score) {
-            this.id = id;
-            this.label = label;
-            this.score = score;
-        }
-    }
-
-    private static class LollipopChartView extends View {
-        private final List<CriterionEntry> entries;
-        private final List<Drawable> icons;
-        private final int[] colors;
-        private final double[] scores;
-        private final String[] scoreLabels;
-        private final LollipopChartMetrics metrics;
-        private final float selectedGlowRadius;
-        private OnDimensionClickListener dimensionClickListener;
-        private int selectedIndex = -1;
-
-        private final Paint barPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-        private final Paint circlePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-        private final Paint circleStrokePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-        private final Paint scorePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-        private final Paint zeroLinePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-        private final Paint selectedGlowPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-
-        @Nullable
-        private LollipopChartGeometry geometry;
-
-        LollipopChartView(final Context context,
-                          final List<CriterionEntry> entries,
-                          final List<Drawable> icons,
-                          final int[] colors,
-                          final int iconSizePx) {
-            super(context);
-            this.entries = entries;
-            this.icons = icons;
-            this.colors = colors;
-            this.scores = new double[entries.size()];
-            this.scoreLabels = new String[entries.size()];
-            for (int i = 0; i < entries.size(); i++) {
-                final double score = entries.get(i).score;
-                this.scores[i] = score;
-                this.scoreLabels[i] = String.format(Locale.US, "%.0f", score);
-            }
-            this.metrics = LollipopChartMetrics.of(iconSizePx, this::dp);
-            this.selectedGlowRadius = metrics.getCircleRadius() + dp(3f);
-
-            barPaint.setStyle(Paint.Style.FILL);
-            barPaint.setStrokeCap(Paint.Cap.BUTT);
-            barPaint.setStrokeWidth(dp(12f));
-
-            circlePaint.setStyle(Paint.Style.FILL);
-            circlePaint.setColor(Color.parseColor("#0F0F0F"));
-
-            circleStrokePaint.setStyle(Paint.Style.STROKE);
-            circleStrokePaint.setStrokeWidth(metrics.getCircleStrokeWidth());
-
-            scorePaint.setTextSize(dp(10f));
-            scorePaint.setTypeface(Typeface.create(Typeface.DEFAULT, Typeface.BOLD));
-            scorePaint.setTextAlign(Paint.Align.CENTER);
-            scorePaint.setColor(Color.WHITE);
-
-            zeroLinePaint.setStyle(Paint.Style.STROKE);
-            zeroLinePaint.setColor(Color.parseColor("#40FFFFFF"));
-            zeroLinePaint.setStrokeWidth(dp(1f));
-
-            selectedGlowPaint.setStyle(Paint.Style.STROKE);
-            selectedGlowPaint.setStrokeWidth(dp(4f));
-
-            setClickable(true);
-        }
-
-        void setOnDimensionClickListener(final OnDimensionClickListener listener) {
-            this.dimensionClickListener = listener;
-        }
-
-        @Override
-        protected void onMeasure(final int widthMeasureSpec, final int heightMeasureSpec) {
-            final int maxWidth = dp(400) + getPaddingLeft() + getPaddingRight();
-            int clampedWidthSpec = widthMeasureSpec;
-            if (MeasureSpec.getSize(widthMeasureSpec) > maxWidth) {
-                clampedWidthSpec = MeasureSpec.makeMeasureSpec(
-                        maxWidth, MeasureSpec.getMode(widthMeasureSpec));
-            }
-            super.onMeasure(clampedWidthSpec, heightMeasureSpec);
-
-            final int height = LollipopChartGeometry.desiredHeight(scores, metrics)
-                    + getPaddingTop() + getPaddingBottom();
-
-            setMeasuredDimension(getMeasuredWidth(), height);
-        }
-
-        @Override
-        protected void onSizeChanged(final int w, final int h, final int oldw, final int oldh) {
-            super.onSizeChanged(w, h, oldw, oldh);
-            geometry = LollipopChartGeometry.of(scores, metrics, w, h);
-            if (geometry == null) {
-                return;
-            }
-            for (int i = 0; i < entries.size() && i < icons.size(); i++) {
-                final Drawable icon = icons.get(i);
-                if (icon != null) {
-                    final LollipopIconBounds bounds = geometry.iconBounds(
-                            i, LollipopIconFit.of(entries.get(i).id));
-                    icon.setBounds(bounds.getLeft(), bounds.getTop(),
-                            bounds.getRight(), bounds.getBottom());
-                    icon.setTintList(null);
-                }
-            }
-        }
-
-        private int dp(final float dpVal) {
-            return (int) TypedValue.applyDimension(
-                    TypedValue.COMPLEX_UNIT_DIP, dpVal,
-                    getResources().getDisplayMetrics());
-        }
-
-        @Override
-        public boolean onTouchEvent(final MotionEvent event) {
-            if (event.getAction() == MotionEvent.ACTION_UP && geometry != null) {
-                final Integer hit = geometry.hitTest(event.getX(), event.getY());
-                if (hit != null) {
-                    selectedIndex = (selectedIndex == hit) ? -1 : hit;
-                    invalidate();
-                    if (dimensionClickListener != null && selectedIndex >= 0) {
-                        dimensionClickListener.onDimensionClick(selectedIndex);
-                    }
-                    return true;
-                }
-            }
-            return super.onTouchEvent(event);
-        }
-
-        @Override
-        protected void onDraw(final Canvas canvas) {
-            super.onDraw(canvas);
-            if (geometry == null) {
-                return;
-            }
-
-            final float[] centerXs = geometry.getCenterXs();
-            final float[] barEndYs = geometry.getBarEndYs();
-            final float[] labelYs = geometry.getLabelYs();
-            final float zeroY = geometry.getZeroY();
-            final float circleRadius = metrics.getCircleRadius();
-
-            canvas.drawLine(geometry.getZeroLineStartX(), zeroY,
-                    geometry.getZeroLineEndX(), zeroY, zeroLinePaint);
-
-            for (int i = 0; i < entries.size(); i++) {
-                final int color = colors[i];
-                final float cx = centerXs[i];
-                final float barEndY = barEndYs[i];
-
-                barPaint.setColor(color);
-                canvas.drawLine(cx, zeroY, cx, barEndY, barPaint);
-
-                if (i == selectedIndex) {
-                    selectedGlowPaint.setColor(color);
-                    selectedGlowPaint.setAlpha(160);
-                    canvas.drawCircle(cx, barEndY, selectedGlowRadius, selectedGlowPaint);
-                }
-
-                canvas.drawCircle(cx, barEndY, circleRadius, circlePaint);
-                circleStrokePaint.setColor(color);
-                canvas.drawCircle(cx, barEndY, circleRadius, circleStrokePaint);
-
-                final Drawable icon = i < icons.size() ? icons.get(i) : null;
-                if (icon != null) {
-                    icon.draw(canvas);
-                }
-
-                scorePaint.setColor(color);
-                canvas.drawText(scoreLabels[i], cx, labelYs[i], scorePaint);
-            }
-        }
     }
 }

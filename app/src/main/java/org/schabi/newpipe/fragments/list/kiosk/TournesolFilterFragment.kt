@@ -39,6 +39,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -113,61 +114,9 @@ class TournesolFilterFragment : BottomSheetDialogFragment() {
             setContent {
                 AppTheme {
                     TournesolFilterSheet(
+                        initialConfig = cfg,
                         appContext = appContext,
-                        initialLanguages = cfg.languages,
-                        initialDateKey = cfg.dateKey,
-                        initialIncludeLowScoreVideos = cfg.includeLowScoreVideos,
-                        initialDurationMinSeconds = cfg.durationMinSeconds,
-                        initialDurationMaxSeconds = cfg.durationMaxSeconds,
-                        initialWeightLargelyRecommended = cfg.weightFor(TournesolFilterCriterion.LARGELY_RECOMMENDED),
-                        initialWeightReliability = cfg.weightFor(TournesolFilterCriterion.RELIABILITY),
-                        initialWeightImportance = cfg.weightFor(TournesolFilterCriterion.IMPORTANCE),
-                        initialWeightPedagogy = cfg.weightFor(TournesolFilterCriterion.PEDAGOGY),
-                        initialWeightLaymanFriendly = cfg.weightFor(TournesolFilterCriterion.LAYMAN_FRIENDLY),
-                        initialWeightEntertainingRelaxing = cfg.weightFor(TournesolFilterCriterion.ENTERTAINING_RELAXING),
-                        initialWeightEngaging = cfg.weightFor(TournesolFilterCriterion.ENGAGING),
-                        initialWeightDiversityInclusion = cfg.weightFor(TournesolFilterCriterion.DIVERSITY_INCLUSION),
-                        initialWeightBetterHabits = cfg.weightFor(TournesolFilterCriterion.BETTER_HABITS),
-                        initialWeightBackfireRisk = cfg.weightFor(TournesolFilterCriterion.BACKFIRE_RISK),
-                        onApply = {
-                                languages,
-                                dateKey,
-                                includeLowScoreVideos,
-                                durationMin,
-                                durationMax,
-                                wLR,
-                                wRel,
-                                wImp,
-                                wPed,
-                                wLay,
-                                wEnt,
-                                wEng,
-                                wDiv,
-                                wBet,
-                                wBack
-                            ->
-                            listener?.onApply(
-                                TournesolFilterConfig(
-                                    languages = languages,
-                                    dateKey = dateKey,
-                                    includeLowScoreVideos = includeLowScoreVideos,
-                                    durationMinSeconds = durationMin,
-                                    durationMaxSeconds = durationMax,
-                                    weights = mapOf(
-                                        TournesolFilterCriterion.LARGELY_RECOMMENDED to wLR,
-                                        TournesolFilterCriterion.RELIABILITY to wRel,
-                                        TournesolFilterCriterion.IMPORTANCE to wImp,
-                                        TournesolFilterCriterion.PEDAGOGY to wPed,
-                                        TournesolFilterCriterion.LAYMAN_FRIENDLY to wLay,
-                                        TournesolFilterCriterion.ENTERTAINING_RELAXING to wEnt,
-                                        TournesolFilterCriterion.ENGAGING to wEng,
-                                        TournesolFilterCriterion.DIVERSITY_INCLUSION to wDiv,
-                                        TournesolFilterCriterion.BETTER_HABITS to wBet,
-                                        TournesolFilterCriterion.BACKFIRE_RISK to wBack
-                                    )
-                                )
-                            )
-                        },
+                        onApply = { config -> listener?.onApply(config) },
                         onClose = { dismiss() }
                     )
                 }
@@ -178,13 +127,6 @@ class TournesolFilterFragment : BottomSheetDialogFragment() {
 
 private data class FilterOption(val key: String, @StringRes val labelResId: Int)
 
-private const val DURATION_SLIDER_MAX = 120f
-
-private const val PREF_TOURNESOL_FILTER_WEIGHTS_ENABLED = "tournesol_filter_weights_enabled"
-private const val PREF_WEIGHT_LEVEL_PREFIX = "tournesol_filter_weight_level_"
-
-private val WEIGHT_LEVELS = intArrayOf(0, 25, 50, 75, 100)
-
 private fun weightLevelLabel(value: Int): String = when (value) {
     0 -> "Ignore"
     25 -> "Not important"
@@ -193,31 +135,26 @@ private fun weightLevelLabel(value: Int): String = when (value) {
     else -> "Crucial"
 }
 
-private fun quantizeToLevel(value: Int): Int {
-    if (value < 0) return 50
-    return WEIGHT_LEVELS.minByOrNull { kotlin.math.abs(it - value) } ?: 50
+@StringRes
+private fun criterionLabelRes(criterion: TournesolFilterCriterion): Int = when (criterion) {
+    TournesolFilterCriterion.LARGELY_RECOMMENDED -> R.string.filter_criteria_largely_recommended
+    TournesolFilterCriterion.RELIABILITY -> R.string.filter_criteria_reliability
+    TournesolFilterCriterion.IMPORTANCE -> R.string.filter_criteria_importance
+    TournesolFilterCriterion.PEDAGOGY -> R.string.filter_criteria_pedagogy
+    TournesolFilterCriterion.LAYMAN_FRIENDLY -> R.string.filter_criteria_layman_friendly
+    TournesolFilterCriterion.ENTERTAINING_RELAXING -> R.string.filter_criteria_entertaining_relaxing
+    TournesolFilterCriterion.ENGAGING -> R.string.filter_criteria_engaging
+    TournesolFilterCriterion.DIVERSITY_INCLUSION -> R.string.filter_criteria_diversity_inclusion
+    TournesolFilterCriterion.BETTER_HABITS -> R.string.filter_criteria_better_habits
+    TournesolFilterCriterion.BACKFIRE_RISK -> R.string.filter_criteria_backfire_risk
 }
 
 @OptIn(ExperimentalLayoutApi::class, ExperimentalMaterial3Api::class)
 @Composable
 private fun TournesolFilterSheet(
+    initialConfig: TournesolFilterConfig,
     appContext: Context,
-    initialLanguages: List<String>,
-    initialDateKey: String,
-    initialIncludeLowScoreVideos: Boolean,
-    initialDurationMinSeconds: Int,
-    initialDurationMaxSeconds: Int,
-    initialWeightLargelyRecommended: Int,
-    initialWeightReliability: Int,
-    initialWeightImportance: Int,
-    initialWeightPedagogy: Int,
-    initialWeightLaymanFriendly: Int,
-    initialWeightEntertainingRelaxing: Int,
-    initialWeightEngaging: Int,
-    initialWeightDiversityInclusion: Int,
-    initialWeightBetterHabits: Int,
-    initialWeightBackfireRisk: Int,
-    onApply: (List<String>, String, Boolean, Int, Int, Int, Int, Int, Int, Int, Int, Int, Int, Int, Int) -> Unit,
+    onApply: (TournesolFilterConfig) -> Unit,
     onClose: () -> Unit
 ) {
     val chipColors = FilterChipDefaults.filterChipColors(
@@ -232,79 +169,53 @@ private fun TournesolFilterSheet(
         fontSize = 14.sp,
         letterSpacing = TextUnit(0.04f, TextUnitType.Em)
     )
-    val selectedLanguages = remember {
-        mutableStateListOf<String>().apply { addAll(initialLanguages) }
+    val prefs = remember { PreferenceManager.getDefaultSharedPreferences(appContext) }
+    val initialForm = remember {
+        TournesolFilterForm.from(
+            config = initialConfig,
+            weightsEnabled = prefs.getBoolean(PREF_TOURNESOL_FILTER_WEIGHTS_ENABLED, false),
+            storedLevel = { criterion ->
+                prefs.getInt(criterion.weightLevelPrefKey, Int.MIN_VALUE).takeIf { it != Int.MIN_VALUE }
+            }
+        )
     }
-    var selectedDateKey by remember { mutableStateOf(initialDateKey) }
-    var includeLowScoreVideos by remember { mutableStateOf(initialIncludeLowScoreVideos) }
+    val selectedLanguages = remember {
+        mutableStateListOf<String>().apply { addAll(initialForm.languages) }
+    }
+    var selectedDateKey by remember { mutableStateOf(initialForm.dateKey) }
+    var includeLowScoreVideos by remember { mutableStateOf(initialForm.includeLowScoreVideos) }
 
     // Duration: store as minutes in slider, convert to seconds for API
-    var durationMinMinutes by remember {
-        mutableStateOf(if (initialDurationMinSeconds >= 0) initialDurationMinSeconds / 60f else 0f)
-    }
-    var durationMaxMinutes by remember {
-        mutableStateOf(if (initialDurationMaxSeconds >= 0) initialDurationMaxSeconds / 60f else DURATION_SLIDER_MAX)
-    }
+    var durationMinMinutes by remember { mutableStateOf(initialForm.durationMinMinutes) }
+    var durationMaxMinutes by remember { mutableStateOf(initialForm.durationMaxMinutes) }
 
     // Weights: always a level in WEIGHT_LEVELS. Persisted via fragment-local prefs so the
     // user's chosen levels survive even when the master toggle is disabled.
-    val prefs = remember { PreferenceManager.getDefaultSharedPreferences(appContext) }
-    fun loadLevel(key: String, fallback: Int): Int {
-        val stored = prefs.getInt(PREF_WEIGHT_LEVEL_PREFIX + key, Int.MIN_VALUE)
-        return if (stored == Int.MIN_VALUE) quantizeToLevel(fallback) else quantizeToLevel(stored)
+    var weightsEnabled by remember { mutableStateOf(initialForm.weightsEnabled) }
+    val weightLevels = remember {
+        mutableStateMapOf<TournesolFilterCriterion, Int>().apply { putAll(initialForm.weightLevels) }
     }
-    var weightsEnabled by remember {
-        mutableStateOf(prefs.getBoolean(PREF_TOURNESOL_FILTER_WEIGHTS_ENABLED, false))
-    }
-    var weightLR by remember { mutableStateOf(loadLevel("largely_recommended", initialWeightLargelyRecommended)) }
-    var weightRel by remember { mutableStateOf(loadLevel("reliability", initialWeightReliability)) }
-    var weightImp by remember { mutableStateOf(loadLevel("importance", initialWeightImportance)) }
-    var weightPed by remember { mutableStateOf(loadLevel("pedagogy", initialWeightPedagogy)) }
-    var weightLay by remember { mutableStateOf(loadLevel("layman_friendly", initialWeightLaymanFriendly)) }
-    var weightEnt by remember { mutableStateOf(loadLevel("entertaining_relaxing", initialWeightEntertainingRelaxing)) }
-    var weightEng by remember { mutableStateOf(loadLevel("engaging", initialWeightEngaging)) }
-    var weightDiv by remember { mutableStateOf(loadLevel("diversity_inclusion", initialWeightDiversityInclusion)) }
-    var weightBet by remember { mutableStateOf(loadLevel("better_habits", initialWeightBetterHabits)) }
-    var weightBack by remember { mutableStateOf(loadLevel("backfire_risk", initialWeightBackfireRisk)) }
-
-    fun currentDurationMinSeconds(): Int = if (durationMinMinutes <= 0f) -1 else (durationMinMinutes * 60).toInt()
-    fun currentDurationMaxSeconds(): Int = if (durationMaxMinutes >= DURATION_SLIDER_MAX) -1 else (durationMaxMinutes * 60).toInt()
 
     fun persistLevels() {
-        prefs.edit()
-            .putBoolean(PREF_TOURNESOL_FILTER_WEIGHTS_ENABLED, weightsEnabled)
-            .putInt(PREF_WEIGHT_LEVEL_PREFIX + "largely_recommended", weightLR)
-            .putInt(PREF_WEIGHT_LEVEL_PREFIX + "reliability", weightRel)
-            .putInt(PREF_WEIGHT_LEVEL_PREFIX + "importance", weightImp)
-            .putInt(PREF_WEIGHT_LEVEL_PREFIX + "pedagogy", weightPed)
-            .putInt(PREF_WEIGHT_LEVEL_PREFIX + "layman_friendly", weightLay)
-            .putInt(PREF_WEIGHT_LEVEL_PREFIX + "entertaining_relaxing", weightEnt)
-            .putInt(PREF_WEIGHT_LEVEL_PREFIX + "engaging", weightEng)
-            .putInt(PREF_WEIGHT_LEVEL_PREFIX + "diversity_inclusion", weightDiv)
-            .putInt(PREF_WEIGHT_LEVEL_PREFIX + "better_habits", weightBet)
-            .putInt(PREF_WEIGHT_LEVEL_PREFIX + "backfire_risk", weightBack)
-            .apply()
+        val editor = prefs.edit().putBoolean(PREF_TOURNESOL_FILTER_WEIGHTS_ENABLED, weightsEnabled)
+        for (criterion in TournesolFilterCriterion.entries) {
+            editor.putInt(criterion.weightLevelPrefKey, weightLevels.getValue(criterion))
+        }
+        editor.apply()
     }
 
     fun applyAll() {
         persistLevels()
-        val sentinel = -1
         onApply(
-            selectedLanguages.toList(),
-            selectedDateKey,
-            includeLowScoreVideos,
-            currentDurationMinSeconds(),
-            currentDurationMaxSeconds(),
-            if (weightsEnabled) weightLR else sentinel,
-            if (weightsEnabled) weightRel else sentinel,
-            if (weightsEnabled) weightImp else sentinel,
-            if (weightsEnabled) weightPed else sentinel,
-            if (weightsEnabled) weightLay else sentinel,
-            if (weightsEnabled) weightEnt else sentinel,
-            if (weightsEnabled) weightEng else sentinel,
-            if (weightsEnabled) weightDiv else sentinel,
-            if (weightsEnabled) weightBet else sentinel,
-            if (weightsEnabled) weightBack else sentinel
+            TournesolFilterForm(
+                languages = selectedLanguages.toList(),
+                dateKey = selectedDateKey,
+                includeLowScoreVideos = includeLowScoreVideos,
+                durationMinMinutes = durationMinMinutes,
+                durationMaxMinutes = durationMaxMinutes,
+                weightsEnabled = weightsEnabled,
+                weightLevels = weightLevels.toMap()
+            ).toConfig()
         )
     }
 
@@ -328,19 +239,6 @@ private fun TournesolFilterSheet(
             FilterOption("day", R.string.date_last_day)
         )
     }
-
-    val criteria: List<Triple<Int, Int, (Int) -> Unit>> = listOf(
-        Triple(R.string.filter_criteria_largely_recommended, weightLR, { v -> weightLR = v }),
-        Triple(R.string.filter_criteria_reliability, weightRel, { v -> weightRel = v }),
-        Triple(R.string.filter_criteria_importance, weightImp, { v -> weightImp = v }),
-        Triple(R.string.filter_criteria_pedagogy, weightPed, { v -> weightPed = v }),
-        Triple(R.string.filter_criteria_layman_friendly, weightLay, { v -> weightLay = v }),
-        Triple(R.string.filter_criteria_entertaining_relaxing, weightEnt, { v -> weightEnt = v }),
-        Triple(R.string.filter_criteria_engaging, weightEng, { v -> weightEng = v }),
-        Triple(R.string.filter_criteria_diversity_inclusion, weightDiv, { v -> weightDiv = v }),
-        Triple(R.string.filter_criteria_better_habits, weightBet, { v -> weightBet = v }),
-        Triple(R.string.filter_criteria_backfire_risk, weightBack, { v -> weightBack = v })
-    )
 
     val baseDensity = LocalDensity.current
     val scaledDensity = remember(baseDensity) {
@@ -489,18 +387,18 @@ private fun TournesolFilterSheet(
                         )
                     )
                 }
-                criteria.chunked(2).forEach { pair ->
+                TournesolFilterCriterion.entries.chunked(2).forEach { pair ->
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.spacedBy(12.dp)
                     ) {
-                        pair.forEach { (labelRes, value, setter) ->
+                        pair.forEach { criterion ->
                             Box(modifier = Modifier.weight(1f)) {
                                 CompactWeightSlider(
-                                    label = stringResource(labelRes),
-                                    value = value,
+                                    label = stringResource(criterionLabelRes(criterion)),
+                                    value = weightLevels.getValue(criterion),
                                     enabled = weightsEnabled,
-                                    onValueChange = setter,
+                                    onValueChange = { weightLevels[criterion] = it },
                                     onValueChangeFinished = { if (weightsEnabled) applyAll() }
                                 )
                             }

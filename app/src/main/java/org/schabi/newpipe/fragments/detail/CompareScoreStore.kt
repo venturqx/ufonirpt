@@ -17,6 +17,8 @@ internal data class ComparisonScores(
     val extraScores: Map<String, Int> = emptyMap()
 )
 
+internal data class CompareScoreSnapshot(val submitted: Set<String>, val scores: String?)
+
 internal interface CompareScoreBackend {
     fun readSubmitted(): Set<String>
 
@@ -25,13 +27,12 @@ internal interface CompareScoreBackend {
     fun readScores(): String?
 
     fun writeScores(json: String)
-
-    fun hasCurrentData(): Boolean
-
-    fun readLegacySubmitted(): Set<String>
-
-    fun readLegacyScores(): String?
 }
+
+private const val PREF_SUBMITTED_COMPARISONS = "compare_submitted_pairs_v2"
+private const val PREF_COMPARISON_SCORES = "compare_submitted_scores_v2"
+private const val LEGACY_PREF_SUBMITTED_COMPARISONS = "compare_submitted_pairs_v1"
+private const val LEGACY_PREF_COMPARISON_SCORES = "compare_submitted_scores_v1"
 
 internal class CompareScorePrefs(
     private val prefs: SharedPreferences
@@ -50,27 +51,54 @@ internal class CompareScorePrefs(
         prefs.edit().putString(PREF_COMPARISON_SCORES, json).apply()
     }
 
-    override fun hasCurrentData(): Boolean = prefs.contains(PREF_SUBMITTED_COMPARISONS) || prefs.contains(PREF_COMPARISON_SCORES)
+    fun hasCurrentData(): Boolean = prefs.contains(PREF_SUBMITTED_COMPARISONS) || prefs.contains(PREF_COMPARISON_SCORES)
 
-    override fun readLegacySubmitted(): Set<String> {
-        return prefs.getStringSet(LEGACY_PREF_SUBMITTED_COMPARISONS, emptySet()).orEmpty()
+    fun commit(snapshot: CompareScoreSnapshot): Boolean {
+        return prefs.edit()
+            .putStringSet(PREF_SUBMITTED_COMPARISONS, snapshot.submitted)
+            .putString(PREF_COMPARISON_SCORES, snapshot.scores)
+            .commit()
+    }
+}
+
+internal class CompareScoreLegacyPrefs(
+    private val prefs: SharedPreferences
+) {
+    fun readV2(): CompareScoreSnapshot? = read(PREF_SUBMITTED_COMPARISONS, PREF_COMPARISON_SCORES)
+
+    fun readV1(): CompareScoreSnapshot? = read(LEGACY_PREF_SUBMITTED_COMPARISONS, LEGACY_PREF_COMPARISON_SCORES)
+
+    fun delete() {
+        val stale = KEYS.filter { prefs.contains(it) }
+        if (stale.isEmpty()) {
+            return
+        }
+        val editor = prefs.edit()
+        stale.forEach { editor.remove(it) }
+        editor.apply()
     }
 
-    override fun readLegacyScores(): String? = prefs.getString(LEGACY_PREF_COMPARISON_SCORES, null)
+    private fun read(submittedKey: String, scoresKey: String): CompareScoreSnapshot? {
+        if (!prefs.contains(submittedKey) && !prefs.contains(scoresKey)) {
+            return null
+        }
+        return CompareScoreSnapshot(
+            submitted = prefs.getStringSet(submittedKey, emptySet()).orEmpty(),
+            scores = prefs.getString(scoresKey, null)
+        )
+    }
 
     private companion object {
-        const val PREF_SUBMITTED_COMPARISONS = "compare_submitted_pairs_v2"
-        const val PREF_COMPARISON_SCORES = "compare_submitted_scores_v2"
-        const val LEGACY_PREF_SUBMITTED_COMPARISONS = "compare_submitted_pairs_v1"
-        const val LEGACY_PREF_COMPARISON_SCORES = "compare_submitted_scores_v1"
+        val KEYS = listOf(
+            PREF_SUBMITTED_COMPARISONS,
+            PREF_COMPARISON_SCORES,
+            LEGACY_PREF_SUBMITTED_COMPARISONS,
+            LEGACY_PREF_COMPARISON_SCORES
+        )
     }
 }
 
 internal class CompareScoreStore(private val backend: CompareScoreBackend) {
-    init {
-        migrateLegacyKeyOrder(backend)
-    }
-
     private val submitted = backend.readSubmitted()
         .mapNotNullTo(LinkedHashSet<CompareKey>(), ::parseCompareKey)
     private val scores = parseScores(backend.readScores()).toMutableMap()
@@ -133,31 +161,38 @@ internal class CompareScoreStore(private val backend: CompareScoreBackend) {
     }
 
     companion object {
+        private const val PREFS_FILE = "compare_scores"
+
         private var shared: CompareScoreStore? = null
 
         @Synchronized
-        fun shared(context: Context): CompareScoreStore = shared ?: CompareScoreStore(
-            CompareScorePrefs(PreferenceManager.getDefaultSharedPreferences(context))
-        ).also { shared = it }
+        fun shared(context: Context): CompareScoreStore = shared ?: create(context).also { shared = it }
+
+        private fun create(context: Context): CompareScoreStore {
+            val current = CompareScorePrefs(context.getSharedPreferences(PREFS_FILE, Context.MODE_PRIVATE))
+            val legacy = CompareScoreLegacyPrefs(PreferenceManager.getDefaultSharedPreferences(context))
+            migrateCompareScores(legacy, current)
+            return CompareScoreStore(current)
+        }
     }
 }
 
 private fun CompareKey.swapped(): CompareKey = CompareKey(entityB, entityA)
 
-private fun migrateLegacyKeyOrder(backend: CompareScoreBackend) {
-    if (backend.hasCurrentData()) {
-        return
+internal fun migrateCompareScores(legacy: CompareScoreLegacyPrefs, current: CompareScorePrefs) {
+    if (!current.hasCurrentData()) {
+        val snapshot = legacy.readV2() ?: legacy.readV1()?.withSwappedKeys() ?: return
+        if (!current.commit(snapshot)) {
+            return
+        }
     }
-    val legacyPairs = backend.readLegacySubmitted()
-    val legacyScores = backend.readLegacyScores()
-    if (legacyPairs.isEmpty() && legacyScores.isNullOrBlank()) {
-        return
-    }
-    backend.writeSubmitted(
-        legacyPairs.mapNotNull(::parseCompareKey).map { it.swapped().toStorage() }.toSet()
-    )
-    backend.writeScores(serializeScores(parseScores(legacyScores).mapKeys { it.key.swapped() }))
+    legacy.delete()
 }
+
+private fun CompareScoreSnapshot.withSwappedKeys(): CompareScoreSnapshot = CompareScoreSnapshot(
+    submitted = submitted.mapNotNull(::parseCompareKey).map { it.swapped().toStorage() }.toSet(),
+    scores = serializeScores(parseScores(scores).mapKeys { it.key.swapped() })
+)
 
 private fun CompareKey.toStorage(): String {
     return "${entityA.encodeUtf8().base64()}|${entityB.encodeUtf8().base64()}"

@@ -23,6 +23,8 @@ enum class SubmitOutcome { CREATED, ALREADY_EXISTS }
 
 enum class SaveResult { CREATED, UPDATED }
 
+class TournesolApiException(val httpCode: Int, val body: String) : IOException("HTTP $httpCode")
+
 object CompareRepository {
     fun buildTournesolUid(url: String, serviceId: Int): String? {
         if (!TournesolUid.supports(serviceId)) {
@@ -215,7 +217,7 @@ object CompareRepository {
         }
     }
 
-    private fun httpError(code: Int, body: String) = IOException("HTTP $code $body")
+    private fun httpError(code: Int, body: String) = TournesolApiException(code, body)
 
     private fun apiUrl(vararg pathSegments: String): HttpUrl.Builder = BASE_URL.toHttpUrl()
         .newBuilder()

@@ -47,9 +47,14 @@ class CompareRepositoryTest {
 
     private fun Request.bodyText(): String = Buffer().also { body!!.writeTo(it) }.readUtf8()
 
-    private fun TestObserver<*>.assertHttpError(message: String) {
+    private fun TestObserver<*>.assertHttpError(httpCode: Int, body: String) {
         awaitDone(5, TimeUnit.SECONDS)
-        assertError { it is IOException && it.message == message }
+        assertError {
+            it is TournesolApiException &&
+                it.httpCode == httpCode &&
+                it.body == body &&
+                it.message == "HTTP $httpCode"
+        }
     }
 
     @After
@@ -78,7 +83,7 @@ class CompareRepositoryTest {
 
         serve(code = 204, body = "empty")
         CompareRepository.checkComparison("tok", "yt:a", "yt:b").test()
-            .assertHttpError("HTTP 204 empty")
+            .assertHttpError(204, "empty")
     }
 
     @Test
@@ -240,18 +245,35 @@ class CompareRepositoryTest {
     }
 
     @Test
-    fun `every endpoint maps a failed response to an IOException with status and body`() {
+    fun `every endpoint maps a failed response to an api exception with status and body`() {
         serve(code = 503, body = "down")
-        val message = "HTTP 503 down"
 
-        CompareRepository.checkComparison("tok", "yt:a", "yt:b").test().assertHttpError(message)
-        CompareRepository.submitComparison("tok", "yt:a", "yt:b", 1).test().assertHttpError(message)
+        CompareRepository.checkComparison("tok", "yt:a", "yt:b").test().assertHttpError(503, "down")
+        CompareRepository.submitComparison("tok", "yt:a", "yt:b", 1).test()
+            .assertHttpError(503, "down")
         CompareRepository.patchComparison("tok", "yt:a", "yt:b", emptyList()).test()
-            .assertHttpError(message)
-        CompareRepository.fetchUserComparisons("tok").test().assertHttpError(message)
-        CompareRepository.fetchWeeklyComparisons().test().assertHttpError(message)
-        CompareRepository.fetchSuggestedVideos("tok").test().assertHttpError(message)
-        CompareRepository.fetchEntityToCompare("tok", "yt:a").test().assertHttpError(message)
+            .assertHttpError(503, "down")
+        CompareRepository.fetchUserComparisons("tok").test().assertHttpError(503, "down")
+        CompareRepository.fetchWeeklyComparisons().test().assertHttpError(503, "down")
+        CompareRepository.fetchSuggestedVideos("tok").test().assertHttpError(503, "down")
+        CompareRepository.fetchEntityToCompare("tok", "yt:a").test().assertHttpError(503, "down")
+    }
+
+    @Test
+    fun `api exception keeps the body in its property and out of its message`() {
+        val error = TournesolApiException(400, "invalid")
+
+        assertEquals(400, error.httpCode)
+        assertEquals("invalid", error.body)
+        assertEquals("HTTP 400", error.message)
+    }
+
+    @Test
+    fun `html gateway page stays out of the exception message`() {
+        val html = "<html><body><h1>502 Bad Gateway</h1></body></html>"
+        serve(code = 502, body = html)
+
+        CompareRepository.fetchSuggestedVideos("tok").test().assertHttpError(502, html)
     }
 
     @Test
@@ -259,10 +281,12 @@ class CompareRepositoryTest {
         assertEquals(SubmitOutcome.CREATED, CompareRepository.resolveSubmitOutcome(200, ""))
         assertEquals(SubmitOutcome.CREATED, CompareRepository.resolveSubmitOutcome(299, ""))
 
-        val rejected = assertThrows(IOException::class.java) {
+        val rejected = assertThrows(TournesolApiException::class.java) {
             CompareRepository.resolveSubmitOutcome(400, "invalid")
         }
-        assertEquals("HTTP 400 invalid", rejected.message)
+        assertEquals(400, rejected.httpCode)
+        assertEquals("invalid", rejected.body)
+        assertEquals("HTTP 400", rejected.message)
 
         assertThrows(IOException::class.java) {
             CompareRepository.resolveSubmitOutcome(300, "")

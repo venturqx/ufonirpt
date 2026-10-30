@@ -23,6 +23,46 @@ class CompareSubmitFailureTest {
     }
 
     @Test
+    fun `api 401 requires login`() {
+        assertEquals(
+            CompareSubmitFailure.LoginRequired,
+            CompareSubmitFailure.from(TournesolApiException(401, "revoked"))
+        )
+    }
+
+    @Test
+    fun `wrapped api 401 is a plain failure carrying the wrapper message`() {
+        assertEquals(
+            CompareSubmitFailure.Failed("wrapper"),
+            CompareSubmitFailure.from(
+                RuntimeException("wrapper", TournesolApiException(401, "revoked"))
+            )
+        )
+    }
+
+    @Test
+    fun `other api errors fail with the short message`() {
+        assertEquals(
+            CompareSubmitFailure.Failed("HTTP 403"),
+            CompareSubmitFailure.from(TournesolApiException(403, "forbidden"))
+        )
+        assertEquals(
+            CompareSubmitFailure.Failed("HTTP 500"),
+            CompareSubmitFailure.from(TournesolApiException(500, "boom"))
+        )
+    }
+
+    @Test
+    fun `html error page never reaches the failure message`() {
+        assertEquals(
+            CompareSubmitFailure.Failed("HTTP 502"),
+            CompareSubmitFailure.from(
+                TournesolApiException(502, "<html><body>Bad Gateway</body></html>")
+            )
+        )
+    }
+
+    @Test
     fun `null message has no message`() {
         assertEquals(
             CompareSubmitFailure.Failed(null),
