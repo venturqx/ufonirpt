@@ -111,6 +111,13 @@ internal class CompareScoreStore(private val backend: CompareScoreBackend) {
         }
     }
 
+    fun clear() {
+        submitted.clear()
+        scores.clear()
+        saveSubmitted()
+        saveScores()
+    }
+
     private fun saveSubmitted() {
         backend.writeSubmitted(submitted.map(CompareKey::toStorage).toSet())
     }
@@ -122,6 +129,7 @@ internal class CompareScoreStore(private val backend: CompareScoreBackend) {
     companion object {
         private var shared: CompareScoreStore? = null
 
+        @Synchronized
         fun shared(context: Context): CompareScoreStore = shared ?: CompareScoreStore(
             CompareScorePrefs(PreferenceManager.getDefaultSharedPreferences(context))
         ).also { shared = it }

@@ -455,7 +455,10 @@ public class TournesolScoreCard extends LinearLayout {
         private final List<CriterionEntry> entries;
         private final List<Drawable> icons;
         private final int[] colors;
-        private final int iconSizePx;
+        private final double[] scores;
+        private final String[] scoreLabels;
+        private final LollipopChartMetrics metrics;
+        private final float selectedGlowRadius;
         private OnDimensionClickListener dimensionClickListener;
         private int selectedIndex = -1;
 
@@ -466,9 +469,8 @@ public class TournesolScoreCard extends LinearLayout {
         private final Paint zeroLinePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         private final Paint selectedGlowPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
 
-        private final float[] circleCxArray;
-        private final float[] circleCyArray;
-        private float circleRadiusCached;
+        @Nullable
+        private LollipopChartGeometry geometry;
 
         LollipopChartView(final Context context,
                           final List<CriterionEntry> entries,
@@ -479,18 +481,25 @@ public class TournesolScoreCard extends LinearLayout {
             this.entries = entries;
             this.icons = icons;
             this.colors = colors;
-            this.iconSizePx = iconSizePx;
-            this.circleCxArray = new float[entries.size()];
-            this.circleCyArray = new float[entries.size()];
+            this.scores = new double[entries.size()];
+            this.scoreLabels = new String[entries.size()];
+            for (int i = 0; i < entries.size(); i++) {
+                final double score = entries.get(i).score;
+                this.scores[i] = score;
+                this.scoreLabels[i] = String.format(Locale.US, "%.0f", score);
+            }
+            this.metrics = LollipopChartMetrics.of(iconSizePx, this::dp);
+            this.selectedGlowRadius = metrics.getCircleRadius() + dp(3f);
 
             barPaint.setStyle(Paint.Style.FILL);
             barPaint.setStrokeCap(Paint.Cap.BUTT);
+            barPaint.setStrokeWidth(dp(12f));
 
             circlePaint.setStyle(Paint.Style.FILL);
             circlePaint.setColor(Color.parseColor("#0F0F0F"));
 
             circleStrokePaint.setStyle(Paint.Style.STROKE);
-            circleStrokePaint.setStrokeWidth(dp(3.5f));
+            circleStrokePaint.setStrokeWidth(metrics.getCircleStrokeWidth());
 
             scorePaint.setTextSize(dp(10f));
             scorePaint.setTypeface(Typeface.create(Typeface.DEFAULT, Typeface.BOLD));
@@ -521,38 +530,29 @@ public class TournesolScoreCard extends LinearLayout {
             }
             super.onMeasure(clampedWidthSpec, heightMeasureSpec);
 
-            double minS = 0;
-            double maxS = 0;
-            for (final CriterionEntry e : entries) {
-                if (e.score < minS) {
-                    minS = e.score;
-                }
-                if (e.score > maxS) {
-                    maxS = e.score;
-                }
-            }
-            final double range = maxS - minS;
-
-            final float dpPerUnit = dp(2f);
-
-            final double topMargin = maxS > 0 ? Math.max(3, range * 0.1) : 2;
-            final double bottomMargin = minS < 0 ? Math.max(5, range * 0.2) : 2;
-            final float barArea = (float) ((range + topMargin + bottomMargin) * dpPerUnit);
-
-            final float circleRadius = dp(14f);
-            final float scoreTextHeight = dp(14f);
-            final float textGap = dp(3f);
-            final float topOverhead = circleRadius + (maxS > 0 ? scoreTextHeight + textGap : 0);
-            final float bottomOverhead = circleRadius
-                    + (minS < 0 ? scoreTextHeight + textGap : 0);
-            final float overhead = topOverhead + bottomOverhead;
-
-            final int desiredHeight = (int) (overhead + barArea)
+            final int height = LollipopChartGeometry.desiredHeight(scores, metrics)
                     + getPaddingTop() + getPaddingBottom();
-            final int maxHeight = dp(260f) + getPaddingTop() + getPaddingBottom();
-            final int height = Math.min(desiredHeight, maxHeight);
 
             setMeasuredDimension(getMeasuredWidth(), height);
+        }
+
+        @Override
+        protected void onSizeChanged(final int w, final int h, final int oldw, final int oldh) {
+            super.onSizeChanged(w, h, oldw, oldh);
+            geometry = LollipopChartGeometry.of(scores, metrics, w, h);
+            if (geometry == null) {
+                return;
+            }
+            for (int i = 0; i < entries.size() && i < icons.size(); i++) {
+                final Drawable icon = icons.get(i);
+                if (icon != null) {
+                    final LollipopIconBounds bounds = geometry.iconBounds(
+                            i, LollipopIconFit.of(entries.get(i).id));
+                    icon.setBounds(bounds.getLeft(), bounds.getTop(),
+                            bounds.getRight(), bounds.getBottom());
+                    icon.setTintList(null);
+                }
+            }
         }
 
         private int dp(final float dpVal) {
@@ -563,21 +563,15 @@ public class TournesolScoreCard extends LinearLayout {
 
         @Override
         public boolean onTouchEvent(final MotionEvent event) {
-            if (event.getAction() == MotionEvent.ACTION_UP) {
-                final float tx = event.getX();
-                final float ty = event.getY();
-                final float touchRadius = circleRadiusCached + dp(8f);
-                for (int i = 0; i < entries.size(); i++) {
-                    final float dx = tx - circleCxArray[i];
-                    final float dy = ty - circleCyArray[i];
-                    if (dx * dx + dy * dy <= touchRadius * touchRadius) {
-                        selectedIndex = (selectedIndex == i) ? -1 : i;
-                        invalidate();
-                        if (dimensionClickListener != null && selectedIndex >= 0) {
-                            dimensionClickListener.onDimensionClick(selectedIndex);
-                        }
-                        return true;
+            if (event.getAction() == MotionEvent.ACTION_UP && geometry != null) {
+                final Integer hit = geometry.hitTest(event.getX(), event.getY());
+                if (hit != null) {
+                    selectedIndex = (selectedIndex == hit) ? -1 : hit;
+                    invalidate();
+                    if (dimensionClickListener != null && selectedIndex >= 0) {
+                        dimensionClickListener.onDimensionClick(selectedIndex);
                     }
+                    return true;
                 }
             }
             return super.onTouchEvent(event);
@@ -586,70 +580,31 @@ public class TournesolScoreCard extends LinearLayout {
         @Override
         protected void onDraw(final Canvas canvas) {
             super.onDraw(canvas);
-            final int n = entries.size();
-            if (n == 0) {
+            if (geometry == null) {
                 return;
             }
 
-            final float w = getWidth();
-            final float h = getHeight();
-            final float circleRadius = dp(14f);
-            circleRadiusCached = circleRadius;
-            final float barWidth = dp(12f);
+            final float[] centerXs = geometry.getCenterXs();
+            final float[] barEndYs = geometry.getBarEndYs();
+            final float[] labelYs = geometry.getLabelYs();
+            final float zeroY = geometry.getZeroY();
+            final float circleRadius = metrics.getCircleRadius();
 
-            final float scoreTextHeight = dp(14f);
-            final float textGap = dp(3f);
+            canvas.drawLine(geometry.getZeroLineStartX(), zeroY,
+                    geometry.getZeroLineEndX(), zeroY, zeroLinePaint);
 
-            double minScore = 0;
-            double maxScore = 0;
-            for (final CriterionEntry entry : entries) {
-                if (entry.score < minScore) {
-                    minScore = entry.score;
-                }
-                if (entry.score > maxScore) {
-                    maxScore = entry.score;
-                }
-            }
-
-            final float topPadding = maxScore > 0 ? scoreTextHeight + textGap : 0;
-            final float bottomPadding = minScore < 0 ? scoreTextHeight + textGap : 0;
-
-            final float drawTop = topPadding + circleRadius;
-            final float drawBottom = h - bottomPadding - circleRadius;
-
-            final double range = maxScore - minScore;
-            maxScore += maxScore > 0 ? Math.max(3, range * 0.1) : 2;
-            minScore -= minScore < 0 ? Math.max(5, range * 0.2) : 2;
-            final double totalRange = maxScore - minScore;
-
-            final float zeroY = (float) (drawTop
-                    + (maxScore / totalRange) * (drawBottom - drawTop));
-
-            final float slotWidth = w / n;
-            canvas.drawLine(slotWidth * 0.3f, zeroY,
-                    w - slotWidth * 0.3f, zeroY, zeroLinePaint);
-
-            for (int i = 0; i < n; i++) {
-                final CriterionEntry entry = entries.get(i);
+            for (int i = 0; i < entries.size(); i++) {
                 final int color = colors[i];
-                final float cx = slotWidth * (i + 0.5f);
-
-                final float barEndY = (float) (drawTop
-                        + ((maxScore - entry.score) / totalRange)
-                        * (drawBottom - drawTop));
-
-                circleCxArray[i] = cx;
-                circleCyArray[i] = barEndY;
+                final float cx = centerXs[i];
+                final float barEndY = barEndYs[i];
 
                 barPaint.setColor(color);
-                barPaint.setStrokeWidth(barWidth);
                 canvas.drawLine(cx, zeroY, cx, barEndY, barPaint);
 
                 if (i == selectedIndex) {
                     selectedGlowPaint.setColor(color);
                     selectedGlowPaint.setAlpha(160);
-                    canvas.drawCircle(cx, barEndY, circleRadius + dp(3f),
-                            selectedGlowPaint);
+                    canvas.drawCircle(cx, barEndY, selectedGlowRadius, selectedGlowPaint);
                 }
 
                 canvas.drawCircle(cx, barEndY, circleRadius, circlePaint);
@@ -658,36 +613,11 @@ public class TournesolScoreCard extends LinearLayout {
 
                 final Drawable icon = i < icons.size() ? icons.get(i) : null;
                 if (icon != null) {
-                    final int strokeInset = dp(3.5f) / 2;
-                    int halfIconW = iconSizePx / 2 - strokeInset;
-                    int halfIconH = iconSizePx / 2 - strokeInset;
-                    float iconOffsetY = 0;
-                    final String entryId = entry.id;
-                    if ("layman_friendly".equals(entryId)) {
-                        halfIconW = (int) (halfIconW * 0.88f);
-                        halfIconH = (int) (halfIconH * 0.88f);
-                    }
-                    if ("backfire_risk".equals(entryId)) {
-                        iconOffsetY = dp(1f);
-                    }
-                    final float iy = barEndY + iconOffsetY;
-                    icon.setBounds(
-                            (int) (cx - halfIconW), (int) (iy - halfIconH),
-                            (int) (cx + halfIconW), (int) (iy + halfIconH));
-                    icon.setTintList(null);
                     icon.draw(canvas);
                 }
 
-                final String scoreText = String.format(Locale.US, "%.0f", entry.score);
                 scorePaint.setColor(color);
-                if (entry.score >= 0) {
-                    canvas.drawText(scoreText, cx,
-                            barEndY - circleRadius - dp(6f), scorePaint);
-                } else {
-                    canvas.drawText(scoreText, cx,
-                            barEndY + circleRadius + scoreTextHeight + dp(1f),
-                            scorePaint);
-                }
+                canvas.drawText(scoreLabels[i], cx, labelYs[i], scorePaint);
             }
         }
     }

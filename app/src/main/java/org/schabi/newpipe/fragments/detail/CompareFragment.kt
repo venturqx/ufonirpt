@@ -18,11 +18,13 @@ import androidx.core.view.ViewCompat
 import androidx.fragment.app.Fragment
 import androidx.preference.PreferenceManager
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
+import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.disposables.CompositeDisposable
 import io.reactivex.rxjava3.disposables.Disposable
 import io.reactivex.rxjava3.schedulers.Schedulers
 import java.time.OffsetDateTime
 import kotlin.math.abs
+import kotlin.reflect.KMutableProperty0
 import org.schabi.newpipe.R
 import org.schabi.newpipe.database.history.model.StreamHistoryEntry
 import org.schabi.newpipe.database.stream.model.StreamEntity
@@ -510,57 +512,32 @@ class CompareFragment : Fragment() {
 
         val entities = entitiesForLeftRight(currentUid, lastUid)
 
-        submitInProgress = true
-        disposables.add(
-            TournesolAuthManager.getValidAccessToken(requireContext())
-                .orMissingToken()
-                .flatMap { token ->
-                    CompareRepository.submitComparison(
-                        token,
-                        entities.entityA,
-                        entities.entityB,
-                        score
-                    )
-                }
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                    { result ->
-                        submitInProgress = false
-                        markSubmitted(entities.entityA, entities.entityB)
-                        storeSubmittedScores(
-                            CompareKey(entities.entityA, entities.entityB),
-                            mainScore = score
-                        )
-                        if (result == SaveResult.CREATED) {
-                            TournesolAuthManager.incrementComparisonCount(requireContext())
-                            refreshUserInfo()
-                        }
-                        Toast.makeText(
-                            requireContext(),
-                            getString(saveResultMessageRes(result)),
-                            Toast.LENGTH_LONG
-                        ).show()
-                    },
-                    { throwable ->
-                        submitInProgress = false
-                        if (throwable is MissingTokenException) {
-                            Toast.makeText(
-                                requireContext(),
-                                getString(R.string.compare_login_required),
-                                Toast.LENGTH_SHORT
-                            ).show()
-                            showLoginDialog()
-                            return@subscribe
-                        }
-                        val message = throwable.message
-                        val errorText = if (message.isNullOrBlank()) {
-                            getString(R.string.compare_failed)
-                        } else {
-                            getString(R.string.compare_failed_with_message, message)
-                        }
-                        Toast.makeText(requireContext(), errorText, Toast.LENGTH_LONG).show()
-                    }
+        runAuthenticated(
+            inProgress = ::submitInProgress,
+            request = { token ->
+                CompareRepository.submitComparison(
+                    token,
+                    entities.entityA,
+                    entities.entityB,
+                    score
                 )
+            },
+            onResult = { result ->
+                markSubmitted(entities.entityA, entities.entityB)
+                storeSubmittedScores(
+                    CompareKey(entities.entityA, entities.entityB),
+                    mainScore = score
+                )
+                if (result == SaveResult.CREATED) {
+                    TournesolAuthManager.incrementComparisonCount(requireContext())
+                    refreshUserInfo()
+                }
+                Toast.makeText(
+                    requireContext(),
+                    getString(saveResultMessageRes(result)),
+                    Toast.LENGTH_LONG
+                ).show()
+            }
         )
     }
 
@@ -597,64 +574,39 @@ class CompareFragment : Fragment() {
         val key = resolveCompactCompareKey() ?: return
         val alreadySubmitted = scoreStore.isSubmitted(key)
 
-        submitInProgress = true
-        disposables.add(
-            TournesolAuthManager.getValidAccessToken(requireContext())
-                .orMissingToken()
-                .flatMap { token ->
-                    if (alreadySubmitted) {
-                        CompareRepository.patchComparison(
-                            token,
-                            key.entityA,
-                            key.entityB,
-                            listOf(CriteriaScore(COMPACT_MAIN_CRITERION_ID, score))
-                        ).map { SaveResult.UPDATED }
-                    } else {
-                        CompareRepository.submitComparison(
-                            token,
-                            key.entityA,
-                            key.entityB,
-                            score
-                        )
-                    }
+        runAuthenticated(
+            inProgress = ::submitInProgress,
+            request = { token ->
+                if (alreadySubmitted) {
+                    CompareRepository.patchComparison(
+                        token,
+                        key.entityA,
+                        key.entityB,
+                        listOf(CriteriaScore(COMPACT_MAIN_CRITERION_ID, score))
+                    ).map { SaveResult.UPDATED }
+                } else {
+                    CompareRepository.submitComparison(
+                        token,
+                        key.entityA,
+                        key.entityB,
+                        score
+                    )
                 }
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                    { result ->
-                        submitInProgress = false
-                        markSubmitted(key.entityA, key.entityB)
-                        storeSubmittedScores(key, mainScore = score)
-                        if (result == SaveResult.CREATED) {
-                            TournesolAuthManager.incrementComparisonCount(requireContext())
-                            refreshUserInfo()
-                        }
-                        Toast.makeText(
-                            requireContext(),
-                            getString(saveResultMessageRes(result)),
-                            Toast.LENGTH_LONG
-                        ).show()
-                        onSuccess()
-                    },
-                    { throwable ->
-                        submitInProgress = false
-                        if (throwable is MissingTokenException) {
-                            Toast.makeText(
-                                requireContext(),
-                                getString(R.string.compare_login_required),
-                                Toast.LENGTH_SHORT
-                            ).show()
-                            showLoginDialog()
-                            return@subscribe
-                        }
-                        val message = throwable.message
-                        val errorText = if (message.isNullOrBlank()) {
-                            getString(R.string.compare_failed)
-                        } else {
-                            getString(R.string.compare_failed_with_message, message)
-                        }
-                        Toast.makeText(requireContext(), errorText, Toast.LENGTH_LONG).show()
-                    }
-                )
+            },
+            onResult = { result ->
+                markSubmitted(key.entityA, key.entityB)
+                storeSubmittedScores(key, mainScore = score)
+                if (result == SaveResult.CREATED) {
+                    TournesolAuthManager.incrementComparisonCount(requireContext())
+                    refreshUserInfo()
+                }
+                Toast.makeText(
+                    requireContext(),
+                    getString(saveResultMessageRes(result)),
+                    Toast.LENGTH_LONG
+                ).show()
+                onSuccess()
+            }
         )
     }
 
@@ -670,68 +622,43 @@ class CompareFragment : Fragment() {
         val criteriaScores = listOf(CriteriaScore(criterionId, value))
         val alreadySubmitted = scoreStore.isSubmitted(key)
 
-        submitInProgress = true
-        disposables.add(
-            TournesolAuthManager.getValidAccessToken(requireContext())
-                .orMissingToken()
-                .flatMap { token ->
-                    if (alreadySubmitted) {
-                        CompareRepository.patchComparison(
-                            token,
-                            key.entityA,
-                            key.entityB,
-                            criteriaScores
-                        ).map { SaveResult.UPDATED }
-                    } else {
-                        CompareRepository.submitOrUpdateComparison(
-                            token,
-                            key.entityA,
-                            key.entityB,
-                            criteriaScores
-                        )
-                    }
+        runAuthenticated(
+            inProgress = ::submitInProgress,
+            request = { token ->
+                if (alreadySubmitted) {
+                    CompareRepository.patchComparison(
+                        token,
+                        key.entityA,
+                        key.entityB,
+                        criteriaScores
+                    ).map { SaveResult.UPDATED }
+                } else {
+                    CompareRepository.submitOrUpdateComparison(
+                        token,
+                        key.entityA,
+                        key.entityB,
+                        criteriaScores
+                    )
                 }
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                    { result ->
-                        submitInProgress = false
-                        markSubmitted(key.entityA, key.entityB)
-                        storeSubmittedScores(
-                            key,
-                            extraScores = (scoreStore.scoresFor(key)?.extraScores.orEmpty()) +
-                                (criterionId to value)
-                        )
-                        if (result == SaveResult.CREATED) {
-                            TournesolAuthManager.incrementComparisonCount(requireContext())
-                            refreshUserInfo()
-                        }
-                        Toast.makeText(
-                            requireContext(),
-                            getString(saveResultMessageRes(result)),
-                            Toast.LENGTH_LONG
-                        ).show()
-                        onSuccess()
-                    },
-                    { throwable ->
-                        submitInProgress = false
-                        if (throwable is MissingTokenException) {
-                            Toast.makeText(
-                                requireContext(),
-                                getString(R.string.compare_login_required),
-                                Toast.LENGTH_SHORT
-                            ).show()
-                            showLoginDialog()
-                            return@subscribe
-                        }
-                        val message = throwable.message
-                        val errorText = if (message.isNullOrBlank()) {
-                            getString(R.string.compare_failed)
-                        } else {
-                            getString(R.string.compare_failed_with_message, message)
-                        }
-                        Toast.makeText(requireContext(), errorText, Toast.LENGTH_LONG).show()
-                    }
+            },
+            onResult = { result ->
+                markSubmitted(key.entityA, key.entityB)
+                storeSubmittedScores(
+                    key,
+                    extraScores = (scoreStore.scoresFor(key)?.extraScores.orEmpty()) +
+                        (criterionId to value)
                 )
+                if (result == SaveResult.CREATED) {
+                    TournesolAuthManager.incrementComparisonCount(requireContext())
+                    refreshUserInfo()
+                }
+                Toast.makeText(
+                    requireContext(),
+                    getString(saveResultMessageRes(result)),
+                    Toast.LENGTH_LONG
+                ).show()
+                onSuccess()
+            }
         )
     }
 
@@ -744,52 +671,27 @@ class CompareFragment : Fragment() {
         }
         val key = resolveCompactCompareKey() ?: return
 
-        submitInProgress = true
-        disposables.add(
-            TournesolAuthManager.getValidAccessToken(requireContext())
-                .orMissingToken()
-                .flatMap { token ->
-                    CompareRepository.patchComparison(
-                        token,
-                        key.entityA,
-                        key.entityB,
-                        criteriaScores
-                    )
-                }
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                    { messageRes ->
-                        submitInProgress = false
-                        val merged = (scoreStore.scoresFor(key)?.extraScores.orEmpty()) +
-                            criteriaScores.associate { it.criteria to it.score }
-                        storeSubmittedScores(key, extraScores = merged)
-                        Toast.makeText(
-                            requireContext(),
-                            getString(messageRes),
-                            Toast.LENGTH_LONG
-                        ).show()
-                        onSuccess()
-                    },
-                    { throwable ->
-                        submitInProgress = false
-                        if (throwable is MissingTokenException) {
-                            Toast.makeText(
-                                requireContext(),
-                                getString(R.string.compare_login_required),
-                                Toast.LENGTH_SHORT
-                            ).show()
-                            showLoginDialog()
-                            return@subscribe
-                        }
-                        val message = throwable.message
-                        val errorText = if (message.isNullOrBlank()) {
-                            getString(R.string.compare_failed)
-                        } else {
-                            getString(R.string.compare_failed_with_message, message)
-                        }
-                        Toast.makeText(requireContext(), errorText, Toast.LENGTH_LONG).show()
-                    }
+        runAuthenticated(
+            inProgress = ::submitInProgress,
+            request = { token ->
+                CompareRepository.patchComparison(
+                    token,
+                    key.entityA,
+                    key.entityB,
+                    criteriaScores
                 )
+            },
+            onResult = { messageRes ->
+                val merged = (scoreStore.scoresFor(key)?.extraScores.orEmpty()) +
+                    criteriaScores.associate { it.criteria to it.score }
+                storeSubmittedScores(key, extraScores = merged)
+                Toast.makeText(
+                    requireContext(),
+                    getString(messageRes),
+                    Toast.LENGTH_LONG
+                ).show()
+                onSuccess()
+            }
         )
     }
 
@@ -803,49 +705,24 @@ class CompareFragment : Fragment() {
             return
         }
 
-        changeInProgress = true
-        disposables.add(
-            TournesolAuthManager.getValidAccessToken(requireContext())
-                .orMissingToken()
-                .flatMap { token ->
-                    CompareRepository.patchComparison(
-                        token,
-                        key.entityA,
-                        key.entityB,
-                        listOf(CriteriaScore("largely_recommended", score))
-                    )
-                }
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                    {
-                        changeInProgress = false
-                        storeSubmittedScores(key, mainScore = score)
-                        Toast.makeText(
-                            requireContext(),
-                            getString(R.string.compare_score_updated),
-                            Toast.LENGTH_LONG
-                        ).show()
-                    },
-                    { throwable ->
-                        changeInProgress = false
-                        if (throwable is MissingTokenException) {
-                            Toast.makeText(
-                                requireContext(),
-                                getString(R.string.compare_login_required),
-                                Toast.LENGTH_SHORT
-                            ).show()
-                            showLoginDialog()
-                            return@subscribe
-                        }
-                        val message = throwable.message
-                        val errorText = if (message.isNullOrBlank()) {
-                            getString(R.string.compare_failed)
-                        } else {
-                            getString(R.string.compare_failed_with_message, message)
-                        }
-                        Toast.makeText(requireContext(), errorText, Toast.LENGTH_LONG).show()
-                    }
+        runAuthenticated(
+            inProgress = ::changeInProgress,
+            request = { token ->
+                CompareRepository.patchComparison(
+                    token,
+                    key.entityA,
+                    key.entityB,
+                    listOf(CriteriaScore("largely_recommended", score))
                 )
+            },
+            onResult = {
+                storeSubmittedScores(key, mainScore = score)
+                Toast.makeText(
+                    requireContext(),
+                    getString(R.string.compare_score_updated),
+                    Toast.LENGTH_LONG
+                ).show()
+            }
         )
     }
 
@@ -897,53 +774,74 @@ class CompareFragment : Fragment() {
 
         val entities = entitiesForLeftRight(currentUid, lastUid)
 
-        submitMoreInProgress = true
+        runAuthenticated(
+            inProgress = ::submitMoreInProgress,
+            request = { token ->
+                CompareRepository.patchComparison(
+                    token,
+                    entities.entityA,
+                    entities.entityB,
+                    criteriaScores
+                )
+            },
+            onResult = { messageRes ->
+                storeSubmittedScores(
+                    CompareKey(entities.entityA, entities.entityB),
+                    extraScores = extraScores
+                )
+                Toast.makeText(
+                    requireContext(),
+                    getString(messageRes),
+                    Toast.LENGTH_LONG
+                ).show()
+            }
+        )
+    }
+
+    private fun <T : Any> runAuthenticated(
+        inProgress: KMutableProperty0<Boolean>,
+        request: (String) -> Single<T>,
+        onResult: (T) -> Unit
+    ) {
+        inProgress.set(true)
         disposables.add(
             TournesolAuthManager.getValidAccessToken(requireContext())
                 .orMissingToken()
-                .flatMap { token ->
-                    CompareRepository.patchComparison(
-                        token,
-                        entities.entityA,
-                        entities.entityB,
-                        criteriaScores
-                    )
-                }
+                .flatMap { token -> request(token) }
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
-                    { messageRes ->
-                        submitMoreInProgress = false
-                        storeSubmittedScores(
-                            CompareKey(entities.entityA, entities.entityB),
-                            extraScores = extraScores
-                        )
-                        Toast.makeText(
-                            requireContext(),
-                            getString(messageRes),
-                            Toast.LENGTH_LONG
-                        ).show()
+                    { result ->
+                        inProgress.set(false)
+                        onResult(result)
                     },
                     { throwable ->
-                        submitMoreInProgress = false
-                        if (throwable is MissingTokenException) {
-                            Toast.makeText(
-                                requireContext(),
-                                getString(R.string.compare_login_required),
-                                Toast.LENGTH_SHORT
-                            ).show()
-                            showLoginDialog()
-                            return@subscribe
-                        }
-                        val message = throwable.message
-                        val errorText = if (message.isNullOrBlank()) {
-                            getString(R.string.compare_failed)
-                        } else {
-                            getString(R.string.compare_failed_with_message, message)
-                        }
-                        Toast.makeText(requireContext(), errorText, Toast.LENGTH_LONG).show()
+                        inProgress.set(false)
+                        showSubmitFailure(CompareSubmitFailure.from(throwable))
                     }
                 )
         )
+    }
+
+    private fun showSubmitFailure(failure: CompareSubmitFailure) {
+        when (failure) {
+            CompareSubmitFailure.LoginRequired -> {
+                Toast.makeText(
+                    requireContext(),
+                    getString(R.string.compare_login_required),
+                    Toast.LENGTH_SHORT
+                ).show()
+                showLoginDialog()
+            }
+
+            is CompareSubmitFailure.Failed -> {
+                val errorText = if (failure.message == null) {
+                    getString(R.string.compare_failed)
+                } else {
+                    getString(R.string.compare_failed_with_message, failure.message)
+                }
+                Toast.makeText(requireContext(), errorText, Toast.LENGTH_LONG).show()
+            }
+        }
     }
 
     private fun updateExtraScore(criteria: String, value: Int) {

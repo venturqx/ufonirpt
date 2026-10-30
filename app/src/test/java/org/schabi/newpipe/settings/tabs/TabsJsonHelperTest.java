@@ -15,10 +15,22 @@ import org.junit.Test;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class TabsJsonHelperTest {
     private static final String JSON_TABS_ARRAY_KEY = "tabs";
     private static final String JSON_TAB_ID_KEY = "tab_id";
+    private static final List<String> DEFAULT_TAB_VALUES = List.of(
+            "DEFAULT_KIOSK",
+            "SUBSCRIPTIONS",
+            "LIVE",
+            "BOOKMARKS",
+            "FEED",
+            "TRENDING_PODCASTS",
+            "TRENDING_GAMING",
+            "TRENDING_MUSIC",
+            "TRENDING_MOVIES",
+            "TOURNESOL");
 
     @Test
     public void testEmptyAndNullRead() throws TabsJsonHelper.InvalidJsonException {
@@ -140,5 +152,65 @@ public class TabsJsonHelperTest {
         assertEquals(feedGroupTab.getFeedGroupId(), grpTabFromReturnedJson.getFeedGroupId());
         assertEquals(feedGroupTab.getIconId(), grpTabFromReturnedJson.getIconId());
         assertEquals(feedGroupTab.getFeedGroupName(), grpTabFromReturnedJson.getFeedGroupName());
+    }
+
+    @Test
+    public void testDefaultTabsHaveNoDuplicatesAndSelectedTabFirst() {
+        for (final String value : DEFAULT_TAB_VALUES) {
+            final List<Tab> tabs = TabsJsonHelper.getDefaultTabsFor(value);
+
+            assertEquals(value, Tab.Type.valueOf(value).getTab(), tabs.get(0));
+            assertEquals(value, tabs.size(), tabs.stream().distinct().count());
+        }
+    }
+
+    @Test
+    public void testDefaultTabsExactLists() {
+        final List<Tab> liveTabs = tabsOf(Tab.Type.LIVE, Tab.Type.COMPARE,
+                Tab.Type.SUBSCRIPTIONS, Tab.Type.BOOKMARKS, Tab.Type.MANIFESTO);
+        assertEquals(liveTabs, TabsJsonHelper.getDefaultTabsFor("LIVE"));
+        assertEquals(liveTabs, TabsJsonHelper.getDefaultTabs());
+
+        assertEquals(tabsOf(Tab.Type.TOURNESOL, Tab.Type.COMPARE,
+                        Tab.Type.SUBSCRIPTIONS, Tab.Type.BOOKMARKS, Tab.Type.MANIFESTO),
+                TabsJsonHelper.getDefaultTabsFor("TOURNESOL"));
+    }
+
+    @Test
+    public void testDefaultTabsKeepOrderWhenSelectedTabWasAlreadyListed() {
+        assertEquals(tabsOf(Tab.Type.SUBSCRIPTIONS, Tab.Type.COMPARE,
+                        Tab.Type.BOOKMARKS, Tab.Type.MANIFESTO),
+                TabsJsonHelper.getDefaultTabsFor("SUBSCRIPTIONS"));
+        assertEquals(tabsOf(Tab.Type.BOOKMARKS, Tab.Type.COMPARE,
+                        Tab.Type.SUBSCRIPTIONS, Tab.Type.MANIFESTO),
+                TabsJsonHelper.getDefaultTabsFor("BOOKMARKS"));
+        assertEquals(tabsOf(Tab.Type.COMPARE, Tab.Type.SUBSCRIPTIONS,
+                        Tab.Type.BOOKMARKS, Tab.Type.MANIFESTO),
+                TabsJsonHelper.getDefaultTabsFor("COMPARE"));
+    }
+
+    @Test
+    public void testDefaultTabsFallBackToLive() {
+        final List<Tab> liveTabs = TabsJsonHelper.getDefaultTabsFor("LIVE");
+
+        assertEquals(liveTabs, TabsJsonHelper.getDefaultTabsFor(null));
+        assertEquals(liveTabs, TabsJsonHelper.getDefaultTabsFor(""));
+        assertEquals(liveTabs, TabsJsonHelper.getDefaultTabsFor("UNKNOWN"));
+        assertEquals(liveTabs, TabsJsonHelper.getDefaultTabsFor("live"));
+    }
+
+    @Test
+    public void testDefaultTabsAcceptExactlyTheSelectableTypes() {
+        for (final Tab.Type type : Tab.Type.values()) {
+            final String name = type.name();
+            final boolean accepted = DEFAULT_TAB_VALUES.contains(name) || "COMPARE".equals(name);
+            final Tab expectedFirst = accepted ? type.getTab() : Tab.Type.LIVE.getTab();
+
+            assertEquals(name, expectedFirst, TabsJsonHelper.getDefaultTabsFor(name).get(0));
+        }
+    }
+
+    private static List<Tab> tabsOf(final Tab.Type... types) {
+        return Arrays.stream(types).map(Tab.Type::getTab).collect(Collectors.toList());
     }
 }

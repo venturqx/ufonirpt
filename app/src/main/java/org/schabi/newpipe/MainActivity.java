@@ -71,6 +71,7 @@ import org.schabi.newpipe.extractor.services.peertube.PeertubeInstance;
 import org.schabi.newpipe.fragments.BackPressable;
 import org.schabi.newpipe.fragments.MainFragment;
 import org.schabi.newpipe.fragments.detail.CompareHistoryActivity;
+import org.schabi.newpipe.fragments.detail.CompareScoreStore;
 import org.schabi.newpipe.fragments.detail.VideoDetailFragment;
 import org.schabi.newpipe.fragments.list.search.SearchFragment;
 import org.schabi.newpipe.local.feed.notifications.NotificationWorker;
@@ -421,6 +422,7 @@ public class MainActivity extends AppCompatActivity {
 
         drawerHeaderBinding.drawerHeaderLogoutButton.setOnClickListener(view -> {
             TournesolAuthManager.INSTANCE.clearAuthState(this);
+            CompareScoreStore.Companion.shared(this).clear();
             updateProfileHeader();
             notifyCompareAuthChanged();
         });

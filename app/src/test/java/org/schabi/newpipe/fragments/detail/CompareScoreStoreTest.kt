@@ -282,6 +282,73 @@ class CompareScoreStoreTest {
         assertEquals(0, backend.scoresWrites)
     }
 
+    @Test
+    fun `clear empties submitted pairs and scores in memory and on disk`() {
+        val backend = FakeBackend(
+            submitted = setOf(PLAIN_STORED, "no-separator"),
+            scores = LEGACY_SCORES
+        )
+        val store = CompareScoreStore(backend)
+
+        store.clear()
+
+        assertFalse(store.isSubmitted(PLAIN_KEY))
+        assertNull(store.scoresFor(PLAIN_KEY))
+        assertNull(store.scoresFor(SLASH_KEY))
+        assertEquals(emptySet<String>(), backend.submitted)
+        assertEquals("{}", backend.scores)
+    }
+
+    @Test
+    fun `clear persists across a new store`() {
+        val backend = FakeBackend(submitted = setOf(PLAIN_STORED), scores = LEGACY_SCORES)
+
+        CompareScoreStore(backend).clear()
+
+        val reloaded = CompareScoreStore(backend)
+        assertFalse(reloaded.isSubmitted(PLAIN_KEY))
+        assertNull(reloaded.scoresFor(PLAIN_KEY))
+    }
+
+    @Test
+    fun `clear does not bring migrated legacy data back`() {
+        val backend = FakeBackend(
+            legacySubmitted = setOf(PLAIN_STORED),
+            legacyScores = """{"$PLAIN_STORED":{"mainScore":-7}}"""
+        )
+        val swapped = CompareKey(PLAIN_KEY.entityB, PLAIN_KEY.entityA)
+        val store = CompareScoreStore(backend)
+        assertTrue(store.isSubmitted(swapped))
+
+        store.clear()
+
+        val reloaded = CompareScoreStore(backend)
+        assertFalse(reloaded.isSubmitted(swapped))
+        assertFalse(reloaded.isSubmitted(PLAIN_KEY))
+        assertNull(reloaded.scoresFor(swapped))
+        assertNull(reloaded.scoresFor(PLAIN_KEY))
+    }
+
+    @Test
+    fun `the store works normally after clear`() {
+        val backend = FakeBackend(
+            submitted = setOf(PLAIN_STORED, SLASH_STORED),
+            scores = LEGACY_SCORES
+        )
+        val store = CompareScoreStore(backend)
+
+        store.clear()
+        store.markSubmitted(SLASH_KEY)
+        store.recordScores(SLASH_KEY, mainScore = 1)
+
+        assertEquals(setOf(SLASH_STORED), backend.submitted)
+        val reloaded = CompareScoreStore(backend)
+        assertTrue(reloaded.isSubmitted(SLASH_KEY))
+        assertEquals(ComparisonScores(mainScore = 1), reloaded.scoresFor(SLASH_KEY))
+        assertFalse(reloaded.isSubmitted(PLAIN_KEY))
+        assertNull(reloaded.scoresFor(PLAIN_KEY))
+    }
+
     private companion object {
         val SLASH_KEY = CompareKey("yt:aaa???", "yt:b>>>")
         val PLAIN_KEY = CompareKey("yt:dQw4w9WgXcQ", "yt:jNQXAC9IVRw")
