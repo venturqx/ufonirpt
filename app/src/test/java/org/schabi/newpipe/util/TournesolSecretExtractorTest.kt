@@ -2,8 +2,10 @@ package org.schabi.newpipe.util
 
 import java.io.IOException
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertThrows
+import org.junit.Assert.assertTrue
 import org.junit.Test
 
 class TournesolSecretExtractorTest {
@@ -13,6 +15,11 @@ class TournesolSecretExtractorTest {
     private val clientSecret = "b".repeat(128)
     private val credentialsJs = "client_id:\"$clientId\",client_secret:\"$clientSecret\""
     private val requested = mutableListOf<String>()
+    private val warnings = mutableListOf<String>()
+    private var nowMillis = 1_000L
+    private val state = TournesolSecretState { nowMillis }
+
+    private fun extractor(pages: Map<String, String>) = TournesolSecretExtractor(fakeFetch(pages), state) { message, _ -> warnings += message }
 
     private fun asset(name: String) = "${baseUrl}assets/$name.js"
 
@@ -111,7 +118,7 @@ class TournesolSecretExtractorTest {
     }
 
     @Test
-    fun `extractSecrets rescans past cached secrets and updates the cache`() {
+    fun `extractSecrets rescans past cached secrets once the cooldown ends`() {
         val freshId = "c".repeat(40)
         val freshSecret = "d".repeat(128)
         val stalePages = mapOf(baseUrl to html("main-a"), asset("main-a") to credentialsJs)
@@ -120,12 +127,48 @@ class TournesolSecretExtractorTest {
             asset("main-a") to "client_id:\"$freshId\",client_secret:\"$freshSecret\""
         )
 
-        TournesolSecretExtractor(fakeFetch(stalePages)).extractSecrets().blockingGet()
-        assertEquals(Pair(clientId, clientSecret), TournesolSecretExtractor.getDefaultOrCachedSecrets())
+        extractor(stalePages).extractSecrets().blockingGet()
+        assertEquals(Pair(clientId, clientSecret), state.current())
 
-        val refreshed = TournesolSecretExtractor(fakeFetch(freshPages)).extractSecrets().blockingGet()
+        nowMillis += SECRET_SCAN_COOLDOWN_MS
+        val refreshed = extractor(freshPages).extractSecrets().blockingGet()
 
         assertEquals(Pair(freshId, freshSecret), refreshed)
-        assertEquals(refreshed, TournesolSecretExtractor.getDefaultOrCachedSecrets())
+        assertEquals(refreshed, state.current())
+    }
+
+    @Test
+    fun `extractSecrets skips the scan during the cooldown`() {
+        val fallback = state.current()
+        val emptyPages = mapOf(baseUrl to html("main-a"), asset("main-a") to "")
+        val pages = mapOf(baseUrl to html("main-a"), asset("main-a") to credentialsJs)
+
+        assertEquals(fallback, extractor(emptyPages).extractSecrets().blockingGet())
+        val requestsAfterFirstScan = requested.size
+
+        nowMillis += SECRET_SCAN_COOLDOWN_MS - 1
+        assertEquals(fallback, extractor(pages).extractSecrets().blockingGet())
+        assertEquals(requestsAfterFirstScan, requested.size)
+
+        nowMillis += 1
+        assertEquals(Pair(clientId, clientSecret), extractor(pages).extractSecrets().blockingGet())
+    }
+
+    @Test
+    fun `extractSecrets falls back and warns when the home page fails`() {
+        val fallback = state.current()
+
+        assertEquals(fallback, extractor(emptyMap()).extractSecrets().blockingGet())
+
+        assertEquals(listOf(baseUrl), requested)
+        assertEquals(1, warnings.size)
+        assertFalse(state.isScanDue())
+    }
+
+    @Test
+    fun `a cancelled scan does not start the cooldown`() {
+        extractor(mapOf(baseUrl to html("main-a"))).extractSecrets().test(true)
+
+        assertTrue(state.isScanDue())
     }
 }

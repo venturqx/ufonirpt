@@ -2,7 +2,6 @@ package org.schabi.newpipe.util
 
 import java.text.SimpleDateFormat
 import java.util.Calendar
-import java.util.LinkedHashSet
 import java.util.Locale
 import java.util.TimeZone
 
@@ -37,8 +36,6 @@ object TournesolHelper {
     const val DEFAULT_TOURNESOL_FILTER_WEIGHT = -1
     private const val REASON_INSUFFICIENT_TOURNESOL_SCORE = "insufficient_tournesol_score"
     private const val REASON_INSUFFICIENT_TRUST = "insufficient_trust"
-    private const val REASON_MODERATION_BY_ASSOCIATION = "moderation_by_association"
-    private const val REASON_MODERATION_BY_CONTRIBUTORS = "moderation_by_contributors"
 
     @JvmOverloads
     fun buildTournesolUrl(
@@ -68,35 +65,6 @@ object TournesolHelper {
             }
         }
         return sb.toString()
-    }
-
-    @JvmStatic
-    fun formatUnsafeReasonCodes(reasons: List<String>?): String {
-        if (reasons.isNullOrEmpty()) {
-            return ""
-        }
-
-        val reasonLabels = LinkedHashSet<String>()
-        for (reason in reasons) {
-            val reasonLabel = when (reason) {
-                REASON_INSUFFICIENT_TOURNESOL_SCORE,
-                REASON_INSUFFICIENT_TRUST -> "Insufficient"
-
-                REASON_MODERATION_BY_ASSOCIATION,
-                REASON_MODERATION_BY_CONTRIBUTORS -> "Moderated"
-
-                else -> reason
-            }
-            if (reasonLabel.isNotBlank()) {
-                reasonLabels.add(reasonLabel)
-            }
-        }
-
-        if (reasonLabels.isEmpty()) {
-            return ""
-        }
-
-        return "(" + reasonLabels.joinToString("/") + ")"
     }
 
     @JvmStatic

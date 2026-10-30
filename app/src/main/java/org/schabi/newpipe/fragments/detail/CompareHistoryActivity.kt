@@ -13,7 +13,9 @@ import io.reactivex.rxjava3.disposables.Disposable
 import org.schabi.newpipe.R
 import org.schabi.newpipe.fragments.detail.compare.CompareComparisonsFullScreen
 import org.schabi.newpipe.ui.theme.AppTheme
+import org.schabi.newpipe.util.MissingTokenException
 import org.schabi.newpipe.util.TournesolAuthManager
+import org.schabi.newpipe.util.orMissingToken
 
 class CompareHistoryActivity : AppCompatActivity() {
 
@@ -46,10 +48,8 @@ class CompareHistoryActivity : AppCompatActivity() {
         totalCount = null
         disposable?.dispose()
         disposable = TournesolAuthManager.getValidAccessToken(this)
-            .switchIfEmpty(
-                io.reactivex.rxjava3.core.Maybe.error(RuntimeException("login_required"))
-            )
-            .flatMapSingle { token ->
+            .orMissingToken()
+            .flatMap { token ->
                 CompareRepository.fetchUserComparisons(
                     token = token,
                     username = "me",
@@ -71,7 +71,7 @@ class CompareHistoryActivity : AppCompatActivity() {
                 },
                 { throwable ->
                     loading = false
-                    if (throwable.message == "login_required") {
+                    if (throwable is MissingTokenException) {
                         error = getString(R.string.compare_login_required)
                         return@subscribe
                     }

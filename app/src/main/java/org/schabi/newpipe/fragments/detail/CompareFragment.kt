@@ -29,6 +29,7 @@ import org.schabi.newpipe.database.stream.model.StreamEntity
 import org.schabi.newpipe.extractor.stream.StreamInfo
 import org.schabi.newpipe.fragments.detail.compare.CompareCompactScreen
 import org.schabi.newpipe.fragments.detail.compare.CompareScreen
+import org.schabi.newpipe.fragments.detail.compare.entitiesForLeftRight
 import org.schabi.newpipe.ktx.serializable
 import org.schabi.newpipe.local.history.HistoryRecordManager
 import org.schabi.newpipe.ui.theme.AppTheme
@@ -247,20 +248,16 @@ class CompareFragment : Fragment() {
         suggestionsDisposable = null
         weeklyStatsDisposable?.dispose()
         weeklyStatsDisposable = null
-        // Drop Compose-state references so a retained Fragment instance (e.g. during
-        // fullscreen/rotation teardown where old + new views briefly coexist) does not
-        // pin the full history list, recommendations list, and suggestion pool in heap.
+        // Drop the large lists so a kept Fragment instance does not pin them in heap.
+        // currentInfo, currentHistoryEntry and stored scores are small, set only in
+        // onCreate/applyStored..., and must survive for a recreated view.
         historyEntries = emptyList()
         recommendations = emptyList()
         recommendationsTotalCount = null
         suggestedLeft = null
         suggestedRight = null
         suggestionPool.clear()
-        storedMainScore = null
-        storedExtraScores = emptyMap()
-        currentHistoryEntry = null
         compactPairSelection = null
-        currentInfo = null
         super.onDestroyView()
     }
 
@@ -470,6 +467,9 @@ class CompareFragment : Fragment() {
     }
 
     private fun sendComparison(score: Int) {
+        if (submitInProgress) {
+            return
+        }
         val info = currentInfo
         if (info == null) {
             Toast.makeText(
@@ -508,27 +508,36 @@ class CompareFragment : Fragment() {
             return
         }
 
+        val entities = entitiesForLeftRight(currentUid, lastUid)
+
         submitInProgress = true
         disposables.add(
             TournesolAuthManager.getValidAccessToken(requireContext())
                 .orMissingToken()
                 .flatMap { token ->
-                    CompareRepository.submitComparison(token, lastUid, currentUid, score)
+                    CompareRepository.submitComparison(
+                        token,
+                        entities.entityA,
+                        entities.entityB,
+                        score
+                    )
                 }
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
-                    { messageRes ->
+                    { result ->
                         submitInProgress = false
-                        markSubmitted(lastUid, currentUid)
+                        markSubmitted(entities.entityA, entities.entityB)
                         storeSubmittedScores(
-                            CompareKey(lastUid, currentUid),
+                            CompareKey(entities.entityA, entities.entityB),
                             mainScore = score
                         )
-                        TournesolAuthManager.incrementComparisonCount(requireContext())
-                        refreshUserInfo()
+                        if (result == SaveResult.CREATED) {
+                            TournesolAuthManager.incrementComparisonCount(requireContext())
+                            refreshUserInfo()
+                        }
                         Toast.makeText(
                             requireContext(),
-                            getString(messageRes),
+                            getString(saveResultMessageRes(result)),
                             Toast.LENGTH_LONG
                         ).show()
                     },
@@ -567,9 +576,9 @@ class CompareFragment : Fragment() {
             return null
         }
 
-        val lastUid = CompareRepository.buildTournesolUid(pair.rightUrl, pair.rightServiceId)
-        val currentUid = CompareRepository.buildTournesolUid(pair.leftUrl, pair.leftServiceId)
-        if (lastUid == null || currentUid == null) {
+        val leftUid = CompareRepository.buildTournesolUid(pair.leftUrl, pair.leftServiceId)
+        val rightUid = CompareRepository.buildTournesolUid(pair.rightUrl, pair.rightServiceId)
+        if (leftUid == null || rightUid == null) {
             Toast.makeText(
                 requireContext(),
                 getString(R.string.compare_service_not_supported),
@@ -577,7 +586,8 @@ class CompareFragment : Fragment() {
             ).show()
             return null
         }
-        return CompareKey(lastUid, currentUid)
+        val entities = entitiesForLeftRight(leftUid, rightUid)
+        return CompareKey(entities.entityA, entities.entityB)
     }
 
     private fun sendCompactMainComparison(score: Int, onSuccess: () -> Unit) {
@@ -595,37 +605,32 @@ class CompareFragment : Fragment() {
                     if (alreadySubmitted) {
                         CompareRepository.patchComparison(
                             token,
-                            key.lastUid,
-                            key.currentUid,
+                            key.entityA,
+                            key.entityB,
                             listOf(CriteriaScore(COMPACT_MAIN_CRITERION_ID, score))
-                        )
+                        ).map { SaveResult.UPDATED }
                     } else {
                         CompareRepository.submitComparison(
                             token,
-                            key.lastUid,
-                            key.currentUid,
+                            key.entityA,
+                            key.entityB,
                             score
                         )
                     }
                 }
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
-                    { messageRes ->
+                    { result ->
                         submitInProgress = false
-                        markSubmitted(key.lastUid, key.currentUid)
+                        markSubmitted(key.entityA, key.entityB)
                         storeSubmittedScores(key, mainScore = score)
-                        if (!alreadySubmitted) {
+                        if (result == SaveResult.CREATED) {
                             TournesolAuthManager.incrementComparisonCount(requireContext())
                             refreshUserInfo()
                         }
-                        val toastRes = if (alreadySubmitted) {
-                            R.string.compare_score_updated
-                        } else {
-                            messageRes
-                        }
                         Toast.makeText(
                             requireContext(),
-                            getString(toastRes),
+                            getString(saveResultMessageRes(result)),
                             Toast.LENGTH_LONG
                         ).show()
                         onSuccess()
@@ -673,36 +678,36 @@ class CompareFragment : Fragment() {
                     if (alreadySubmitted) {
                         CompareRepository.patchComparison(
                             token,
-                            key.lastUid,
-                            key.currentUid,
+                            key.entityA,
+                            key.entityB,
                             criteriaScores
-                        )
+                        ).map { SaveResult.UPDATED }
                     } else {
-                        CompareRepository.submitComparisonWithCriteria(
+                        CompareRepository.submitOrUpdateComparison(
                             token,
-                            key.lastUid,
-                            key.currentUid,
+                            key.entityA,
+                            key.entityB,
                             criteriaScores
                         )
                     }
                 }
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
-                    { messageRes ->
+                    { result ->
                         submitInProgress = false
+                        markSubmitted(key.entityA, key.entityB)
                         storeSubmittedScores(
                             key,
                             extraScores = (scoreStore.scoresFor(key)?.extraScores.orEmpty()) +
                                 (criterionId to value)
                         )
-                        val toastRes = if (alreadySubmitted) {
-                            R.string.compare_score_updated
-                        } else {
-                            messageRes
+                        if (result == SaveResult.CREATED) {
+                            TournesolAuthManager.incrementComparisonCount(requireContext())
+                            refreshUserInfo()
                         }
                         Toast.makeText(
                             requireContext(),
-                            getString(toastRes),
+                            getString(saveResultMessageRes(result)),
                             Toast.LENGTH_LONG
                         ).show()
                         onSuccess()
@@ -746,8 +751,8 @@ class CompareFragment : Fragment() {
                 .flatMap { token ->
                     CompareRepository.patchComparison(
                         token,
-                        key.lastUid,
-                        key.currentUid,
+                        key.entityA,
+                        key.entityB,
                         criteriaScores
                     )
                 }
@@ -805,8 +810,8 @@ class CompareFragment : Fragment() {
                 .flatMap { token ->
                     CompareRepository.patchComparison(
                         token,
-                        key.lastUid,
-                        key.currentUid,
+                        key.entityA,
+                        key.entityB,
                         listOf(CriteriaScore("largely_recommended", score))
                     )
                 }
@@ -890,6 +895,8 @@ class CompareFragment : Fragment() {
             CriteriaScore(criterion.id, extraScores[criterion.id] ?: 0)
         }
 
+        val entities = entitiesForLeftRight(currentUid, lastUid)
+
         submitMoreInProgress = true
         disposables.add(
             TournesolAuthManager.getValidAccessToken(requireContext())
@@ -897,8 +904,8 @@ class CompareFragment : Fragment() {
                 .flatMap { token ->
                     CompareRepository.patchComparison(
                         token,
-                        lastUid,
-                        currentUid,
+                        entities.entityA,
+                        entities.entityB,
                         criteriaScores
                     )
                 }
@@ -907,7 +914,7 @@ class CompareFragment : Fragment() {
                     { messageRes ->
                         submitMoreInProgress = false
                         storeSubmittedScores(
-                            CompareKey(lastUid, currentUid),
+                            CompareKey(entities.entityA, entities.entityB),
                             extraScores = extraScores
                         )
                         Toast.makeText(
@@ -989,7 +996,7 @@ class CompareFragment : Fragment() {
         checkDisposable?.dispose()
         checkDisposable = TournesolAuthManager.getValidAccessToken(requireContext())
             .flatMapSingle { token ->
-                CompareRepository.checkComparison(token, key.currentUid, key.lastUid)
+                CompareRepository.checkComparison(token, key.entityB, key.entityA)
             }
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(
@@ -1005,7 +1012,7 @@ class CompareFragment : Fragment() {
             return
         }
         if (exists) {
-            markSubmitted(key.lastUid, key.currentUid)
+            markSubmitted(key.entityA, key.entityB)
         } else {
             scoreStore.forget(key)
             if (compareKeyForSelection() == key) {
@@ -1021,15 +1028,16 @@ class CompareFragment : Fragment() {
     private fun compareKeyForSelection(): CompareKey? {
         if (useCompactUi) {
             val pair = compactPairSelection ?: return null
-            val lastUid = CompareRepository.buildTournesolUid(
-                pair.rightUrl,
-                pair.rightServiceId
-            ) ?: return null
-            val currentUid = CompareRepository.buildTournesolUid(
+            val leftUid = CompareRepository.buildTournesolUid(
                 pair.leftUrl,
                 pair.leftServiceId
             ) ?: return null
-            return CompareKey(lastUid, currentUid)
+            val rightUid = CompareRepository.buildTournesolUid(
+                pair.rightUrl,
+                pair.rightServiceId
+            ) ?: return null
+            val entities = entitiesForLeftRight(leftUid, rightUid)
+            return CompareKey(entities.entityA, entities.entityB)
         }
         val info = currentInfo ?: return null
         val selectedEntry = historyEntries.getOrNull(selectedIndex) ?: return null
@@ -1041,13 +1049,22 @@ class CompareFragment : Fragment() {
             info.url,
             info.serviceId
         ) ?: return null
-        return CompareKey(lastUid, currentUid)
+        val entities = entitiesForLeftRight(currentUid, lastUid)
+        return CompareKey(entities.entityA, entities.entityB)
     }
 
-    private fun markSubmitted(lastUid: String, currentUid: String) {
-        scoreStore.markSubmitted(CompareKey(lastUid, currentUid))
-        submitted = true
-        submittedConfirmed = true
+    private fun saveResultMessageRes(result: SaveResult): Int = when (result) {
+        SaveResult.CREATED -> R.string.compare_submitted
+        SaveResult.UPDATED -> R.string.compare_score_updated
+    }
+
+    private fun markSubmitted(entityA: String, entityB: String) {
+        val key = CompareKey(entityA, entityB)
+        scoreStore.markSubmitted(key)
+        if (compareKeyForSelection() == key) {
+            submitted = true
+            submittedConfirmed = true
+        }
     }
 
     private fun storeSubmittedScores(
