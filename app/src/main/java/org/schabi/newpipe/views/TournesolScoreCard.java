@@ -25,16 +25,17 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 
-import org.json.JSONArray;
-import org.json.JSONObject;
-import org.schabi.newpipe.DownloaderImpl;
 import org.schabi.newpipe.R;
 import org.schabi.newpipe.extractor.stream.StreamInfo;
 import org.schabi.newpipe.fragments.detail.VideoDetailFragment;
+import org.schabi.newpipe.util.CriterionDistribution;
+import org.schabi.newpipe.util.CriterionScore;
+import org.schabi.newpipe.util.TournesolEntityApi;
+import org.schabi.newpipe.util.TournesolEntityParser;
 import org.schabi.newpipe.util.TournesolHelper;
+import org.schabi.newpipe.util.TournesolRating;
 import org.schabi.newpipe.util.TournesolScoreCache;
 
-import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -43,18 +44,11 @@ import java.util.Locale;
 import java.util.Map;
 
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
-import io.reactivex.rxjava3.core.Single;
 import io.reactivex.rxjava3.disposables.CompositeDisposable;
-import io.reactivex.rxjava3.schedulers.Schedulers;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.Response;
 
 public class TournesolScoreCard extends LinearLayout {
 
-    private static final String TOURNESOL_API_BASE = "https://api.tournesol.app";
     private static final int TOURNESOL_SCORE_COLOR = Color.parseColor("#FFCA1D");
-    private static final int YOUTUBE_SERVICE_ID = 0;
     private static final int CHART_HEIGHT_DP = 28;
 
     private static final Map<String, Integer> CRITERIA_LABEL_MAP;
@@ -112,16 +106,7 @@ public class TournesolScoreCard extends LinearLayout {
         CRITERIA_COLOR_MAP = Collections.unmodifiableMap(colors);
     }
 
-    private static final class DistributionData {
-        final int[] bins;
-        final int[] distribution;
-        DistributionData(final int[] bins, final int[] distribution) {
-            this.bins = bins;
-            this.distribution = distribution;
-        }
-    }
-
-    private final Map<String, DistributionData> criteriaDistributions = new LinkedHashMap<>();
+    private final Map<String, CriterionDistribution> criteriaDistributions = new LinkedHashMap<>();
     private final CompositeDisposable disposables = new CompositeDisposable();
 
     private LinearLayout tournesolInfoSection;
@@ -197,37 +182,11 @@ public class TournesolScoreCard extends LinearLayout {
     }
 
     private void fetchTournesolInfo() {
-        if (streamInfo == null || streamInfo.getServiceId() != YOUTUBE_SERVICE_ID) {
+        if (streamInfo == null) {
             return;
         }
-        final String videoId = streamInfo.getId();
-        if (videoId == null || videoId.isEmpty()) {
-            return;
-        }
-        final String encodedUid;
-        try {
-            encodedUid = URLEncoder.encode("yt:" + videoId, "UTF-8");
-        } catch (final Exception e) {
-            return;
-        }
-        final String url = TOURNESOL_API_BASE + "/polls/videos/entities/" + encodedUid;
-
         disposables.add(
-                Single.fromCallable(() -> {
-                    final OkHttpClient client = DownloaderImpl.getInstance().getClient();
-                    final Request request = new Request.Builder()
-                            .url(url)
-                            .get()
-                            .addHeader("Accept", "application/json")
-                            .build();
-                    try (Response response = client.newCall(request).execute()) {
-                        if (!response.isSuccessful() || response.body() == null) {
-                            return new JSONObject();
-                        }
-                        return new JSONObject(response.body().string());
-                    }
-                })
-                .subscribeOn(Schedulers.io())
+                TournesolEntityApi.fetchRating(streamInfo.getServiceId(), streamInfo.getId())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
                         this::displayTournesolInfo,
@@ -236,38 +195,18 @@ public class TournesolScoreCard extends LinearLayout {
         );
     }
 
-    private void displayTournesolInfo(final JSONObject data) {
-        if (data == null || !data.has("collective_rating") || streamInfo == null) {
+    private void displayTournesolInfo(final TournesolRating rating) {
+        if (streamInfo == null) {
             return;
         }
-        final JSONObject collectiveRating = data.optJSONObject("collective_rating");
-        if (collectiveRating == null) {
-            return;
-        }
-        final double tournesolScore = collectiveRating.optDouble("tournesol_score", Double.NaN);
-        if (Double.isNaN(tournesolScore)) {
-            return;
-        }
-
-        final JSONObject unsafe = collectiveRating.optJSONObject("unsafe");
-        final List<String> unsafeReasons = new ArrayList<>();
-        if (unsafe != null && unsafe.optBoolean("status", false)) {
-            final JSONArray reasonsArray = unsafe.optJSONArray("reasons");
-            if (reasonsArray != null) {
-                for (int i = 0; i < reasonsArray.length(); i++) {
-                    final String reason = reasonsArray.optString(i, "");
-                    if (!reason.isEmpty()) {
-                        unsafeReasons.add(reason);
-                    }
-                }
-            }
-        }
+        final double tournesolScore = rating.getScore();
+        final List<String> unsafeReasons = rating.getUnsafeReasons();
 
         TournesolScoreCache.INSTANCE.put(streamInfo.getOriginalUrl(),
                 Math.round(tournesolScore), unsafeReasons);
 
-        final int nComparisons = collectiveRating.optInt("n_comparisons", 0);
-        final int nContributors = collectiveRating.optInt("n_contributors", 0);
+        final int nComparisons = rating.getComparisonCount();
+        final int nContributors = rating.getContributorCount();
 
         tournesolScoreValue.setText(String.format(Locale.US, "%.1f", tournesolScore));
         tournesolContributors.setText(
@@ -286,31 +225,20 @@ public class TournesolScoreCard extends LinearLayout {
                     isInsufficient, Math.round(tournesolScore));
         }
 
-        final JSONArray criteriaScores = collectiveRating.optJSONArray("criteria_scores");
-        if (criteriaScores != null && criteriaScores.length() > 0) {
-            displayCriteriaScores(criteriaScores);
-        }
+        displayCriteriaScores(rating.getCriterionScores());
 
         tournesolInfoSection.setVisibility(VISIBLE);
     }
 
-    private void displayCriteriaScores(final JSONArray criteriaScores) {
+    private void displayCriteriaScores(final List<CriterionScore> criteriaScores) {
         final List<CriterionEntry> entries = new ArrayList<>();
-        for (int i = 0; i < criteriaScores.length(); i++) {
-            final JSONObject item = criteriaScores.optJSONObject(i);
-            if (item == null) {
-                continue;
-            }
-            final String criteria = item.optString("criteria", "");
-            final double score = item.optDouble("score", 0);
-            if ("largely_recommended".equals(criteria)) {
-                continue;
-            }
+        for (final CriterionScore item : criteriaScores) {
+            final String criteria = item.getCriteria();
             final Integer labelRes = CRITERIA_LABEL_MAP.get(criteria);
             final String label = labelRes != null
                     ? getContext().getString(labelRes)
                     : criteria.replace("_", " ");
-            entries.add(new CriterionEntry(criteria, label, score));
+            entries.add(new CriterionEntry(criteria, label, item.getScore()));
         }
 
         final List<String> keyOrder = new ArrayList<>(CRITERIA_LABEL_MAP.keySet());
@@ -422,9 +350,10 @@ public class TournesolScoreCard extends LinearLayout {
                 descRow.setVisibility(VISIBLE);
 
                 miniChartContainer.removeAllViews();
-                final DistributionData data = criteriaDistributions.get(entry.id);
+                final CriterionDistribution data = criteriaDistributions.get(entry.id);
                 if (data != null) {
-                    final View chart = createDistributionChart(data.bins, data.distribution);
+                    final View chart = createDistributionChart(
+                            data.getBins(), data.getDistribution());
                     chart.setLayoutParams(new LinearLayout.LayoutParams(
                             LinearLayout.LayoutParams.MATCH_PARENT, dpToPx(CHART_HEIGHT_DP)));
                     miniChartContainer.addView(chart);
@@ -442,38 +371,11 @@ public class TournesolScoreCard extends LinearLayout {
     }
 
     private void fetchTournesolDistribution() {
-        if (streamInfo == null || streamInfo.getServiceId() != YOUTUBE_SERVICE_ID) {
+        if (streamInfo == null) {
             return;
         }
-        final String videoId = streamInfo.getId();
-        if (videoId == null || videoId.isEmpty()) {
-            return;
-        }
-        final String encodedUid;
-        try {
-            encodedUid = URLEncoder.encode("yt:" + videoId, "UTF-8");
-        } catch (final Exception e) {
-            return;
-        }
-        final String url = TOURNESOL_API_BASE + "/polls/videos/entities/" + encodedUid
-                + "/criteria_scores_distributions";
-
         disposables.add(
-                Single.fromCallable(() -> {
-                    final OkHttpClient client = DownloaderImpl.getInstance().getClient();
-                    final Request request = new Request.Builder()
-                            .url(url)
-                            .get()
-                            .addHeader("Accept", "application/json")
-                            .build();
-                    try (Response response = client.newCall(request).execute()) {
-                        if (!response.isSuccessful() || response.body() == null) {
-                            return new JSONObject();
-                        }
-                        return new JSONObject(response.body().string());
-                    }
-                })
-                .subscribeOn(Schedulers.io())
+                TournesolEntityApi.fetchDistributions(streamInfo.getServiceId(), streamInfo.getId())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
                         this::displayDistribution,
@@ -482,47 +384,18 @@ public class TournesolScoreCard extends LinearLayout {
         );
     }
 
-    private void displayDistribution(final JSONObject data) {
-        if (data == null) {
-            return;
-        }
-        final JSONArray distributions = data.optJSONArray("criteria_scores_distributions");
-        if (distributions == null) {
-            return;
-        }
-
+    private void displayDistribution(final Map<String, CriterionDistribution> distributions) {
         criteriaDistributions.clear();
-        for (int i = 0; i < distributions.length(); i++) {
-            final JSONObject entry = distributions.optJSONObject(i);
-            if (entry == null) {
-                continue;
-            }
-            final String name = entry.optString("criteria");
-            final JSONArray binsJson = entry.optJSONArray("bins");
-            final JSONArray distributionJson = entry.optJSONArray("distribution");
-            if (name == null || name.isEmpty()
-                    || binsJson == null || distributionJson == null
-                    || distributionJson.length() == 0) {
-                continue;
-            }
-            final int[] bins = new int[binsJson.length()];
-            for (int j = 0; j < binsJson.length(); j++) {
-                bins[j] = binsJson.optInt(j);
-            }
-            final int[] distribution = new int[distributionJson.length()];
-            for (int j = 0; j < distributionJson.length(); j++) {
-                distribution[j] = distributionJson.optInt(j);
-            }
-            criteriaDistributions.put(name, new DistributionData(bins, distribution));
-        }
+        criteriaDistributions.putAll(distributions);
 
-        final DistributionData lr = criteriaDistributions.get("largely_recommended");
+        final CriterionDistribution lr =
+                criteriaDistributions.get(TournesolEntityParser.LARGELY_RECOMMENDED);
         if (lr == null) {
             return;
         }
         tournesolDistributionContainer.removeAllViews();
         tournesolDistributionContainer.addView(
-                createDistributionChart(lr.bins, lr.distribution));
+                createDistributionChart(lr.getBins(), lr.getDistribution()));
         tournesolDistributionContainer.setVisibility(VISIBLE);
     }
 

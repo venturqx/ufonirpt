@@ -1,6 +1,5 @@
 package org.schabi.newpipe.fragments.list.kiosk
 
-import android.content.SharedPreferences
 import android.view.ContextThemeWrapper
 import android.view.LayoutInflater
 import android.view.View
@@ -12,8 +11,7 @@ import com.google.android.material.badge.BadgeUtils
 import com.google.android.material.chip.Chip
 import org.schabi.newpipe.R
 import org.schabi.newpipe.util.TournesolFilterConfig
-import org.schabi.newpipe.util.TournesolFilterCriterion
-import org.schabi.newpipe.util.TournesolHelper
+import org.schabi.newpipe.util.TournesolFilterStore
 
 class TournesolFilterController(
     private val fragment: Fragment,
@@ -38,13 +36,13 @@ class TournesolFilterController(
     )
 
     fun init(rootView: View) {
-        currentConfig = loadFilters()
+        currentConfig = filterStore().load()
         setupTournesolHeader(rootView)
     }
 
     fun onResume() {
         val previous = currentConfig
-        currentConfig = loadFilters()
+        currentConfig = filterStore().load()
         if (previous != currentConfig) {
             updateQuickChipSelection()
             notifyFiltersChanged()
@@ -126,7 +124,7 @@ class TournesolFilterController(
         currentConfig = currentConfig.copy(
             includeLowScoreVideos = !currentConfig.includeLowScoreVideos
         )
-        saveFilters(currentConfig)
+        filterStore().save(currentConfig)
         updateQuickChipSelection()
         notifyFiltersChanged()
     }
@@ -134,7 +132,7 @@ class TournesolFilterController(
     private fun onQuickDateSelected(dateKey: String) {
         if (currentConfig.dateKey == dateKey) return
         currentConfig = currentConfig.copy(dateKey = dateKey)
-        saveFilters(currentConfig)
+        filterStore().save(currentConfig)
         updateQuickChipSelection()
         notifyFiltersChanged()
     }
@@ -160,74 +158,14 @@ class TournesolFilterController(
         filterFragment.setInitialData(currentConfig)
         filterFragment.setListener { newConfig ->
             currentConfig = newConfig
-            saveFilters(currentConfig)
+            filterStore().save(currentConfig)
             updateQuickChipSelection()
             notifyFiltersChanged()
         }
         filterFragment.show(fragment.parentFragmentManager, "TournesolFilters")
     }
 
-    private fun loadFilters(): TournesolFilterConfig {
-        val prefs: SharedPreferences = PreferenceManager
-            .getDefaultSharedPreferences(fragment.requireContext())
-        val langs = prefs.getString(
-            TournesolHelper.PREF_TOURNESOL_FILTER_LANGUAGES,
-            TournesolHelper.getDefaultFilterLanguages()
-        )
-        val languages = if (!langs.isNullOrEmpty()) langs.split(",") else emptyList()
-        val dateKey = prefs.getString(
-            TournesolHelper.PREF_TOURNESOL_FILTER_DATE_KEY,
-            TournesolHelper.DEFAULT_TOURNESOL_FILTER_DATE_KEY
-        ) ?: TournesolHelper.DEFAULT_TOURNESOL_FILTER_DATE_KEY
-        val includeLowScore = prefs.getBoolean(
-            TournesolHelper.PREF_TOURNESOL_FILTER_INCLUDE_LOW_SCORE,
-            TournesolHelper.DEFAULT_TOURNESOL_FILTER_INCLUDE_LOW_SCORE
-        )
-        val durationMin = prefs.getInt(
-            TournesolHelper.PREF_TOURNESOL_FILTER_DURATION_MIN,
-            TournesolHelper.DEFAULT_TOURNESOL_FILTER_DURATION_MIN
-        )
-        val durationMax = prefs.getInt(
-            TournesolHelper.PREF_TOURNESOL_FILTER_DURATION_MAX,
-            TournesolHelper.DEFAULT_TOURNESOL_FILTER_DURATION_MAX
-        )
-        val weights = TournesolFilterCriterion.entries.associateWith { criterion ->
-            prefs.getInt(criterion.prefKey, TournesolHelper.DEFAULT_TOURNESOL_FILTER_WEIGHT)
-        }
-        return TournesolFilterConfig(
-            languages = languages,
-            dateKey = dateKey,
-            includeLowScoreVideos = includeLowScore,
-            durationMinSeconds = durationMin,
-            durationMaxSeconds = durationMax,
-            weights = weights
-        )
-    }
-
-    private fun saveFilters(config: TournesolFilterConfig) {
-        val prefs: SharedPreferences = PreferenceManager
-            .getDefaultSharedPreferences(fragment.requireContext())
-        val editor = prefs.edit()
-            .putString(
-                TournesolHelper.PREF_TOURNESOL_FILTER_LANGUAGES,
-                config.languages.joinToString(",")
-            )
-            .putString(TournesolHelper.PREF_TOURNESOL_FILTER_DATE_KEY, config.dateKey)
-            .putBoolean(
-                TournesolHelper.PREF_TOURNESOL_FILTER_INCLUDE_LOW_SCORE,
-                config.includeLowScoreVideos
-            )
-            .putInt(
-                TournesolHelper.PREF_TOURNESOL_FILTER_DURATION_MIN,
-                config.durationMinSeconds
-            )
-            .putInt(
-                TournesolHelper.PREF_TOURNESOL_FILTER_DURATION_MAX,
-                config.durationMaxSeconds
-            )
-        for (criterion in TournesolFilterCriterion.entries) {
-            editor.putInt(criterion.prefKey, config.weightFor(criterion))
-        }
-        editor.apply()
-    }
+    private fun filterStore() = TournesolFilterStore(
+        PreferenceManager.getDefaultSharedPreferences(fragment.requireContext())
+    )
 }

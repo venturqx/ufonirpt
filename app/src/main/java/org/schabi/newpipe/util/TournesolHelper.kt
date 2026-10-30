@@ -129,6 +129,9 @@ object TournesolHelper {
             else -> "en,$systemLang"
         }
     }
+
+    fun parseFilterLanguages(languages: String): List<String> = languages.split(",").filter { it.isNotEmpty() }
+
     const val DEFAULT_TOURNESOL_FILTER_DATE_KEY = "3_months"
     const val DEFAULT_TOURNESOL_FILTER_INCLUDE_LOW_SCORE = false
     const val DEFAULT_TOURNESOL_FILTER_DURATION_MIN = -1
@@ -168,46 +171,6 @@ object TournesolHelper {
         }
         return sb.toString()
     }
-
-    fun buildTournesolUrl(
-        languages: List<String>?,
-        dateKey: String,
-        includeLowScoreVideos: Boolean,
-        durationMinSeconds: Int = DEFAULT_TOURNESOL_FILTER_DURATION_MIN,
-        durationMaxSeconds: Int = DEFAULT_TOURNESOL_FILTER_DURATION_MAX,
-        weightLargelyRecommended: Int = DEFAULT_TOURNESOL_FILTER_WEIGHT,
-        weightReliability: Int = DEFAULT_TOURNESOL_FILTER_WEIGHT,
-        weightImportance: Int = DEFAULT_TOURNESOL_FILTER_WEIGHT,
-        weightPedagogy: Int = DEFAULT_TOURNESOL_FILTER_WEIGHT,
-        weightLaymanFriendly: Int = DEFAULT_TOURNESOL_FILTER_WEIGHT,
-        weightEntertainingRelaxing: Int = DEFAULT_TOURNESOL_FILTER_WEIGHT,
-        weightEngaging: Int = DEFAULT_TOURNESOL_FILTER_WEIGHT,
-        weightDiversityInclusion: Int = DEFAULT_TOURNESOL_FILTER_WEIGHT,
-        weightBetterHabits: Int = DEFAULT_TOURNESOL_FILTER_WEIGHT,
-        weightBackfireRisk: Int = DEFAULT_TOURNESOL_FILTER_WEIGHT
-    ): String = buildTournesolUrl(
-        TournesolFilterConfig(
-            languages = languages.orEmpty(),
-            dateKey = dateKey,
-            includeLowScoreVideos = includeLowScoreVideos,
-            durationMinSeconds = durationMinSeconds,
-            durationMaxSeconds = durationMaxSeconds,
-            weights = mapOf(
-                TournesolFilterCriterion.LARGELY_RECOMMENDED to weightLargelyRecommended,
-                TournesolFilterCriterion.RELIABILITY to weightReliability,
-                TournesolFilterCriterion.IMPORTANCE to weightImportance,
-                TournesolFilterCriterion.PEDAGOGY to weightPedagogy,
-                TournesolFilterCriterion.LAYMAN_FRIENDLY to weightLaymanFriendly,
-                TournesolFilterCriterion.ENTERTAINING_RELAXING to weightEntertainingRelaxing,
-                TournesolFilterCriterion.ENGAGING to weightEngaging,
-                TournesolFilterCriterion.DIVERSITY_INCLUSION to weightDiversityInclusion,
-                TournesolFilterCriterion.BETTER_HABITS to weightBetterHabits,
-                TournesolFilterCriterion.BACKFIRE_RISK to weightBackfireRisk
-            )
-        )
-    )
-
-    fun buildTournesolUrl(languages: List<String>?, dateKey: String): String = buildTournesolUrl(languages, dateKey, false)
 
     @JvmStatic
     fun formatUnsafeReasonCodes(reasons: List<String>?): String {

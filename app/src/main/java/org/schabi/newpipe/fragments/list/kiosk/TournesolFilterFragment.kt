@@ -104,7 +104,7 @@ class TournesolFilterFragment : BottomSheetDialogFragment() {
         savedInstanceState: Bundle?
     ): View {
         val cfg = initialConfig ?: TournesolFilterConfig(
-            languages = TournesolHelper.getDefaultFilterLanguages().split(",")
+            languages = TournesolHelper.parseFilterLanguages(TournesolHelper.getDefaultFilterLanguages())
         )
 
         val appContext = requireContext().applicationContext
