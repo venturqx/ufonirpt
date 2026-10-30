@@ -13,6 +13,8 @@ import org.schabi.newpipe.R
 import org.schabi.newpipe.util.TournesolFilterConfig
 import org.schabi.newpipe.util.TournesolFilterStore
 
+private const val FILTER_SHEET_TAG = "TournesolFilters"
+
 class TournesolFilterController(
     private val fragment: Fragment,
     private val listener: Listener
@@ -38,6 +40,8 @@ class TournesolFilterController(
     fun init(rootView: View) {
         currentConfig = filterStore().load()
         setupTournesolHeader(rootView)
+        val restoredSheet = fragment.parentFragmentManager.findFragmentByTag(FILTER_SHEET_TAG)
+        (restoredSheet as? TournesolFilterFragment)?.setListener(::applySheetConfig)
     }
 
     fun onResume() {
@@ -156,13 +160,15 @@ class TournesolFilterController(
     private fun openFilterSheet() {
         val filterFragment = TournesolFilterFragment()
         filterFragment.setInitialData(currentConfig)
-        filterFragment.setListener { newConfig ->
-            currentConfig = newConfig
-            filterStore().save(currentConfig)
-            updateQuickChipSelection()
-            notifyFiltersChanged()
-        }
-        filterFragment.show(fragment.parentFragmentManager, "TournesolFilters")
+        filterFragment.setListener(::applySheetConfig)
+        filterFragment.show(fragment.parentFragmentManager, FILTER_SHEET_TAG)
+    }
+
+    private fun applySheetConfig(newConfig: TournesolFilterConfig) {
+        currentConfig = newConfig
+        filterStore().save(currentConfig)
+        updateQuickChipSelection()
+        notifyFiltersChanged()
     }
 
     private fun filterStore() = TournesolFilterStore(

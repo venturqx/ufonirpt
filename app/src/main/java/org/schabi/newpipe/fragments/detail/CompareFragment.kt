@@ -92,9 +92,7 @@ class CompareFragment : Fragment() {
         embedInDetail = arguments?.getBoolean(KEY_EMBED_IN_DETAIL) == true
         externalScroll = arguments?.getBoolean(KEY_EXTERNAL_SCROLL) == true
         currentHistoryEntry = currentInfo?.let { buildCurrentEntry(it) }
-        scoreStore = CompareScoreStore(
-            CompareScorePrefs(PreferenceManager.getDefaultSharedPreferences(requireContext()))
-        )
+        scoreStore = CompareScoreStore.shared(requireContext())
     }
 
     override fun onCreateView(

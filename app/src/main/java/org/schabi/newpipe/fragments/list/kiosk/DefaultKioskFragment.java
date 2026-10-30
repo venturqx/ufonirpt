@@ -52,6 +52,8 @@ public class DefaultKioskFragment extends KioskFragment {
             }
             updateSelectedDefaultKiosk();
             reloadContent();
+        } else if (tournesolFilterController != null) {
+            tournesolFilterController.onResume();
         }
     }
 

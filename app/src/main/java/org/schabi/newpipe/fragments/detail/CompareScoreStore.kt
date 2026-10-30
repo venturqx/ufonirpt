@@ -1,6 +1,8 @@
 package org.schabi.newpipe.fragments.detail
 
+import android.content.Context
 import android.content.SharedPreferences
+import androidx.preference.PreferenceManager
 import com.grack.nanojson.JsonObject
 import com.grack.nanojson.JsonParser
 import com.grack.nanojson.JsonParserException
@@ -95,6 +97,14 @@ internal class CompareScoreStore(private val backend: CompareScoreBackend) {
 
     private fun saveScores() {
         backend.writeScores(serializeScores(scores))
+    }
+
+    companion object {
+        private var shared: CompareScoreStore? = null
+
+        fun shared(context: Context): CompareScoreStore = shared ?: CompareScoreStore(
+            CompareScorePrefs(PreferenceManager.getDefaultSharedPreferences(context))
+        ).also { shared = it }
     }
 }
 

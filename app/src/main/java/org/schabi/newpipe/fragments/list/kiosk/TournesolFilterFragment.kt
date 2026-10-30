@@ -65,7 +65,7 @@ import org.schabi.newpipe.R
 import org.schabi.newpipe.ui.theme.AppTheme
 import org.schabi.newpipe.util.TournesolFilterConfig
 import org.schabi.newpipe.util.TournesolFilterCriterion
-import org.schabi.newpipe.util.TournesolHelper
+import org.schabi.newpipe.util.TournesolFilterStore
 
 class TournesolFilterFragment : BottomSheetDialogFragment() {
     fun interface FilterListener {
@@ -103,9 +103,9 @@ class TournesolFilterFragment : BottomSheetDialogFragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        val cfg = initialConfig ?: TournesolFilterConfig(
-            languages = TournesolHelper.parseFilterLanguages(TournesolHelper.getDefaultFilterLanguages())
-        )
+        val cfg = initialConfig ?: TournesolFilterStore(
+            PreferenceManager.getDefaultSharedPreferences(requireContext())
+        ).load()
 
         val appContext = requireContext().applicationContext
         return ComposeView(requireContext()).apply {
