@@ -211,13 +211,27 @@ class TournesolSessionTest {
 
     @Test
     fun `invalid_grant is recognised at any depth of the cause chain`() {
-        val direct = IOException("""Token refresh failed: 400 {"error":"invalid_grant"}""")
+        val direct = TokenEndpointException(400, "invalid_grant", "Token refresh failed: 400")
 
         assertEquals(RefreshResult.InvalidGrant, classifyRefreshError<Unit>(direct))
         assertEquals(
             RefreshResult.InvalidGrant,
             classifyRefreshError<Unit>(RuntimeException(direct))
         )
+    }
+
+    @Test
+    fun `message text alone never ends the session`() {
+        val error = IOException("""Token refresh failed: 400 {"error":"invalid_grant"}""")
+
+        assertTrue(classifyRefreshError<Unit>(error) is RefreshResult.Failure)
+    }
+
+    @Test
+    fun `server errors never end the session`() {
+        val error = TokenEndpointException(503, "invalid_grant", "Token refresh failed: 503")
+
+        assertTrue(classifyRefreshError<Unit>(error) is RefreshResult.Failure)
     }
 
     @Test

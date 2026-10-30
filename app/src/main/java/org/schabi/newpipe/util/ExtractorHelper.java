@@ -50,6 +50,7 @@ import org.schabi.newpipe.extractor.kiosk.KioskList;
 import org.schabi.newpipe.extractor.linkhandler.ListLinkHandler;
 import org.schabi.newpipe.extractor.playlist.PlaylistInfo;
 import org.schabi.newpipe.extractor.search.SearchInfo;
+import org.schabi.newpipe.extractor.services.youtube.extractors.kiosk.TournesolKioskExtractor;
 import org.schabi.newpipe.extractor.services.youtube.linkHandler.YoutubeSearchQueryHandlerFactory;
 import org.schabi.newpipe.extractor.stream.StreamInfo;
 import org.schabi.newpipe.extractor.stream.StreamInfoItem;
@@ -58,7 +59,6 @@ import org.schabi.newpipe.util.text.TextLinkifier;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -69,9 +69,6 @@ import io.reactivex.rxjava3.disposables.CompositeDisposable;
 public final class ExtractorHelper {
     private static final String TOURNESOL_KIOSK_ID = "Tournesol";
     private static final String TOURNESOL_KIOSK_ID_LOWER = "tournesol";
-    private static final String TOURNESOL_EXTRACTOR_CLASS =
-            "org.schabi.newpipe.extractor.services.youtube.extractors.kiosk."
-                    + "TournesolKioskExtractor";
     private static final String TAG = ExtractorHelper.class.getSimpleName();
     private static final InfoCache CACHE = InfoCache.getInstance();
 
@@ -184,25 +181,6 @@ public final class ExtractorHelper {
                                                  final boolean forceLoad) {
         return checkCache(forceLoad, serviceId, url, InfoCache.Type.KIOSK,
                 Single.fromCallable(() -> {
-                    // Tournesol logic is now handled by the tab selection or service selection
-                    // If we are here, we are loading a standard kiosk or Tournesol if selected.
-
-                    // Check if the service is Tournesol or if the URL/Kiosk ID implies Tournesol.
-                    // However, Tournesol isn't a separate service ID in NewPipe usually,
-                    // it might be an extractor override.
-
-                    // Since we removed the setting check that forced Tournesol, we should ensure
-                    // that if the user explicitly selected Tournesol tab (if it exists), it works.
-                    // But if Tournesol was just a "recommendation algorithm" that replaced
-                    // "Trending", and we want it to be a tab, we need to ensure there is a way
-                    // to get Tournesol content.
-
-                    // If Tournesol is implemented as a Kiosk, it should be in the Kiosk list.
-                    // If it was just a hack in ExtractorHelper, we might need to expose it as
-                    // a Kiosk or keep a check here if the "url" requested matches a Tournesol
-                    // identifier.
-
-                    // Special handling for Tournesol request
                     if (isTournesolUrl(url)) {
                         final KioskExtractor extractor = getTournesolExtractor(serviceId);
                         configureTournesolExtractor(extractor, url);
@@ -216,89 +194,15 @@ public final class ExtractorHelper {
 
     private static void configureTournesolExtractor(final KioskExtractor extractor,
                                                     final String url) {
-        if (!isTournesolExtractor(extractor)) {
+        if (!(extractor instanceof TournesolKioskExtractor)) {
             return;
         }
 
-        invokeSetDateGte(extractor, null);
-        invokeSetIncludeUnsafe(extractor, PreferenceManager
-                .getDefaultSharedPreferences(App.getInstance())
-                .getBoolean(TournesolHelper.PREF_TOURNESOL_FILTER_INCLUDE_LOW_SCORE,
-                        TournesolHelper.DEFAULT_TOURNESOL_FILTER_INCLUDE_LOW_SCORE));
-        if (url.contains("?")) {
-            final String query = url.substring(url.indexOf("?") + 1);
-            final String[] pairs = query.split("&");
-            for (final String pair : pairs) {
-                final String[] parts = pair.split("=", -1);
-                if (parts.length == 2) {
-                    final String value = decodeQueryValue(parts[1]);
-                    if ("languages".equals(parts[0])) {
-                        if (value != null && !value.isEmpty()) {
-                            invokeSetLanguages(extractor, Arrays.asList(value.split(",")));
-                        } else {
-                            invokeSetLanguages(extractor, Collections.emptyList());
-                        }
-                    } else if ("date_gte".equals(parts[0])) {
-                        invokeSetDateGte(extractor, value);
-                    } else if ("uploader".equals(parts[0])) {
-                        invokeSetUploader(extractor, value);
-                    } else if ("unsafe".equals(parts[0])) {
-                        invokeSetIncludeUnsafe(extractor, "true".equalsIgnoreCase(value));
-                    } else if ("duration_gte".equals(parts[0])) {
-                        invokeSetInt(extractor, "setDurationGte", parseIntOrDefault(value, -1));
-                    } else if ("duration_lte".equals(parts[0])) {
-                        invokeSetInt(extractor, "setDurationLte", parseIntOrDefault(value, -1));
-                    } else if ("weight_largely_recommended".equals(parts[0])) {
-                        invokeSetInt(extractor,
-                                "setWeightLargelyRecommended",
-                                parseIntOrDefault(value, -1));
-                    } else if ("weight_reliability".equals(parts[0])) {
-                        invokeSetInt(extractor,
-                                "setWeightReliability",
-                                parseIntOrDefault(value, -1));
-                    } else if ("weight_importance".equals(parts[0])) {
-                        invokeSetInt(extractor,
-                                "setWeightImportance",
-                                parseIntOrDefault(value, -1));
-                    } else if ("weight_pedagogy".equals(parts[0])) {
-                        invokeSetInt(extractor,
-                                "setWeightPedagogy",
-                                parseIntOrDefault(value, -1));
-                    } else if ("weight_layman_friendly".equals(parts[0])) {
-                        invokeSetInt(extractor,
-                                "setWeightLaymanFriendly",
-                                parseIntOrDefault(value, -1));
-                    } else if ("weight_entertaining_relaxing".equals(parts[0])) {
-                        invokeSetInt(extractor,
-                                "setWeightEntertainingRelaxing",
-                                parseIntOrDefault(value, -1));
-                    } else if ("weight_engaging".equals(parts[0])) {
-                        invokeSetInt(extractor,
-                                "setWeightEngaging",
-                                parseIntOrDefault(value, -1));
-                    } else if ("weight_diversity_inclusion".equals(parts[0])) {
-                        invokeSetInt(extractor,
-                                "setWeightDiversityInclusion",
-                                parseIntOrDefault(value, -1));
-                    } else if ("weight_better_habits".equals(parts[0])) {
-                        invokeSetInt(extractor,
-                                "setWeightBetterHabits",
-                                parseIntOrDefault(value, -1));
-                    } else if ("weight_backfire_risk".equals(parts[0])) {
-                        invokeSetInt(extractor,
-                                "setWeightBackfireRisk",
-                                parseIntOrDefault(value, -1));
-                    }
-                }
-            }
-        }
-    }
-
-    private static boolean isTournesolExtractor(final KioskExtractor extractor) {
-        if (extractor == null) {
-            return false;
-        }
-        return TOURNESOL_EXTRACTOR_CLASS.equals(extractor.getClass().getName());
+        TournesolKioskQuery.parse(url, PreferenceManager
+                        .getDefaultSharedPreferences(App.getInstance())
+                        .getBoolean(TournesolHelper.PREF_TOURNESOL_FILTER_INCLUDE_LOW_SCORE,
+                                TournesolHelper.DEFAULT_TOURNESOL_FILTER_INCLUDE_LOW_SCORE))
+                .applyTo((TournesolKioskExtractor) extractor);
     }
 
     private static boolean isTournesolUrl(@Nullable final String url) {
@@ -316,71 +220,6 @@ public final class ExtractorHelper {
             return kioskList.getExtractorById(TOURNESOL_KIOSK_ID, null);
         } catch (final ExtractionException e) {
             return kioskList.getExtractorById(TOURNESOL_KIOSK_ID_LOWER, null);
-        }
-    }
-
-    private static void invokeSetDateGte(final KioskExtractor extractor, final String value) {
-        try {
-            extractor.getClass()
-                    .getMethod("setDateGte", String.class)
-                    .invoke(extractor, value);
-        } catch (final ReflectiveOperationException ignored) {
-            // Method not available in this extractor version.
-        }
-    }
-
-    private static void invokeSetLanguages(final KioskExtractor extractor,
-                                           final List<String> languages) {
-        try {
-            extractor.getClass()
-                    .getMethod("setLanguages", List.class)
-                    .invoke(extractor, languages);
-        } catch (final ReflectiveOperationException ignored) {
-            // Method not available in this extractor version.
-        }
-    }
-
-    private static void invokeSetUploader(final KioskExtractor extractor,
-                                          @Nullable final String uploader) {
-        try {
-            extractor.getClass()
-                    .getMethod("setUploader", String.class)
-                    .invoke(extractor, uploader);
-        } catch (final ReflectiveOperationException ignored) {
-            // Method not available in this extractor version.
-        }
-    }
-
-    private static void invokeSetIncludeUnsafe(final KioskExtractor extractor,
-                                               final boolean includeUnsafe) {
-        try {
-            extractor.getClass()
-                    .getMethod("setIncludeUnsafe", boolean.class)
-                    .invoke(extractor, includeUnsafe);
-        } catch (final ReflectiveOperationException ignored) {
-            // Method not available in this extractor version.
-        }
-    }
-
-    private static void invokeSetInt(final KioskExtractor extractor,
-                                     final String methodName, final int value) {
-        try {
-            extractor.getClass()
-                    .getMethod(methodName, int.class)
-                    .invoke(extractor, value);
-        } catch (final ReflectiveOperationException ignored) {
-            // Method not available in this extractor version.
-        }
-    }
-
-    private static int parseIntOrDefault(final String value, final int defaultValue) {
-        if (value == null || value.isEmpty()) {
-            return defaultValue;
-        }
-        try {
-            return Integer.parseInt(value);
-        } catch (final NumberFormatException e) {
-            return defaultValue;
         }
     }
 
@@ -405,18 +244,6 @@ public final class ExtractorHelper {
         final List<String> enrichedFilters = new ArrayList<>(contentFilters);
         enrichedFilters.add(YoutubeSearchQueryHandlerFactory.TOURNESOL_UNSAFE);
         return enrichedFilters;
-    }
-
-    private static String decodeQueryValue(@Nullable final String value) {
-        if (value == null) {
-            return null;
-        }
-        try {
-            return java.net.URLDecoder.decode(
-                    value, java.nio.charset.StandardCharsets.UTF_8.name());
-        } catch (final Exception ignored) {
-            return value;
-        }
     }
 
     public static Single<InfoItemsPage<StreamInfoItem>> getMoreKioskItems(final int serviceId,

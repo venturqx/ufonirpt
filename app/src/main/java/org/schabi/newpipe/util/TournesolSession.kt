@@ -76,6 +76,6 @@ class TournesolSession<G>(
 
 fun <G> classifyRefreshError(error: Throwable): RefreshResult<G> {
     val isInvalidGrant = generateSequence(error) { it.cause }
-        .any { it.message?.contains("invalid_grant") == true }
+        .any { it is TokenEndpointException && it.isInvalidGrant }
     return if (isInvalidGrant) RefreshResult.InvalidGrant else RefreshResult.Failure(error)
 }
