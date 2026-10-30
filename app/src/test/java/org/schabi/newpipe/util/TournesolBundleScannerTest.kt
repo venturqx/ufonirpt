@@ -48,6 +48,36 @@ class TournesolBundleScannerTest {
     }
 
     @Test
+    fun `bundleUrls does not span from a css link to a script on one line`() {
+        val html = """<link href="/assets/style-abc.css"><script src="/assets/main-def.js"></script>"""
+
+        assertEquals(
+            listOf("${baseUrl}assets/main-def.js"),
+            TournesolBundleScanner.bundleUrls(html, baseUrl)
+        )
+    }
+
+    @Test
+    fun `bundleUrls does not span across two href attributes on one line`() {
+        val html = """<link href="/assets/style-abc.css"><link href="/assets/vendor-def.js">"""
+
+        assertEquals(
+            listOf("${baseUrl}assets/vendor-def.js"),
+            TournesolBundleScanner.bundleUrls(html, baseUrl)
+        )
+    }
+
+    @Test
+    fun `bundleUrls does not span across two src attributes on one line`() {
+        val html = """<img src="/assets/logo-abc.png"><script src="/assets/main-def.js"></script>"""
+
+        assertEquals(
+            listOf("${baseUrl}assets/main-def.js"),
+            TournesolBundleScanner.bundleUrls(html, baseUrl)
+        )
+    }
+
+    @Test
     fun `bundleUrls moves components bundles first and keeps relative order`() {
         val html = """
             <script src="/assets/a-1.js"></script>

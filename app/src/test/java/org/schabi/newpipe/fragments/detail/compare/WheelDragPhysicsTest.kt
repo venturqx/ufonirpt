@@ -87,7 +87,6 @@ class WheelDragPhysicsTest {
         val state = wheel(page = 0, lastIndex = 0).onDrag(-10_000f, 1000L, pageStep)
 
         assertEquals(WheelPageTarget(0, 0f), state.pageTarget)
-        assertEquals(0, state.cancelTarget())
         assertEquals(0, state.releaseTarget(-10_000f, pageStep))
     }
 
@@ -217,17 +216,5 @@ class WheelDragPhysicsTest {
         assertEquals(0, wheel(page = 0).dragged(10f).releaseTarget(300f, pageStep))
         assertEquals(10, wheel(page = 10).dragged(-50f).releaseTarget(0f, pageStep))
         assertEquals(10, wheel(page = 10).dragged(-10f).releaseTarget(-300f, pageStep))
-    }
-
-    @Test
-    fun `cancel settles on the nearest page`() {
-        assertEquals(6, wheel().copy(position = 5.6f).cancelTarget())
-        assertEquals(5, wheel().copy(position = 5.4f).cancelTarget())
-    }
-
-    @Test
-    fun `cancel without a drag stays within the limits`() {
-        assertEquals(0, WheelDragState.start(0, -0.4f, 10).cancelTarget())
-        assertEquals(10, WheelDragState.start(10, 0.4f, 10).cancelTarget())
     }
 }

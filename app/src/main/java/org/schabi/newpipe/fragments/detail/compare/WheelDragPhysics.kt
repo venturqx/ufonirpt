@@ -1,7 +1,6 @@
 package org.schabi.newpipe.fragments.detail.compare
 
 import kotlin.math.abs
-import kotlin.math.roundToInt
 
 private const val FIRST_FRAME_DELTA_MS = 16L
 private const val MS_PER_SECOND = 1000f
@@ -63,8 +62,6 @@ internal data class WheelDragState(
             smoothedSpeedPxPerSec = smoothedSpeed
         )
     }
-
-    fun cancelTarget(): Int = position.roundToInt().coerceIn(minPage, maxPage)
 
     fun releaseTarget(velocityY: Float, pageStepPx: Float): Int {
         val deltaFromStart = -dragDistance / pageStepPx

@@ -202,8 +202,12 @@ public class TournesolScoreCard extends LinearLayout {
         final double tournesolScore = rating.getScore();
         final List<String> unsafeReasons = rating.getUnsafeReasons();
 
-        TournesolScoreCache.INSTANCE.put(streamInfo.getOriginalUrl(),
-                Math.round(tournesolScore), unsafeReasons);
+        final long roundedScore = Math.round(tournesolScore);
+        final String originalUrl = streamInfo.getOriginalUrl();
+        TournesolScoreCache.INSTANCE.put(originalUrl, roundedScore, unsafeReasons);
+        if (!streamInfo.getUrl().equals(originalUrl)) {
+            TournesolScoreCache.INSTANCE.put(streamInfo.getUrl(), roundedScore, unsafeReasons);
+        }
 
         final int nComparisons = rating.getComparisonCount();
         final int nContributors = rating.getContributorCount();

@@ -58,7 +58,12 @@ class TournesolSecretExtractor {
             }
 
             Log.d(TAG, "Checking $url")
-            val content = fetch(url)
+            val content = try {
+                fetch(url)
+            } catch (e: IOException) {
+                Log.w(TAG, "Skipping $url", e)
+                continue
+            }
             val credentials = TournesolBundleScanner.findCredentials(content)
             if (credentials != null) {
                 Log.d(TAG, "Found credentials!")

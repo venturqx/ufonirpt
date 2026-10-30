@@ -93,11 +93,13 @@ internal fun LollipopPicker(
     } else {
         scores[dimensions[i].id] ?: 0
     }
+    val currentOnScoreChange by rememberUpdatedState(onScoreChange)
+    val currentOnMainScoreChange by rememberUpdatedState(onMainScoreChange)
     fun setScoreAt(i: Int, value: Int) {
         if (dimensions[i].id == COMPACT_MAIN_CRITERION_ID) {
-            onMainScoreChange(value)
+            currentOnMainScoreChange(value)
         } else {
-            onScoreChange(dimensions[i].id, value)
+            currentOnScoreChange(dimensions[i].id, value)
         }
     }
     val circleRadius = with(density) { 14.dp.toPx() }
@@ -112,8 +114,6 @@ internal fun LollipopPicker(
     val activeIndex = hoistedActiveIndex ?: remember { mutableIntStateOf(-1) }
     val dragScore = hoistedDragScore ?: remember { mutableStateOf<Int?>(null) }
     val pendingTap = remember { mutableStateOf<PendingTap?>(null) }
-    val currentOnScoreChange by rememberUpdatedState(onScoreChange)
-    val currentOnMainScoreChange by rememberUpdatedState(onMainScoreChange)
     val labelPaint = remember {
         AndroidPaint(AndroidPaint.ANTI_ALIAS_FLAG).apply {
             textAlign = AndroidPaint.Align.CENTER
@@ -343,6 +343,7 @@ private fun LargelyRecommendedSlider(
     val currentOnMainChange by rememberUpdatedState(onMainScoreChange)
     val currentOnExtraChange by rememberUpdatedState(onScoreChange)
     val currentOnSubmit1 by rememberUpdatedState(onSubmit1)
+    val latestScore by rememberUpdatedState(currentScore)
     val dispatchChange: (Int) -> Unit = { v ->
         if (isMain) currentOnMainChange(v) else currentOnExtraChange(selectedCriterionId, v)
     }
@@ -451,7 +452,7 @@ private fun LargelyRecommendedSlider(
                         val right = size.width - sidePaddingPx
                         val canvasBottom = size.height.toFloat()
                         fun xToScore(x: Float): Int = positionToScore(x, left, right)
-                        val scoreBeforeDrag = currentScore
+                        val scoreBeforeDrag = latestScore
                         var finalScore = xToScore(down.position.x)
                         isDragging = true
                         isInCancelZone = false

@@ -22,8 +22,11 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -82,6 +85,7 @@ internal fun HistoryWheel(
     ) { entries.size }
     val coroutineScope = rememberCoroutineScope()
     val latestSelectedIndex by rememberUpdatedState(selectedIndex)
+    var isDragging by remember { mutableStateOf(false) }
     val cameraDistance = with(density) { (22.dp * scale).toPx() }
     val depthShift = with(density) { (18.dp * scale).toPx() }
     val pageSizePx = with(density) { itemHeight.toPx() }
@@ -89,7 +93,10 @@ internal fun HistoryWheel(
     val pageStepPx = with(density) { (itemHeight - overlap).toPx() }.coerceAtLeast(1f)
     val totalPages = entries.size
 
-    LaunchedEffect(entries, selectedIndex) {
+    LaunchedEffect(entries, selectedIndex, isDragging) {
+        if (isDragging) {
+            return@LaunchedEffect
+        }
         val targetPage = selectedIndex.coerceIn(0, entries.lastIndex)
         if (pagerState.currentPage != targetPage) {
             pagerState.scrollToPage(targetPage)
@@ -113,28 +120,15 @@ internal fun HistoryWheel(
             .pointerInput(pagerState, pageStepPx, entries.size) {
                 val velocityTracker = VelocityTracker()
                 var dragState = WheelDragState.start(0, 0f, entries.lastIndex)
-                detectDragGestures(
-                    onDragStart = {
-                        velocityTracker.resetTracking()
-                        dragState = WheelDragState.start(
-                            pagerState.currentPage,
-                            pagerState.currentPageOffsetFraction,
-                            entries.lastIndex
-                        )
-                    },
-                    onDrag = { change, dragAmount ->
-                        change.consumeAllChanges()
-                        velocityTracker.addPosition(change.uptimeMillis, change.position)
-                        dragState = dragState.onDrag(dragAmount.y, change.uptimeMillis, pageStepPx)
-                        val (targetPage, offset) = dragState.pageTarget
-                        pagerState.requestScrollToPage(
-                            targetPage,
-                            offset
-                        )
-                    },
-                    onDragCancel = {
-                        val target = dragState.cancelTarget()
-                        coroutineScope.launch {
+                var dragGeneration = 0
+                fun settle() {
+                    val target = dragState.releaseTarget(
+                        velocityTracker.calculateVelocity().y,
+                        pageStepPx
+                    )
+                    val settleGeneration = dragGeneration
+                    coroutineScope.launch {
+                        try {
                             pagerState.animateScrollToPage(
                                 target,
                                 animationSpec = tween(
@@ -142,24 +136,45 @@ internal fun HistoryWheel(
                                     easing = LinearOutSlowInEasing
                                 )
                             )
-                        }
-                    },
-                    onDragEnd = {
-                        val target = dragState.releaseTarget(
-                            velocityTracker.calculateVelocity().y,
-                            pageStepPx
-                        )
-                        coroutineScope.launch {
-                            pagerState.animateScrollToPage(
-                                target,
-                                animationSpec = tween(
-                                    durationMillis = 320,
-                                    easing = LinearOutSlowInEasing
-                                )
-                            )
+                        } finally {
+                            if (settleGeneration == dragGeneration) {
+                                isDragging = false
+                            }
                         }
                     }
-                )
+                }
+                try {
+                    detectDragGestures(
+                        onDragStart = {
+                            dragGeneration++
+                            isDragging = true
+                            velocityTracker.resetTracking()
+                            dragState = WheelDragState.start(
+                                pagerState.currentPage,
+                                pagerState.currentPageOffsetFraction,
+                                entries.lastIndex
+                            )
+                        },
+                        onDrag = { change, dragAmount ->
+                            change.consumeAllChanges()
+                            velocityTracker.addPosition(change.uptimeMillis, change.position)
+                            dragState = dragState.onDrag(
+                                dragAmount.y,
+                                change.uptimeMillis,
+                                pageStepPx
+                            )
+                            val (targetPage, offset) = dragState.pageTarget
+                            pagerState.requestScrollToPage(
+                                targetPage,
+                                offset
+                            )
+                        },
+                        onDragCancel = { settle() },
+                        onDragEnd = { settle() }
+                    )
+                } finally {
+                    isDragging = false
+                }
             }
     ) {
         val contentPadding = PaddingValues(vertical = itemHeight / 2)

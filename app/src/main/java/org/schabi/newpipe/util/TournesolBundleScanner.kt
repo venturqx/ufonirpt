@@ -5,8 +5,8 @@ internal data class TournesolClientCredentials(val clientId: String, val clientS
 }
 
 internal object TournesolBundleScanner {
-    private val SCRIPT_SRC_PATTERN = Regex("src=\\\"(/assets/.*?-([\\w-]+)\\.js)\\\"")
-    private val HREF_PATTERN = Regex("href=\\\"(/assets/.*?-([\\w-]+)\\.js)\\\"")
+    private val SCRIPT_SRC_PATTERN = Regex("src=\\\"(/assets/[^\\\"]*?-([\\w-]+)\\.js)\\\"")
+    private val HREF_PATTERN = Regex("href=\\\"(/assets/[^\\\"]*?-([\\w-]+)\\.js)\\\"")
     private val CHUNK_PATTERN = Regex("[\\\"'`](assets/[a-zA-Z0-9_-]+\\.js)[\\\"'`]")
     private val ID_PATTERN = Regex("[\\\"'`]([a-zA-Z0-9]{40})[\\\"'`:]")
     private val SECRET_PATTERN = Regex("[\\\"'`:]([a-zA-Z0-9]{128})[\\\"'`]")
