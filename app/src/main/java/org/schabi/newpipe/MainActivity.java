@@ -94,6 +94,7 @@ import org.schabi.newpipe.util.StateSaver;
 import org.schabi.newpipe.util.ThemeHelper;
 import org.schabi.newpipe.util.TournesolAuthManager;
 import org.schabi.newpipe.util.TournesolLoginDialog;
+import org.schabi.newpipe.util.TournesolProfile;
 import org.schabi.newpipe.util.external_communication.ShareUtils;
 import org.schabi.newpipe.views.FocusOverlayView;
 
@@ -103,6 +104,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
+import io.reactivex.rxjava3.disposables.Disposable;
+
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = "MainActivity";
     @SuppressWarnings("ConstantConditions")
@@ -110,6 +114,7 @@ public class MainActivity extends AppCompatActivity {
 
     private ActivityMainBinding mainBinding;
     private DrawerHeaderBinding drawerHeaderBinding;
+    private Disposable profileHeaderDisposable;
     private DrawerLayoutBinding drawerLayoutBinding;
     private ToolbarLayoutBinding toolbarLayoutBinding;
 
@@ -424,7 +429,17 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void updateProfileHeader() {
-        final String username = TournesolAuthManager.INSTANCE.getUsername(this);
+        if (profileHeaderDisposable != null) {
+            profileHeaderDisposable.dispose();
+        }
+        profileHeaderDisposable = TournesolAuthManager.INSTANCE.loadProfile(this)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(this::renderProfileHeader,
+                        throwable -> Log.e(TAG, "Could not load Tournesol profile", throwable));
+    }
+
+    private void renderProfileHeader(final TournesolProfile profile) {
+        final String username = profile.getUsername();
         if (username != null) {
             final String greeting = getString(R.string.tournesol_hi_greeting) + " ";
             final android.text.SpannableStringBuilder ssb =
@@ -449,8 +464,7 @@ public class MainActivity extends AppCompatActivity {
                 ssb.setSpan(logoSpan, iconPos, ssb.length(),
                         android.text.Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
             }
-            final Integer comparisonCount =
-                    TournesolAuthManager.INSTANCE.getComparisonCount(this);
+            final Integer comparisonCount = profile.getComparisonCount();
             if (comparisonCount != null) {
                 ssb.append(" ");
                 final int countStart = ssb.length();
@@ -574,6 +588,9 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        if (profileHeaderDisposable != null) {
+            profileHeaderDisposable.dispose();
+        }
         if (!isChangingConfigurations()) {
             StateSaver.clearStateFiles();
         }

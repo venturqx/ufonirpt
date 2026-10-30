@@ -63,83 +63,24 @@ import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import org.schabi.newpipe.R
 import org.schabi.newpipe.ui.theme.AppTheme
+import org.schabi.newpipe.util.TournesolFilterConfig
+import org.schabi.newpipe.util.TournesolFilterCriterion
 import org.schabi.newpipe.util.TournesolHelper
 
 class TournesolFilterFragment : BottomSheetDialogFragment() {
-    interface FilterListener {
-        fun onApply(
-            languages: List<String>,
-            dateKey: String,
-            includeLowScoreVideos: Boolean,
-            durationMinSeconds: Int,
-            durationMaxSeconds: Int,
-            weightLargelyRecommended: Int,
-            weightReliability: Int,
-            weightImportance: Int,
-            weightPedagogy: Int,
-            weightLaymanFriendly: Int,
-            weightEntertainingRelaxing: Int,
-            weightEngaging: Int,
-            weightDiversityInclusion: Int,
-            weightBetterHabits: Int,
-            weightBackfireRisk: Int
-        )
+    fun interface FilterListener {
+        fun onApply(config: TournesolFilterConfig)
     }
 
     private var listener: FilterListener? = null
-    private var initialLanguages: List<String>? = null
-    private var initialDateKey: String? = null
-    private var initialIncludeLowScoreVideos: Boolean =
-        TournesolHelper.DEFAULT_TOURNESOL_FILTER_INCLUDE_LOW_SCORE
-    private var initialDurationMinSeconds: Int = TournesolHelper.DEFAULT_TOURNESOL_FILTER_DURATION_MIN
-    private var initialDurationMaxSeconds: Int = TournesolHelper.DEFAULT_TOURNESOL_FILTER_DURATION_MAX
-    private var initialWeightLargelyRecommended: Int = TournesolHelper.DEFAULT_TOURNESOL_FILTER_WEIGHT
-    private var initialWeightReliability: Int = TournesolHelper.DEFAULT_TOURNESOL_FILTER_WEIGHT
-    private var initialWeightImportance: Int = TournesolHelper.DEFAULT_TOURNESOL_FILTER_WEIGHT
-    private var initialWeightPedagogy: Int = TournesolHelper.DEFAULT_TOURNESOL_FILTER_WEIGHT
-    private var initialWeightLaymanFriendly: Int = TournesolHelper.DEFAULT_TOURNESOL_FILTER_WEIGHT
-    private var initialWeightEntertainingRelaxing: Int = TournesolHelper.DEFAULT_TOURNESOL_FILTER_WEIGHT
-    private var initialWeightEngaging: Int = TournesolHelper.DEFAULT_TOURNESOL_FILTER_WEIGHT
-    private var initialWeightDiversityInclusion: Int = TournesolHelper.DEFAULT_TOURNESOL_FILTER_WEIGHT
-    private var initialWeightBetterHabits: Int = TournesolHelper.DEFAULT_TOURNESOL_FILTER_WEIGHT
-    private var initialWeightBackfireRisk: Int = TournesolHelper.DEFAULT_TOURNESOL_FILTER_WEIGHT
+    private var initialConfig: TournesolFilterConfig? = null
 
     fun setListener(listener: FilterListener) {
         this.listener = listener
     }
 
-    fun setInitialData(
-        languages: List<String>,
-        dateKey: String,
-        includeLowScoreVideos: Boolean,
-        durationMinSeconds: Int,
-        durationMaxSeconds: Int,
-        weightLargelyRecommended: Int,
-        weightReliability: Int,
-        weightImportance: Int,
-        weightPedagogy: Int,
-        weightLaymanFriendly: Int,
-        weightEntertainingRelaxing: Int,
-        weightEngaging: Int,
-        weightDiversityInclusion: Int,
-        weightBetterHabits: Int,
-        weightBackfireRisk: Int
-    ) {
-        this.initialLanguages = languages
-        this.initialDateKey = dateKey
-        this.initialIncludeLowScoreVideos = includeLowScoreVideos
-        this.initialDurationMinSeconds = durationMinSeconds
-        this.initialDurationMaxSeconds = durationMaxSeconds
-        this.initialWeightLargelyRecommended = weightLargelyRecommended
-        this.initialWeightReliability = weightReliability
-        this.initialWeightImportance = weightImportance
-        this.initialWeightPedagogy = weightPedagogy
-        this.initialWeightLaymanFriendly = weightLaymanFriendly
-        this.initialWeightEntertainingRelaxing = weightEntertainingRelaxing
-        this.initialWeightEngaging = weightEngaging
-        this.initialWeightDiversityInclusion = weightDiversityInclusion
-        this.initialWeightBetterHabits = weightBetterHabits
-        this.initialWeightBackfireRisk = weightBackfireRisk
+    fun setInitialData(config: TournesolFilterConfig) {
+        this.initialConfig = config
     }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
@@ -162,10 +103,9 @@ class TournesolFilterFragment : BottomSheetDialogFragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        val seedLanguages = initialLanguages
-            ?: TournesolHelper.getDefaultFilterLanguages().split(",")
-        val seedDateKey = initialDateKey ?: TournesolHelper.DEFAULT_TOURNESOL_FILTER_DATE_KEY
-        val seedIncludeLowScoreVideos = initialIncludeLowScoreVideos
+        val cfg = initialConfig ?: TournesolFilterConfig(
+            languages = TournesolHelper.getDefaultFilterLanguages().split(",")
+        )
 
         val appContext = requireContext().applicationContext
         return ComposeView(requireContext()).apply {
@@ -174,21 +114,21 @@ class TournesolFilterFragment : BottomSheetDialogFragment() {
                 AppTheme {
                     TournesolFilterSheet(
                         appContext = appContext,
-                        initialLanguages = seedLanguages,
-                        initialDateKey = seedDateKey,
-                        initialIncludeLowScoreVideos = seedIncludeLowScoreVideos,
-                        initialDurationMinSeconds = initialDurationMinSeconds,
-                        initialDurationMaxSeconds = initialDurationMaxSeconds,
-                        initialWeightLargelyRecommended = initialWeightLargelyRecommended,
-                        initialWeightReliability = initialWeightReliability,
-                        initialWeightImportance = initialWeightImportance,
-                        initialWeightPedagogy = initialWeightPedagogy,
-                        initialWeightLaymanFriendly = initialWeightLaymanFriendly,
-                        initialWeightEntertainingRelaxing = initialWeightEntertainingRelaxing,
-                        initialWeightEngaging = initialWeightEngaging,
-                        initialWeightDiversityInclusion = initialWeightDiversityInclusion,
-                        initialWeightBetterHabits = initialWeightBetterHabits,
-                        initialWeightBackfireRisk = initialWeightBackfireRisk,
+                        initialLanguages = cfg.languages,
+                        initialDateKey = cfg.dateKey,
+                        initialIncludeLowScoreVideos = cfg.includeLowScoreVideos,
+                        initialDurationMinSeconds = cfg.durationMinSeconds,
+                        initialDurationMaxSeconds = cfg.durationMaxSeconds,
+                        initialWeightLargelyRecommended = cfg.weightFor(TournesolFilterCriterion.LARGELY_RECOMMENDED),
+                        initialWeightReliability = cfg.weightFor(TournesolFilterCriterion.RELIABILITY),
+                        initialWeightImportance = cfg.weightFor(TournesolFilterCriterion.IMPORTANCE),
+                        initialWeightPedagogy = cfg.weightFor(TournesolFilterCriterion.PEDAGOGY),
+                        initialWeightLaymanFriendly = cfg.weightFor(TournesolFilterCriterion.LAYMAN_FRIENDLY),
+                        initialWeightEntertainingRelaxing = cfg.weightFor(TournesolFilterCriterion.ENTERTAINING_RELAXING),
+                        initialWeightEngaging = cfg.weightFor(TournesolFilterCriterion.ENGAGING),
+                        initialWeightDiversityInclusion = cfg.weightFor(TournesolFilterCriterion.DIVERSITY_INCLUSION),
+                        initialWeightBetterHabits = cfg.weightFor(TournesolFilterCriterion.BETTER_HABITS),
+                        initialWeightBackfireRisk = cfg.weightFor(TournesolFilterCriterion.BACKFIRE_RISK),
                         onApply = {
                                 languages,
                                 dateKey,
@@ -207,13 +147,25 @@ class TournesolFilterFragment : BottomSheetDialogFragment() {
                                 wBack
                             ->
                             listener?.onApply(
-                                languages,
-                                dateKey,
-                                includeLowScoreVideos,
-                                durationMin,
-                                durationMax,
-                                wLR, wRel, wImp,
-                                wPed, wLay, wEnt, wEng, wDiv, wBet, wBack
+                                TournesolFilterConfig(
+                                    languages = languages,
+                                    dateKey = dateKey,
+                                    includeLowScoreVideos = includeLowScoreVideos,
+                                    durationMinSeconds = durationMin,
+                                    durationMaxSeconds = durationMax,
+                                    weights = mapOf(
+                                        TournesolFilterCriterion.LARGELY_RECOMMENDED to wLR,
+                                        TournesolFilterCriterion.RELIABILITY to wRel,
+                                        TournesolFilterCriterion.IMPORTANCE to wImp,
+                                        TournesolFilterCriterion.PEDAGOGY to wPed,
+                                        TournesolFilterCriterion.LAYMAN_FRIENDLY to wLay,
+                                        TournesolFilterCriterion.ENTERTAINING_RELAXING to wEnt,
+                                        TournesolFilterCriterion.ENGAGING to wEng,
+                                        TournesolFilterCriterion.DIVERSITY_INCLUSION to wDiv,
+                                        TournesolFilterCriterion.BETTER_HABITS to wBet,
+                                        TournesolFilterCriterion.BACKFIRE_RISK to wBack
+                                    )
+                                )
                             )
                         },
                         onClose = { dismiss() }

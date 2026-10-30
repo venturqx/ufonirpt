@@ -14,9 +14,8 @@ import org.schabi.newpipe.extractor.exceptions.ExtractionException;
 import org.schabi.newpipe.extractor.kiosk.KioskList;
 import org.schabi.newpipe.util.KioskTranslator;
 import org.schabi.newpipe.util.ServiceHelper;
+import org.schabi.newpipe.util.TournesolFilterConfig;
 import org.schabi.newpipe.util.TournesolHelper;
-
-import java.util.List;
 
 public class DefaultKioskFragment extends KioskFragment {
 
@@ -37,22 +36,7 @@ public class DefaultKioskFragment extends KioskFragment {
         super.initViews(rootView, savedInstanceState);
         if ("Tournesol".equals(kioskId)) {
             ensureTournesolController(rootView);
-            applyTournesolFilters(tournesolFilterController.getCurrentLanguages(),
-                    tournesolFilterController.getCurrentDateKey(),
-                    tournesolFilterController.getCurrentIncludeLowScoreVideos(),
-                    tournesolFilterController.getCurrentDurationMinSeconds(),
-                    tournesolFilterController.getCurrentDurationMaxSeconds(),
-                    tournesolFilterController.getCurrentWeightLargelyRecommended(),
-                    tournesolFilterController.getCurrentWeightReliability(),
-                    tournesolFilterController.getCurrentWeightImportance(),
-                    tournesolFilterController.getCurrentWeightPedagogy(),
-                    tournesolFilterController.getCurrentWeightLaymanFriendly(),
-                    tournesolFilterController.getCurrentWeightEntertainingRelaxing(),
-                    tournesolFilterController.getCurrentWeightEngaging(),
-                    tournesolFilterController.getCurrentWeightDiversityInclusion(),
-                    tournesolFilterController.getCurrentWeightBetterHabits(),
-                    tournesolFilterController.getCurrentWeightBackfireRisk(),
-                    false);
+            applyTournesolFilters(tournesolFilterController.getCurrentConfig(), false);
         } else {
             hideTournesolHeader(rootView);
         }
@@ -82,57 +66,15 @@ public class DefaultKioskFragment extends KioskFragment {
 
     private void ensureTournesolController(@NonNull final View rootView) {
         if (tournesolFilterController == null) {
-            tournesolFilterController =
-                    new TournesolFilterController(this, this::onTournesolFiltersChanged);
+            tournesolFilterController = new TournesolFilterController(
+                    this, config -> applyTournesolFilters(config, true));
         }
         tournesolFilterController.init(rootView);
     }
 
-    private void onTournesolFiltersChanged(@NonNull final List<String> languages,
-                                           @NonNull final String dateKey,
-                                           final boolean includeLowScoreVideos,
-                                           final int durationMinSeconds,
-                                           final int durationMaxSeconds,
-                                           final int weightLargelyRecommended,
-                                           final int weightReliability,
-                                           final int weightImportance,
-                                           final int weightPedagogy,
-                                           final int weightLaymanFriendly,
-                                           final int weightEntertainingRelaxing,
-                                           final int weightEngaging,
-                                           final int weightDiversityInclusion,
-                                           final int weightBetterHabits,
-                                           final int weightBackfireRisk) {
-        applyTournesolFilters(languages, dateKey, includeLowScoreVideos,
-                durationMinSeconds, durationMaxSeconds,
-                weightLargelyRecommended, weightReliability, weightImportance,
-                weightPedagogy, weightLaymanFriendly, weightEntertainingRelaxing,
-                weightEngaging, weightDiversityInclusion, weightBetterHabits,
-                weightBackfireRisk, true);
-    }
-
-    private void applyTournesolFilters(@NonNull final List<String> languages,
-                                       @NonNull final String dateKey,
-                                       final boolean includeLowScoreVideos,
-                                       final int durationMinSeconds,
-                                       final int durationMaxSeconds,
-                                       final int weightLargelyRecommended,
-                                       final int weightReliability,
-                                       final int weightImportance,
-                                       final int weightPedagogy,
-                                       final int weightLaymanFriendly,
-                                       final int weightEntertainingRelaxing,
-                                       final int weightEngaging,
-                                       final int weightDiversityInclusion,
-                                       final int weightBetterHabits,
-                                       final int weightBackfireRisk,
+    private void applyTournesolFilters(@NonNull final TournesolFilterConfig config,
                                        final boolean reload) {
-        url = TournesolHelper.INSTANCE.buildTournesolUrl(languages, dateKey,
-                includeLowScoreVideos, durationMinSeconds, durationMaxSeconds,
-                weightLargelyRecommended, weightReliability, weightImportance,
-                weightPedagogy, weightLaymanFriendly, weightEntertainingRelaxing,
-                weightEngaging, weightDiversityInclusion, weightBetterHabits,
-                weightBackfireRisk);
+        url = TournesolHelper.INSTANCE.buildTournesolUrl(config);
         if (!reload) {
             return;
         }

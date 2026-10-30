@@ -1,5 +1,10 @@
 package org.schabi.newpipe.fragments.detail
 
+import com.grack.nanojson.JsonArray
+import com.grack.nanojson.JsonObject
+import com.grack.nanojson.JsonParser
+import com.grack.nanojson.JsonStringWriter
+import com.grack.nanojson.JsonWriter
 import io.reactivex.rxjava3.core.Maybe
 import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.schedulers.Schedulers
@@ -9,8 +14,6 @@ import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
-import org.json.JSONArray
-import org.json.JSONObject
 import org.schabi.newpipe.DownloaderImpl
 import org.schabi.newpipe.R
 import org.schabi.newpipe.extractor.NewPipe
@@ -36,33 +39,12 @@ object CompareRepository {
         lastUid: String,
         currentUid: String,
         score: Int
-    ): Single<Int> = Single.fromCallable {
-        val payload = buildComparisonPayload(
-            lastUid,
-            currentUid,
-            listOf(CriteriaScore(COMPARE_CRITERIA, score))
-        )
-        val mediaType = "application/json; charset=utf-8".toMediaType()
-        val body = payload.toString().toRequestBody(mediaType)
-        val request = Request.Builder()
-            .url(COMPARE_URL)
-            .post(body)
-            .addHeader("Authorization", "Bearer $token")
-            .addHeader("Content-Type", "application/json")
-            .build()
-
-        val client = getHttpClient()
-        client.newCall(request).execute().use { response ->
-            val responseBody = response.body?.string().orEmpty()
-            if (response.isSuccessful) {
-                return@fromCallable R.string.compare_submitted
-            }
-            if (response.code == 400 && responseBody.contains("already compared")) {
-                return@fromCallable R.string.compare_already_submitted
-            }
-            throw IOException("HTTP ${response.code} $responseBody")
-        }
-    }.subscribeOn(Schedulers.io())
+    ): Single<Int> = submitComparisonWithCriteria(
+        token = token,
+        lastUid = lastUid,
+        currentUid = currentUid,
+        criteriaScores = listOf(CriteriaScore(COMPARE_CRITERIA, score))
+    )
 
     internal fun submitComparisonWithCriteria(
         token: String,
@@ -70,9 +52,9 @@ object CompareRepository {
         currentUid: String,
         criteriaScores: List<CriteriaScore>
     ): Single<Int> = Single.fromCallable {
-        val payload = buildComparisonPayload(lastUid, currentUid, criteriaScores)
+        val payload = buildComparisonPayloadJson(lastUid, currentUid, criteriaScores)
         val mediaType = "application/json; charset=utf-8".toMediaType()
-        val body = payload.toString().toRequestBody(mediaType)
+        val body = payload.toRequestBody(mediaType)
         val request = Request.Builder()
             .url(COMPARE_URL)
             .post(body)
@@ -83,15 +65,19 @@ object CompareRepository {
         val client = getHttpClient()
         client.newCall(request).execute().use { response ->
             val responseBody = response.body?.string().orEmpty()
-            if (response.isSuccessful) {
-                return@fromCallable R.string.compare_submitted
-            }
-            if (response.code == 400 && responseBody.contains("already compared")) {
-                return@fromCallable R.string.compare_already_submitted
-            }
-            throw IOException("HTTP ${response.code} $responseBody")
+            return@fromCallable resolveSubmitStatusRes(response.code, responseBody)
         }
     }.subscribeOn(Schedulers.io())
+
+    internal fun resolveSubmitStatusRes(httpCode: Int, responseBody: String): Int {
+        if (httpCode in 200..299) {
+            return R.string.compare_submitted
+        }
+        if (httpCode == 400 && responseBody.contains("already compared")) {
+            return R.string.compare_already_submitted
+        }
+        throw IOException("HTTP $httpCode $responseBody")
+    }
 
     fun checkComparison(
         token: String,
@@ -122,9 +108,9 @@ object CompareRepository {
         currentUid: String,
         criteriaScores: List<CriteriaScore>
     ): Single<Int> = Single.fromCallable {
-        val payload = buildPatchPayload(criteriaScores)
+        val payload = buildPatchPayloadJson(criteriaScores)
         val mediaType = "application/json; charset=utf-8".toMediaType()
-        val body = payload.toString().toRequestBody(mediaType)
+        val body = payload.toRequestBody(mediaType)
         val request = Request.Builder()
             .url("$COMPARE_URL/$lastUid/$currentUid/")
             .patch(body)
@@ -170,7 +156,7 @@ object CompareRepository {
         }
     }.subscribeOn(Schedulers.io())
 
-    private fun getTournesolServicePrefix(serviceId: Int): String? {
+    internal fun getTournesolServicePrefix(serviceId: Int): String? {
         return when (serviceId) {
             ServiceList.YouTube.serviceId -> "yt"
             ServiceList.SoundCloud.serviceId -> "sc"
@@ -179,71 +165,72 @@ object CompareRepository {
         }
     }
 
-    private fun buildComparisonPayload(
+    internal fun buildComparisonPayloadJson(
         lastUid: String,
         currentUid: String,
         criteriaScores: List<CriteriaScore>
-    ): JSONObject {
-        val payload = JSONObject()
-        payload.put("pollName", COMPARE_POLL)
-        payload.put("entity_a", JSONObject().put("uid", lastUid))
-        payload.put("entity_b", JSONObject().put("uid", currentUid))
+    ): String = JsonWriter.string()
+        .`object`()
+        .value("pollName", COMPARE_POLL)
+        .`object`("entity_a").value("uid", lastUid).end()
+        .`object`("entity_b").value("uid", currentUid).end()
+        .writeCriteriaScores(criteriaScores)
+        .end()
+        .done()
 
-        payload.put("criteria_scores", buildCriteriaScores(criteriaScores))
-        return payload
-    }
-
-    private fun buildPatchPayload(
+    internal fun buildPatchPayloadJson(
         criteriaScores: List<CriteriaScore>
-    ): JSONObject {
-        val payload = JSONObject()
-        payload.put("criteria_scores", buildCriteriaScores(criteriaScores))
-        return payload
-    }
+    ): String = JsonWriter.string()
+        .`object`()
+        .writeCriteriaScores(criteriaScores)
+        .end()
+        .done()
 
-    private fun buildCriteriaScores(criteriaScores: List<CriteriaScore>): JSONArray {
-        val scores = JSONArray()
+    private fun JsonStringWriter.writeCriteriaScores(
+        criteriaScores: List<CriteriaScore>
+    ): JsonStringWriter {
+        array("criteria_scores")
         criteriaScores.forEach { scoreItem ->
-            val item = JSONObject()
-            item.put("criteria", scoreItem.criteria)
-            item.put("score", scoreItem.score)
-            item.put("score_max", SCORE_MAX)
-            scores.put(item)
+            `object`()
+                .value("criteria", scoreItem.criteria)
+                .value("score", scoreItem.score)
+                .value("score_max", SCORE_MAX)
+                .end()
         }
-        return scores
+        return end()
     }
 
-    private fun parseComparisons(responseBody: String): CompareComparisonsResult {
-        val root = JSONObject(responseBody)
-        val totalCount = root.optInt("count", -1).takeIf { it >= 0 }
-        val results = root.optJSONArray("results") ?: JSONArray()
-        val parsed = ArrayList<CompareRecommendationItem>(results.length())
-        for (index in 0 until results.length()) {
-            val result = results.optJSONObject(index) ?: continue
+    internal fun parseComparisons(responseBody: String): CompareComparisonsResult {
+        val root = JsonParser.`object`().from(responseBody)
+        val totalCount = root.getInt("count", -1).takeIf { it >= 0 }
+        val results = root.getArray("results") ?: JsonArray()
+        val parsed = ArrayList<CompareRecommendationItem>(results.size)
+        for (index in 0 until results.size) {
+            val result = results[index] as? JsonObject ?: continue
             parsed.add(parseComparisonItem(result, index))
         }
         return CompareComparisonsResult(totalCount = totalCount, comparisons = parsed)
     }
 
     private fun parseComparisonItem(
-        result: JSONObject,
+        result: JsonObject,
         index: Int
     ): CompareRecommendationItem {
-        val entityA = result.optJSONObject("entity_a")
-        val entityB = result.optJSONObject("entity_b")
+        val entityA = result.getObject("entity_a")
+        val entityB = result.getObject("entity_b")
         val videoA = parseComparisonVideo(
             entity = entityA,
-            contexts = result.optJSONArray("entity_a_contexts"),
+            contexts = result.getArray("entity_a_contexts"),
             fallbackUid = "entity_a_$index"
         )
         val videoB = parseComparisonVideo(
             entity = entityB,
-            contexts = result.optJSONArray("entity_b_contexts"),
+            contexts = result.getArray("entity_b_contexts"),
             fallbackUid = "entity_b_$index"
         )
 
         val scoreData = findCriteriaScore(
-            result.optJSONArray("criteria_scores"),
+            result.getArray("criteria_scores"),
             COMPARE_CRITERIA
         )
         val score = scoreData?.optNullableInt("score")
@@ -260,15 +247,15 @@ object CompareRepository {
     }
 
     private fun parseComparisonVideo(
-        entity: JSONObject?,
-        contexts: JSONArray?,
+        entity: JsonObject?,
+        contexts: JsonArray?,
         fallbackUid: String
     ): CompareComparisonVideo {
-        val metadataCandidates = ArrayList<JSONObject>()
+        val metadataCandidates = ArrayList<JsonObject>()
         metadataCandidates.addAll(extractEntityMetadataCandidates(entity))
         metadataCandidates.addAll(extractContextMetadataCandidates(contexts))
 
-        val uid = entity?.optString("uid").orEmpty().takeIf { it.isNotBlank() } ?: fallbackUid
+        val uid = entity?.getString("uid").orEmpty().takeIf { it.isNotBlank() } ?: fallbackUid
         val title = findFirstText(metadataCandidates, TITLE_KEYS) ?: uid
         val uploader = findFirstText(metadataCandidates, UPLOADER_KEYS).orEmpty()
         val thumbnailUrl = findFirstThumbnailUrl(metadataCandidates) ?: buildFallbackThumbnailUrl(uid)
@@ -284,89 +271,89 @@ object CompareRepository {
         )
     }
 
-    private fun extractEntityMetadataCandidates(entity: JSONObject?): List<JSONObject> {
+    private fun extractEntityMetadataCandidates(entity: JsonObject?): List<JsonObject> {
         if (entity == null) {
             return emptyList()
         }
-        val candidates = ArrayList<JSONObject>(8)
+        val candidates = ArrayList<JsonObject>(8)
         collectObjectCandidates(entity, candidates)
         return candidates
     }
 
-    private fun extractContextMetadataCandidates(contexts: JSONArray?): List<JSONObject> {
+    private fun extractContextMetadataCandidates(contexts: JsonArray?): List<JsonObject> {
         if (contexts == null) {
             return emptyList()
         }
-        val candidates = ArrayList<JSONObject>(contexts.length() * 8)
-        for (index in 0 until contexts.length()) {
-            collectObjectCandidates(contexts.opt(index), candidates)
+        val candidates = ArrayList<JsonObject>(contexts.size * 8)
+        for (index in 0 until contexts.size) {
+            collectObjectCandidates(contexts[index], candidates)
         }
         return candidates
     }
 
-    private fun collectObjectCandidates(
+    internal fun collectObjectCandidates(
         value: Any?,
-        candidates: MutableList<JSONObject>,
+        candidates: MutableList<JsonObject>,
         depth: Int = 0
     ) {
         if (value == null || depth > 5) {
             return
         }
         when (value) {
-            is JSONObject -> {
-                value.optJSONObject("metadata")?.let { metadata ->
-                    candidates.add(metadata)
+            is JsonObject -> {
+                (value["metadata"] as? JsonObject)?.let { metadata ->
                     collectObjectCandidates(metadata, candidates, depth + 1)
                 }
                 candidates.add(value)
-                val keys = value.keys()
-                while (keys.hasNext()) {
-                    val key = keys.next()
-                    collectObjectCandidates(value.opt(key), candidates, depth + 1)
+                for ((key, child) in value.entries) {
+                    if (key != "metadata") {
+                        collectObjectCandidates(child, candidates, depth + 1)
+                    }
                 }
             }
 
-            is JSONArray -> {
-                for (index in 0 until value.length()) {
-                    collectObjectCandidates(value.opt(index), candidates, depth + 1)
+            is JsonArray -> {
+                for (index in 0 until value.size) {
+                    collectObjectCandidates(value[index], candidates, depth + 1)
                 }
             }
         }
     }
 
-    private fun findFirstText(candidates: List<JSONObject>, keys: List<String>): String? {
+    private fun findFirstText(candidates: List<JsonObject>, keys: List<String>): String? {
         for (candidate in candidates) {
             extractText(candidate, keys)?.let { return it }
         }
         return null
     }
 
-    private fun findFirstThumbnailUrl(candidates: List<JSONObject>): String? {
+    private fun findFirstThumbnailUrl(candidates: List<JsonObject>): String? {
         for (candidate in candidates) {
             extractThumbnailUrl(candidate)?.let { return it }
         }
         return null
     }
 
-    private fun findCriteriaScore(criteriaScores: JSONArray?, criteria: String): JSONObject? {
+    private fun findCriteriaScore(criteriaScores: JsonArray?, criteria: String): JsonObject? {
         if (criteriaScores == null) {
             return null
         }
-        for (index in 0 until criteriaScores.length()) {
-            val item = criteriaScores.optJSONObject(index) ?: continue
-            if (item.optString("criteria") == criteria) {
+        for (index in 0 until criteriaScores.size) {
+            val item = criteriaScores.getObject(index) ?: continue
+            if (item.getString("criteria") == criteria) {
                 return item
             }
         }
         return null
     }
 
-    private fun extractText(metadata: JSONObject?, keys: List<String>): String? {
+    private fun extractText(metadata: JsonObject?, keys: List<String>): String? {
         if (metadata == null) {
             return null
         }
         keys.forEach { key ->
-            val value = metadata.optString(key).trim()
+            val raw = metadata[key]
+            val value = (raw as? String)?.trim().orEmpty()
             if (value.isNotEmpty() && value != "null") {
                 return value
             }
@@ -374,12 +361,12 @@ object CompareRepository {
         return null
     }
 
-    private fun extractThumbnailUrl(metadata: JSONObject?): String? {
+    private fun extractThumbnailUrl(metadata: JsonObject?): String? {
         if (metadata == null) {
             return null
         }
         for (key in THUMBNAIL_KEYS) {
-            val raw = metadata.opt(key)
+            val raw = metadata[key]
             when (raw) {
                 is String -> {
                     val normalized = raw.trim()
@@ -388,13 +375,13 @@ object CompareRepository {
                     }
                 }
 
-                is JSONObject -> {
+                is JsonObject -> {
                     extractText(raw, URL_KEYS)?.let { return normalizeUrl(it) }
                 }
 
-                is JSONArray -> {
-                    for (index in 0 until raw.length()) {
-                        when (val entry = raw.opt(index)) {
+                is JsonArray -> {
+                    for (index in 0 until raw.size) {
+                        when (val entry = raw[index]) {
                             is String -> {
                                 val normalized = entry.trim()
                                 if (normalized.isNotEmpty() && normalized != "null") {
@@ -402,7 +389,7 @@ object CompareRepository {
                                 }
                             }
 
-                            is JSONObject -> {
+                            is JsonObject -> {
                                 extractText(entry, URL_KEYS)?.let { return normalizeUrl(it) }
                             }
                         }
@@ -440,12 +427,9 @@ object CompareRepository {
         return videoId.takeIf { it.isNotEmpty() }
     }
 
-    private fun JSONObject.optNullableInt(name: String): Int? {
-        return if (has(name) && !isNull(name)) {
-            optInt(name)
-        } else {
-            null
-        }
+    private fun JsonObject.optNullableInt(name: String): Int? {
+        val raw = this[name]
+        return (raw as? Number)?.toInt()
     }
 
     fun fetchWeeklyComparisons(): Single<Int> = Single.fromCallable {
@@ -461,17 +445,20 @@ object CompareRepository {
             if (!response.isSuccessful) {
                 throw IOException("HTTP ${response.code} $responseBody")
             }
-            val json = JSONObject(responseBody)
-            val polls = json.optJSONArray("polls")
-            if (polls != null && polls.length() > 0) {
-                val poll = polls.getJSONObject(0)
-                val comparisons = poll.optJSONObject("comparisons")
-                comparisons?.optInt("added_current_week", 0) ?: 0
-            } else {
-                0
-            }
+            parseWeeklyComparisons(responseBody)
         }
     }.subscribeOn(Schedulers.io())
+
+    internal fun parseWeeklyComparisons(responseBody: String): Int {
+        val json = JsonParser.`object`().from(responseBody)
+        val polls = json.getArray("polls")
+        if (polls != null && polls.size > 0) {
+            val poll = polls.getObject(0)
+            val comparisons = poll?.getObject("comparisons")
+            return comparisons?.getInt("added_current_week", 0) ?: 0
+        }
+        return 0
+    }
 
     private fun getHttpClient(): OkHttpClient {
         return DownloaderImpl.getInstance()?.getClient() ?: OkHttpClient.Builder().build()
@@ -521,34 +508,24 @@ object CompareRepository {
         }
     }.subscribeOn(Schedulers.io())
 
-    private fun parseSuggestedVideos(responseBody: String): List<CompareComparisonVideo> {
+    internal fun parseSuggestedVideos(responseBody: String): List<CompareComparisonVideo> {
         val trimmed = responseBody.trim()
         val results = if (trimmed.startsWith("[")) {
-            JSONArray(trimmed)
+            JsonParser.array().from(trimmed)
         } else {
-            val root = JSONObject(trimmed)
-            root.optJSONArray("results") ?: JSONArray()
+            val root = JsonParser.`object`().from(trimmed)
+            root.getArray("results") ?: JsonArray()
         }
-        val parsed = ArrayList<CompareComparisonVideo>(results.length())
-        for (index in 0 until results.length()) {
-            val item = results.optJSONObject(index) ?: continue
-            val entity = item.optJSONObject("entity") ?: item
-            val uid = entity.optString("uid").takeIf { it.isNotBlank() } ?: continue
-            val metadataCandidates = ArrayList<JSONObject>()
-            metadataCandidates.addAll(extractEntityMetadataCandidates(entity))
-            val title = findFirstText(metadataCandidates, TITLE_KEYS) ?: uid
-            val uploader = findFirstText(metadataCandidates, UPLOADER_KEYS).orEmpty()
-            val thumbnailUrl = findFirstThumbnailUrl(metadataCandidates)
-                ?: buildFallbackThumbnailUrl(uid)
-            val videoUrl = findFirstText(metadataCandidates, URL_KEYS)?.let(::normalizeUrl)
-                ?: buildFallbackVideoUrl(uid)
+        val parsed = ArrayList<CompareComparisonVideo>(results.size)
+        for (index in 0 until results.size) {
+            val item = results[index] as? JsonObject ?: continue
+            val entity = item["entity"] as? JsonObject ?: item
+            val uid = entity.getString("uid")?.takeIf { it.isNotBlank() } ?: continue
             parsed.add(
-                CompareComparisonVideo(
-                    uid = uid,
-                    title = title,
-                    uploader = uploader,
-                    thumbnailUrl = thumbnailUrl,
-                    videoUrl = videoUrl
+                parseComparisonVideo(
+                    entity = entity,
+                    contexts = item.getArray("entity_contexts"),
+                    fallbackUid = uid
                 )
             )
         }

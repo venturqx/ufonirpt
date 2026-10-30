@@ -15,6 +15,7 @@ import org.schabi.newpipe.fragments.list.playlist.PlaylistControlViewHolder
 import org.schabi.newpipe.player.playqueue.KioskPlayQueue
 import org.schabi.newpipe.player.playqueue.PlayQueue
 import org.schabi.newpipe.util.PlayButtonHelper
+import org.schabi.newpipe.util.TournesolFilterConfig
 import org.schabi.newpipe.util.TournesolHelper
 
 class TournesolKioskFragment : KioskFragment(), PlaylistControlViewHolder {
@@ -36,67 +37,13 @@ class TournesolKioskFragment : KioskFragment(), PlaylistControlViewHolder {
             return
         }
         if (tournesolFilterController == null) {
-            tournesolFilterController = TournesolFilterController(
-                this,
-                object : TournesolFilterController.Listener {
-                    override fun onFiltersChanged(
-                        languages: List<String>,
-                        dateKey: String,
-                        includeLowScoreVideos: Boolean,
-                        durationMinSeconds: Int,
-                        durationMaxSeconds: Int,
-                        weightLargelyRecommended: Int,
-                        weightReliability: Int,
-                        weightImportance: Int,
-                        weightPedagogy: Int,
-                        weightLaymanFriendly: Int,
-                        weightEntertainingRelaxing: Int,
-                        weightEngaging: Int,
-                        weightDiversityInclusion: Int,
-                        weightBetterHabits: Int,
-                        weightBackfireRisk: Int
-                    ) {
-                        onTournesolFiltersChanged(
-                            languages,
-                            dateKey,
-                            includeLowScoreVideos,
-                            durationMinSeconds,
-                            durationMaxSeconds,
-                            weightLargelyRecommended,
-                            weightReliability,
-                            weightImportance,
-                            weightPedagogy,
-                            weightLaymanFriendly,
-                            weightEntertainingRelaxing,
-                            weightEngaging,
-                            weightDiversityInclusion,
-                            weightBetterHabits,
-                            weightBackfireRisk
-                        )
-                    }
-                }
-            )
+            tournesolFilterController = TournesolFilterController(this) { config ->
+                applyTournesolFilters(config, reload = true)
+            }
         }
         tournesolFilterController?.init(rootView)
         val controller = tournesolFilterController ?: return
-        applyTournesolFilters(
-            controller.getCurrentLanguages(),
-            controller.getCurrentDateKey(),
-            controller.getCurrentIncludeLowScoreVideos(),
-            controller.getCurrentDurationMinSeconds(),
-            controller.getCurrentDurationMaxSeconds(),
-            controller.getCurrentWeightLargelyRecommended(),
-            controller.getCurrentWeightReliability(),
-            controller.getCurrentWeightImportance(),
-            controller.getCurrentWeightPedagogy(),
-            controller.getCurrentWeightLaymanFriendly(),
-            controller.getCurrentWeightEntertainingRelaxing(),
-            controller.getCurrentWeightEngaging(),
-            controller.getCurrentWeightDiversityInclusion(),
-            controller.getCurrentWeightBetterHabits(),
-            controller.getCurrentWeightBackfireRisk(),
-            false
-        )
+        applyTournesolFilters(controller.currentConfig, reload = false)
     }
 
     override fun onResume() {
@@ -111,69 +58,8 @@ class TournesolKioskFragment : KioskFragment(), PlaylistControlViewHolder {
         super.onDestroyView()
     }
 
-    private fun onTournesolFiltersChanged(
-        languages: List<String>,
-        dateKey: String,
-        includeLowScoreVideos: Boolean,
-        durationMinSeconds: Int,
-        durationMaxSeconds: Int,
-        weightLargelyRecommended: Int,
-        weightReliability: Int,
-        weightImportance: Int,
-        weightPedagogy: Int,
-        weightLaymanFriendly: Int,
-        weightEntertainingRelaxing: Int,
-        weightEngaging: Int,
-        weightDiversityInclusion: Int,
-        weightBetterHabits: Int,
-        weightBackfireRisk: Int
-    ) {
-        applyTournesolFilters(
-            languages, dateKey, includeLowScoreVideos,
-            durationMinSeconds, durationMaxSeconds,
-            weightLargelyRecommended, weightReliability, weightImportance,
-            weightPedagogy, weightLaymanFriendly, weightEntertainingRelaxing,
-            weightEngaging, weightDiversityInclusion, weightBetterHabits,
-            weightBackfireRisk,
-            true
-        )
-    }
-
-    private fun applyTournesolFilters(
-        languages: List<String>,
-        dateKey: String,
-        includeLowScoreVideos: Boolean,
-        durationMinSeconds: Int,
-        durationMaxSeconds: Int,
-        weightLargelyRecommended: Int,
-        weightReliability: Int,
-        weightImportance: Int,
-        weightPedagogy: Int,
-        weightLaymanFriendly: Int,
-        weightEntertainingRelaxing: Int,
-        weightEngaging: Int,
-        weightDiversityInclusion: Int,
-        weightBetterHabits: Int,
-        weightBackfireRisk: Int,
-        reload: Boolean
-    ) {
-        url = TournesolHelper.buildTournesolUrl(
-            languages,
-            dateKey,
-            includeLowScoreVideos,
-            durationMinSeconds,
-            durationMaxSeconds,
-            weightLargelyRecommended,
-            weightReliability,
-            weightImportance,
-            weightPedagogy,
-            weightLaymanFriendly,
-            weightEntertainingRelaxing,
-            weightEngaging,
-            weightDiversityInclusion,
-            weightBetterHabits,
-            weightBackfireRisk
-        )
+    private fun applyTournesolFilters(config: TournesolFilterConfig, reload: Boolean) {
+        url = TournesolHelper.buildTournesolUrl(config)
         if (!reload) {
             return
         }

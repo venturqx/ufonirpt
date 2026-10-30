@@ -11,6 +11,7 @@ import com.grack.nanojson.JsonObject
 import com.grack.nanojson.JsonParser
 import io.reactivex.rxjava3.core.Maybe
 import io.reactivex.rxjava3.core.Single
+import io.reactivex.rxjava3.schedulers.Schedulers
 import java.io.File
 import java.io.IOException
 import java.util.concurrent.TimeUnit
@@ -22,6 +23,8 @@ import okhttp3.FormBody
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import org.schabi.newpipe.DownloaderImpl
+
+data class TournesolProfile(val username: String?, val comparisonCount: Int?)
 
 object TournesolAuthManager {
     private const val TAG = "TournesolAuthManager"
@@ -36,11 +39,64 @@ object TournesolAuthManager {
     private const val OAUTH_SCOPE = "read write groups"
     private const val DEFAULT_MIN_TTL_MS = 2 * 60 * 1000L
 
-    private fun getAuthStatePrefs(context: Context): SharedPreferences? {
-        val appContext = context.applicationContext
+    @Volatile
+    private var authStatePrefs: SharedPreferences? = null
+
+    @Volatile
+    private var session: TournesolSession<TokenResponse>? = null
+
+    private class AuthStateTokenStore(
+        private val appContext: Context
+    ) : TokenStore<TokenResponse> {
+        override fun load(): StoredTokens? = getAuthState(appContext)?.toStoredTokens()
+
+        override fun save(grant: TokenResponse): StoredTokens? {
+            val prefs = getAuthStatePrefs(appContext) ?: return null
+            val authState = getAuthState(appContext) ?: return null
+            authState.update(grant, null)
+            // commit(): a rotated refresh token that is lost cannot be recovered.
+            prefs.edit().putString(SHARED_PREF_AUTH_STATE, authState.jsonSerializeString()).commit()
+            return authState.toStoredTokens()
+        }
+
+        override fun clear() = clearAuthState(appContext)
+    }
+
+    private fun AuthState.toStoredTokens() = StoredTokens(accessToken, refreshToken, accessTokenExpirationTime)
+
+    private fun session(appContext: Context): TournesolSession<TokenResponse> = session ?: synchronized(this) {
+        session ?: TournesolSession(AuthStateTokenStore(appContext), ::refreshBlocking)
+            .also { session = it }
+    }
+
+    private fun refreshBlocking(refreshToken: String): RefreshResult<TokenResponse> = performTokenRefresh(refreshToken)
+        .map<RefreshResult<TokenResponse>> { RefreshResult.Success(it) }
+        .onErrorReturn { classifyRefreshError(it) }
+        .blockingGet()
+
+    private fun getAuthStatePrefs(
+        context: Context,
+        resetIfUnreadable: Boolean = false
+    ): SharedPreferences? {
+        authStatePrefs?.let { return it }
+        return synchronized(this) {
+            authStatePrefs
+                ?: openAuthStatePrefs(context.applicationContext, resetIfUnreadable)
+                    ?.also { authStatePrefs = it }
+        }
+    }
+
+    private fun openAuthStatePrefs(
+        appContext: Context,
+        resetIfUnreadable: Boolean
+    ): SharedPreferences? {
         val encryptedPrefs = try {
             createEncryptedAuthPrefs(appContext)
         } catch (firstFailure: Exception) {
+            if (!resetIfUnreadable) {
+                Log.w(TAG, "Encrypted auth prefs are unavailable.", firstFailure)
+                return null
+            }
             Log.w(TAG, "Encrypted auth prefs are unreadable. Resetting auth storage.", firstFailure)
             clearAuthStateStorage(appContext)
             try {
@@ -105,7 +161,7 @@ object TournesolAuthManager {
     }
 
     fun saveUsername(context: Context, username: String) {
-        val prefs = getAuthStatePrefs(context) ?: return
+        val prefs = getAuthStatePrefs(context, resetIfUnreadable = true) ?: return
         prefs.edit().putString(SHARED_PREF_USERNAME, username).apply()
     }
 
@@ -131,6 +187,15 @@ object TournesolAuthManager {
     fun incrementComparisonCount(context: Context) {
         val current = getComparisonCount(context) ?: return
         saveComparisonCount(context, current + 1)
+    }
+
+    fun loadProfile(context: Context): Single<TournesolProfile> {
+        val appContext = context.applicationContext
+        return Single
+            .fromCallable {
+                TournesolProfile(getUsername(appContext), getComparisonCount(appContext))
+            }
+            .subscribeOn(Schedulers.io())
     }
 
     fun getDailyComparisons(context: Context): Int {
@@ -162,7 +227,7 @@ object TournesolAuthManager {
     }
 
     fun saveAuthState(context: Context, authState: AuthState) {
-        val prefs = getAuthStatePrefs(context) ?: return
+        val prefs = getAuthStatePrefs(context, resetIfUnreadable = true) ?: return
         prefs.edit().putString(SHARED_PREF_AUTH_STATE, authState.jsonSerializeString()).apply()
     }
 
@@ -190,32 +255,14 @@ object TournesolAuthManager {
         context: Context,
         minTtlMs: Long = DEFAULT_MIN_TTL_MS
     ): Maybe<String> {
-        val authState = getAuthState(context) ?: return Maybe.empty()
-        val token = authState.accessToken
-        val expirationTime = authState.accessTokenExpirationTime
-        val now = System.currentTimeMillis()
-        val needsRefresh = token.isNullOrBlank() ||
-            (expirationTime != null && expirationTime <= now + minTtlMs)
-        if (!needsRefresh) {
-            return Maybe.just(token)
-        }
-
-        val refreshToken = authState.refreshToken
-        if (refreshToken.isNullOrBlank()) {
-            return Maybe.empty()
-        }
-
-        return performTokenRefresh(refreshToken)
-            .flatMapMaybe { tokenResponse ->
-                authState.update(tokenResponse, null)
-                saveAuthState(context, authState)
-                val refreshedToken = authState.accessToken
-                if (refreshedToken.isNullOrBlank()) {
-                    Maybe.empty()
-                } else {
-                    Maybe.just(refreshedToken)
-                }
+        val appContext = context.applicationContext
+        return Maybe.fromCallable {
+            when (val result = session(appContext).validToken(minTtlMs)) {
+                is AccessTokenResult.Token -> result.value
+                AccessTokenResult.LoggedOut -> null
+                is AccessTokenResult.Failed -> throw result.cause
             }
+        }
     }
 
     fun performPasswordLogin(username: String, password: String): Single<TokenResponse> {
