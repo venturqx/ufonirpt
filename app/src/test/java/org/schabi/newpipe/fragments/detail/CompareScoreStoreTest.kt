@@ -1,6 +1,9 @@
 package org.schabi.newpipe.fragments.detail
 
 import com.grack.nanojson.JsonParser
+import java.util.concurrent.Callable
+import java.util.concurrent.Executors
+import java.util.concurrent.TimeUnit
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNull
@@ -349,7 +352,85 @@ class CompareScoreStoreTest {
         assertNull(reloaded.scoresFor(PLAIN_KEY))
     }
 
+    @Test
+    fun `clear can be called twice`() {
+        val backend = FakeBackend(submitted = setOf(PLAIN_STORED), scores = LEGACY_SCORES)
+        val store = CompareScoreStore(backend)
+
+        store.clear()
+        store.clear()
+
+        assertFalse(store.isSubmitted(PLAIN_KEY))
+        assertEquals(emptySet<String>(), backend.submitted)
+        assertEquals("{}", backend.scores)
+    }
+
+    @Test
+    fun `concurrent writers lose no update`() {
+        val backend = FakeBackend()
+        val store = CompareScoreStore(backend)
+        val keysByWriter = List(WRITERS) { writer ->
+            List(KEYS_PER_WRITER) { CompareKey("writer$writer", "key$it") }
+        }
+
+        runConcurrently(
+            keysByWriter.map { keys ->
+                Callable {
+                    keys.forEach { key ->
+                        store.markSubmitted(key)
+                        store.recordScores(key, mainScore = 1)
+                    }
+                }
+            }
+        )
+
+        val reloaded = CompareScoreStore(backend)
+        keysByWriter.flatten().forEach { key ->
+            assertTrue(reloaded.isSubmitted(key))
+            assertEquals(ComparisonScores(mainScore = 1), reloaded.scoresFor(key))
+        }
+        assertEquals(WRITERS * KEYS_PER_WRITER, backend.submittedWrites)
+        assertEquals(WRITERS * KEYS_PER_WRITER, backend.scoresWrites)
+    }
+
+    @Test
+    fun `clear from another thread does not break concurrent writers`() {
+        val backend = FakeBackend()
+        val store = CompareScoreStore(backend)
+        val keys = List(KEYS_PER_WRITER) { CompareKey("writer", "key$it") }
+        val writers = List(WRITERS) {
+            Callable {
+                keys.forEach { key ->
+                    store.markSubmitted(key)
+                    store.recordScores(key, mainScore = 1)
+                    store.isSubmitted(key)
+                    store.scoresFor(key)
+                    store.forget(key)
+                }
+            }
+        }
+        val clearer = Callable { repeat(KEYS_PER_WRITER) { store.clear() } }
+
+        runConcurrently(writers + clearer)
+
+        store.clear()
+        assertEquals(emptySet<String>(), backend.submitted)
+        assertEquals("{}", backend.scores)
+    }
+
+    private fun runConcurrently(tasks: List<Callable<Unit>>) {
+        val pool = Executors.newFixedThreadPool(tasks.size)
+        try {
+            pool.invokeAll(tasks, 30, TimeUnit.SECONDS).forEach { it.get() }
+        } finally {
+            pool.shutdownNow()
+        }
+    }
+
     private companion object {
+        const val WRITERS = 4
+        const val KEYS_PER_WRITER = 100
+
         val SLASH_KEY = CompareKey("yt:aaa???", "yt:b>>>")
         val PLAIN_KEY = CompareKey("yt:dQw4w9WgXcQ", "yt:jNQXAC9IVRw")
         val EXTRAS_KEY = CompareKey("yt:only", "yt:extras")

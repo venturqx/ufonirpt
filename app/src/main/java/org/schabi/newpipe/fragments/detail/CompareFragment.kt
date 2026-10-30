@@ -47,6 +47,7 @@ class CompareFragment : Fragment() {
     private var embedInDetail = false
     private var externalScroll = false
     private val disposables = CompositeDisposable()
+    private val authDisposables = CompositeDisposable()
 
     private var currentHistoryEntry: StreamHistoryEntry? = null
     private var historyEntries by mutableStateOf<List<StreamHistoryEntry>>(emptyList())
@@ -89,6 +90,7 @@ class CompareFragment : Fragment() {
     private var dailyComparisons by mutableStateOf<Int?>(null)
     private var username by mutableStateOf<String?>(null)
     private var comparisonCount by mutableStateOf<Int?>(null)
+    private var profileDisposable: Disposable? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -105,6 +107,11 @@ class CompareFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+        disposables.add(
+            TournesolAuthManager.signedOut()
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe { onSignedOut() }
+        )
         val historyRecordManager = HistoryRecordManager(requireContext())
         if (isHistoryEnabled()) {
             val historySource = historyRecordManager.getStreamHistorySortedById()
@@ -240,16 +247,14 @@ class CompareFragment : Fragment() {
 
     override fun onDestroyView() {
         disposables.clear()
+        cancelAuthenticatedWork()
         loginDisposable?.dispose()
         loginDisposable = null
-        recommendationsDisposable?.dispose()
-        recommendationsDisposable = null
-        checkDisposable?.dispose()
-        checkDisposable = null
-        suggestionsDisposable?.dispose()
-        suggestionsDisposable = null
+        loginInProgress = false
         weeklyStatsDisposable?.dispose()
         weeklyStatsDisposable = null
+        profileDisposable?.dispose()
+        profileDisposable = null
         // Drop the large lists so a kept Fragment instance does not pin them in heap.
         // currentInfo, currentHistoryEntry and stored scores are small, set only in
         // onCreate/applyStored..., and must survive for a recreated view.
@@ -261,6 +266,29 @@ class CompareFragment : Fragment() {
         suggestionPool.clear()
         compactPairSelection = null
         super.onDestroyView()
+    }
+
+    private fun onSignedOut() {
+        cancelAuthenticatedWork()
+        scoreStore.clear()
+        resetSelectionState()
+        refreshSubmittedState()
+        refreshUserInfo()
+    }
+
+    private fun cancelAuthenticatedWork() {
+        authDisposables.clear()
+        submitInProgress = false
+        changeInProgress = false
+        submitMoreInProgress = false
+        recommendationsDisposable?.dispose()
+        recommendationsDisposable = null
+        recommendationsLoading = false
+        checkDisposable?.dispose()
+        checkDisposable = null
+        suggestionsDisposable?.dispose()
+        suggestionsDisposable = null
+        suggestionsLoading = false
     }
 
     private fun prepareHistory(entries: List<StreamHistoryEntry>): PreparedHistory {
@@ -700,8 +728,9 @@ class CompareFragment : Fragment() {
             return
         }
         val key = compareKeyForSelection() ?: return
+        val newScore = score
         val storedScore = scoreStore.scoresFor(key)?.mainScore
-        if (storedScore != null && storedScore == score) {
+        if (storedScore != null && storedScore == newScore) {
             return
         }
 
@@ -712,11 +741,11 @@ class CompareFragment : Fragment() {
                     token,
                     key.entityA,
                     key.entityB,
-                    listOf(CriteriaScore("largely_recommended", score))
+                    listOf(CriteriaScore("largely_recommended", newScore))
                 )
             },
             onResult = {
-                storeSubmittedScores(key, mainScore = score)
+                storeSubmittedScores(key, mainScore = newScore)
                 Toast.makeText(
                     requireContext(),
                     getString(R.string.compare_score_updated),
@@ -768,8 +797,9 @@ class CompareFragment : Fragment() {
             return
         }
 
+        val newExtraScores = extraScores
         val criteriaScores = EXTRA_CRITERIA.map { criterion ->
-            CriteriaScore(criterion.id, extraScores[criterion.id] ?: 0)
+            CriteriaScore(criterion.id, newExtraScores[criterion.id] ?: 0)
         }
 
         val entities = entitiesForLeftRight(currentUid, lastUid)
@@ -787,7 +817,7 @@ class CompareFragment : Fragment() {
             onResult = { messageRes ->
                 storeSubmittedScores(
                     CompareKey(entities.entityA, entities.entityB),
-                    extraScores = extraScores
+                    extraScores = newExtraScores
                 )
                 Toast.makeText(
                     requireContext(),
@@ -804,7 +834,7 @@ class CompareFragment : Fragment() {
         onResult: (T) -> Unit
     ) {
         inProgress.set(true)
-        disposables.add(
+        authDisposables.add(
             TournesolAuthManager.getValidAccessToken(requireContext())
                 .orMissingToken()
                 .flatMap { token -> request(token) }
@@ -1247,9 +1277,17 @@ class CompareFragment : Fragment() {
 
     fun refreshUserInfo() {
         val ctx = context ?: return
-        username = TournesolAuthManager.getUsername(ctx)
-        comparisonCount = TournesolAuthManager.getComparisonCount(ctx)
-        dailyComparisons = TournesolAuthManager.getDailyComparisons(ctx)
+        profileDisposable?.dispose()
+        profileDisposable = TournesolAuthManager.loadProfile(ctx)
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(
+                { profile ->
+                    username = profile.username
+                    comparisonCount = profile.comparisonCount
+                    dailyComparisons = profile.dailyComparisons
+                },
+                { /* keep the last known profile on read errors */ }
+            )
     }
 
     companion object {

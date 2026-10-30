@@ -106,6 +106,7 @@ import org.schabi.newpipe.player.playqueue.PlayQueue
 import org.schabi.newpipe.player.playqueue.SinglePlayQueue
 import org.schabi.newpipe.player.ui.MainPlayerUi
 import org.schabi.newpipe.player.ui.VideoPlayerUi
+import org.schabi.newpipe.settings.tabs.TabsJsonHelper
 import org.schabi.newpipe.util.DependentPreferenceHelper
 import org.schabi.newpipe.util.DeviceUtils
 import org.schabi.newpipe.util.ExtractorHelper
@@ -316,7 +317,10 @@ class VideoDetailFragment :
         showComments = prefs.getBoolean(getString(R.string.show_comments_key), true)
         showRelatedItems = prefs.getBoolean(getString(R.string.show_next_video_key), true)
         showDescription = prefs.getBoolean(getString(R.string.show_description_key), true)
-        val defaultTabValue = prefs.getString(getString(R.string.default_tab_key), "LIVE")
+        val defaultTabValue = prefs.getString(
+            getString(R.string.default_tab_key),
+            TabsJsonHelper.DEFAULT_TAB_VALUE
+        )
         isTournesolTab = "TOURNESOL" == defaultTabValue
         selectedTabTag = prefs.getString(
             getString(R.string.stream_info_selected_tab_key),

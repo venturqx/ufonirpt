@@ -1,6 +1,7 @@
 package org.schabi.newpipe.settings.tabs;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static java.util.Objects.requireNonNull;
@@ -208,6 +209,81 @@ public class TabsJsonHelperTest {
 
             assertEquals(name, expectedFirst, TabsJsonHelper.getDefaultTabsFor(name).get(0));
         }
+    }
+
+    @Test
+    public void testSelectableTypeFromResolvesEveryDefaultTabValue() {
+        for (final String value : DEFAULT_TAB_VALUES) {
+            assertEquals(value, Tab.Type.valueOf(value), TabsJsonHelper.selectableTypeFrom(value));
+        }
+        assertEquals(Tab.Type.COMPARE, TabsJsonHelper.selectableTypeFrom("COMPARE"));
+    }
+
+    @Test
+    public void testSelectableTypeFromIsNullForUnknownValues() {
+        assertNull(TabsJsonHelper.selectableTypeFrom(null));
+        assertNull(TabsJsonHelper.selectableTypeFrom(""));
+        assertNull(TabsJsonHelper.selectableTypeFrom("UNKNOWN"));
+        assertNull(TabsJsonHelper.selectableTypeFrom("live"));
+
+        for (final Tab.Type type : Tab.Type.values()) {
+            final String name = type.name();
+            if (!DEFAULT_TAB_VALUES.contains(name) && !"COMPARE".equals(name)) {
+                assertNull(name, TabsJsonHelper.selectableTypeFrom(name));
+            }
+        }
+    }
+
+    @Test
+    public void testDefaultTabValueIsSelectable() {
+        assertEquals(Tab.Type.TOURNESOL,
+                TabsJsonHelper.selectableTypeFrom(TabsJsonHelper.DEFAULT_TAB_VALUE));
+    }
+
+    @Test
+    public void testReadDropsRepeatedSelectableTabKeepingFirstOccurrence()
+            throws TabsJsonHelper.InvalidJsonException {
+        assertEquals(tabsOf(Tab.Type.SUBSCRIPTIONS, Tab.Type.COMPARE,
+                        Tab.Type.BOOKMARKS, Tab.Type.MANIFESTO),
+                readBack(tabsOf(Tab.Type.SUBSCRIPTIONS, Tab.Type.COMPARE,
+                        Tab.Type.SUBSCRIPTIONS, Tab.Type.BOOKMARKS, Tab.Type.MANIFESTO)));
+        assertEquals(tabsOf(Tab.Type.COMPARE, Tab.Type.SUBSCRIPTIONS,
+                        Tab.Type.BOOKMARKS, Tab.Type.MANIFESTO),
+                readBack(tabsOf(Tab.Type.COMPARE, Tab.Type.COMPARE,
+                        Tab.Type.SUBSCRIPTIONS, Tab.Type.BOOKMARKS, Tab.Type.MANIFESTO)));
+        assertEquals(tabsOf(Tab.Type.FEED, Tab.Type.SUBSCRIPTIONS, Tab.Type.BOOKMARKS),
+                readBack(tabsOf(Tab.Type.FEED, Tab.Type.FEED,
+                        Tab.Type.SUBSCRIPTIONS, Tab.Type.BOOKMARKS)));
+    }
+
+    @Test
+    public void testReadDropsRepeatedSelectableTabAfterReordering()
+            throws TabsJsonHelper.InvalidJsonException {
+        assertEquals(tabsOf(Tab.Type.MANIFESTO, Tab.Type.BOOKMARKS, Tab.Type.COMPARE),
+                readBack(tabsOf(Tab.Type.MANIFESTO, Tab.Type.BOOKMARKS,
+                        Tab.Type.COMPARE, Tab.Type.BOOKMARKS)));
+    }
+
+    @Test
+    public void testReadKeepsLegitimateEntries() throws TabsJsonHelper.InvalidJsonException {
+        final Tab channel = new Tab.ChannelTab(666, "https://example.org", "testName");
+        final Tab kiosk = new Tab.KioskTab(123, "trending_key");
+        final Tab localPlaylist = new Tab.PlaylistTab(1L, "playlist");
+        final Tab feedGroup = new Tab.FeedGroupTab(1L, "x", 123);
+
+        final List<Tab> tabs = Arrays.asList(
+                Tab.Type.TOURNESOL.getTab(), channel, channel, kiosk, kiosk,
+                localPlaylist, localPlaylist, feedGroup, feedGroup,
+                Tab.Type.BLANK.getTab(), Tab.Type.BLANK.getTab(),
+                Tab.Type.MANIFESTO.getTab(), Tab.Type.MANIFESTO.getTab(),
+                Tab.Type.COMPARE.getTab(), Tab.Type.SUBSCRIPTIONS.getTab());
+
+        assertEquals(tabs, readBack(tabs));
+    }
+
+    private static List<Tab> readBack(final List<Tab> tabs)
+            throws TabsJsonHelper.InvalidJsonException {
+        return TabsJsonHelper.getTabsFromJson(null, TabsJsonHelper.getJsonToSave(tabs));
     }
 
     private static List<Tab> tabsOf(final Tab.Type... types) {

@@ -16,6 +16,7 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.PluralsRes;
+import androidx.annotation.RequiresApi;
 import androidx.annotation.StringRes;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.core.content.ContextCompat;
@@ -68,6 +69,12 @@ import java.util.stream.Collectors;
 public final class Localization {
     private static final String TAG = Localization.class.toString();
     public static final String DOT_SEPARATOR = " • ";
+    private static final LocaleKeyedCache<NumberFormat> NUMBER_FORMATS =
+            new LocaleKeyedCache<>(NumberFormat::getInstance);
+    @RequiresApi(Build.VERSION_CODES.N)
+    private static final LocaleKeyedCache<CompactDecimalFormat> COMPACT_FORMATS =
+            new LocaleKeyedCache<>(locale -> CompactDecimalFormat.getInstance(locale,
+                    CompactDecimalFormat.CompactStyle.SHORT));
     private static PrettyTime prettyTime;
 
     private Localization() { }
@@ -168,7 +175,7 @@ public final class Localization {
     }
 
     public static String localizeNumber(final double number) {
-        return NumberFormat.getInstance(getAppLocale()).format(number);
+        return NUMBER_FORMATS.get(getAppLocale()).format(number);
     }
 
     public static String formatDate(@NonNull final OffsetDateTime offsetDateTime) {
@@ -225,8 +232,7 @@ public final class Localization {
 
     public static String shortCount(@NonNull final Context context, final long count) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            return CompactDecimalFormat.getInstance(getAppLocale(),
-                    CompactDecimalFormat.CompactStyle.SHORT).format(count);
+            return COMPACT_FORMATS.get(getAppLocale()).format(count);
         }
 
         final double value = (double) count;

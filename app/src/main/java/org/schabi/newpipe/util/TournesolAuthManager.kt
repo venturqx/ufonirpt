@@ -7,8 +7,10 @@ import androidx.preference.PreferenceManager
 import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKeys
 import io.reactivex.rxjava3.core.Maybe
+import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.schedulers.Schedulers
+import io.reactivex.rxjava3.subjects.PublishSubject
 import java.io.File
 import java.util.concurrent.TimeUnit
 import net.openid.appauth.AuthState
@@ -17,8 +19,13 @@ import net.openid.appauth.TokenRequest
 import net.openid.appauth.TokenResponse
 import okhttp3.OkHttpClient
 import org.schabi.newpipe.DownloaderImpl
+import org.schabi.newpipe.fragments.detail.CompareScoreStore
 
-data class TournesolProfile(val username: String?, val comparisonCount: Int?)
+data class TournesolProfile(
+    val username: String?,
+    val comparisonCount: Int?,
+    val dailyComparisons: Int
+)
 
 class MissingTokenException : RuntimeException()
 
@@ -41,6 +48,8 @@ object TournesolAuthManager {
 
     @Volatile
     private var session: TournesolSession<TokenResponse>? = null
+
+    private val signedOutEvents = PublishSubject.create<Unit>().toSerialized()
 
     private class AuthStateTokenStore(
         private val appContext: Context
@@ -190,38 +199,51 @@ object TournesolAuthManager {
         val appContext = context.applicationContext
         return Single
             .fromCallable {
-                TournesolProfile(getUsername(appContext), getComparisonCount(appContext))
+                TournesolProfile(
+                    getUsername(appContext),
+                    getComparisonCount(appContext),
+                    getDailyComparisons(appContext)
+                )
             }
             .subscribeOn(Schedulers.io())
     }
 
-    fun getDailyComparisons(context: Context): Int {
+    private fun getDailyComparisons(context: Context): Int {
         val prefs = getAuthStatePrefs(context) ?: return 0
-        val currentCount = getComparisonCount(context) ?: return 0
-        val today = java.time.LocalDate.now().toString()
-        val storedDate = prefs.getString(SHARED_PREF_DAILY_BASELINE_DATE, null)
-        if (storedDate == today) {
-            val baseline = prefs.getInt(SHARED_PREF_DAILY_BASELINE_COUNT, currentCount)
-            return (currentCount - baseline).coerceAtLeast(0)
+        val progress = dailyProgress(
+            currentCount = getComparisonCount(context),
+            today = java.time.LocalDate.now().toString(),
+            storedDate = prefs.getString(SHARED_PREF_DAILY_BASELINE_DATE, null),
+            storedCount = if (prefs.contains(SHARED_PREF_DAILY_BASELINE_COUNT)) {
+                prefs.getInt(SHARED_PREF_DAILY_BASELINE_COUNT, 0)
+            } else {
+                null
+            }
+        )
+        progress.baselineToPersist?.let { baseline ->
+            prefs.edit()
+                .putString(SHARED_PREF_DAILY_BASELINE_DATE, baseline.date)
+                .putInt(SHARED_PREF_DAILY_BASELINE_COUNT, baseline.count)
+                .apply()
         }
-        // New day: reset baseline to current count
-        prefs.edit()
-            .putString(SHARED_PREF_DAILY_BASELINE_DATE, today)
-            .putInt(SHARED_PREF_DAILY_BASELINE_COUNT, currentCount)
-            .apply()
-        return 0
+        return progress.count
     }
 
     fun clearAuthState(context: Context) {
-        val prefs = getAuthStatePrefs(context) ?: return
-        prefs.edit()
-            .remove(SHARED_PREF_AUTH_STATE)
-            .remove(SHARED_PREF_USERNAME)
-            .remove(SHARED_PREF_COMPARISON_COUNT)
-            .remove(SHARED_PREF_DAILY_BASELINE_DATE)
-            .remove(SHARED_PREF_DAILY_BASELINE_COUNT)
-            .apply()
+        getAuthStatePrefs(context)?.let { prefs ->
+            prefs.edit()
+                .remove(SHARED_PREF_AUTH_STATE)
+                .remove(SHARED_PREF_USERNAME)
+                .remove(SHARED_PREF_COMPARISON_COUNT)
+                .remove(SHARED_PREF_DAILY_BASELINE_DATE)
+                .remove(SHARED_PREF_DAILY_BASELINE_COUNT)
+                .apply()
+        }
+        CompareScoreStore.shared(context).clear()
+        signedOutEvents.onNext(Unit)
     }
+
+    fun signedOut(): Observable<Unit> = signedOutEvents.observeOn(Schedulers.io())
 
     fun saveAuthState(context: Context, authState: AuthState) {
         val prefs = getAuthStatePrefs(context, resetIfUnreadable = true) ?: return

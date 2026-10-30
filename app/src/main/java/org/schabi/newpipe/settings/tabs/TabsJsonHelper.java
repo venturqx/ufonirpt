@@ -26,6 +26,8 @@ import java.util.stream.Stream;
  * Class to get a JSON representation of a list of tabs, and the other way around.
  */
 public final class TabsJsonHelper {
+    public static final String DEFAULT_TAB_VALUE = Tab.Type.TOURNESOL.name();
+
     private static final String JSON_TABS_ARRAY_KEY = "tabs";
 
     private static final List<Tab> FALLBACK_INITIAL_TABS_LIST = List.of(
@@ -48,6 +50,7 @@ public final class TabsJsonHelper {
             Tab.Type.TRENDING_MUSIC,
             Tab.Type.TRENDING_MOVIES,
             Tab.Type.TOURNESOL,
+            Tab.Type.LIVE,
             Tab.Type.COMPARE);
 
     private TabsJsonHelper() { }
@@ -82,15 +85,25 @@ public final class TabsJsonHelper {
 
             final JsonArray tabsArray = outerJsonObject.getArray(JSON_TABS_ARRAY_KEY, null);
 
-            final var returnTabs = tabsArray.streamAsJsonObjects()
+            final var returnTabs = dropRepeatedSelectableTabs(tabsArray.streamAsJsonObjects()
                     .map(Tab::from)
                     .filter(Objects::nonNull)
-                    .collect(Collectors.toUnmodifiableList());
+                    .collect(Collectors.toUnmodifiableList()));
 
             return returnTabs.isEmpty() ? getDefaultTabs(context) : returnTabs;
         } catch (final JsonParserException e) {
             throw new InvalidJsonException(e);
         }
+    }
+
+    private static List<Tab> dropRepeatedSelectableTabs(final List<Tab> tabs) {
+        final Set<Tab.Type> seen = EnumSet.noneOf(Tab.Type.class);
+        return tabs.stream()
+                .filter(tab -> {
+                    final Tab.Type type = Tab.typeFrom(tab.getTabId());
+                    return !SELECTABLE_FIRST_TYPES.contains(type) || seen.add(type);
+                })
+                .collect(Collectors.toUnmodifiableList());
     }
 
     /**
@@ -122,15 +135,20 @@ public final class TabsJsonHelper {
 
         final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         final String defaultTabKey = context.getString(R.string.default_tab_key);
-        return getDefaultTabsFor(prefs.getString(defaultTabKey, "LIVE"));
+        return getDefaultTabsFor(prefs.getString(defaultTabKey, DEFAULT_TAB_VALUE));
+    }
+
+    @Nullable
+    public static Tab.Type selectableTypeFrom(@Nullable final String selectedType) {
+        return SELECTABLE_FIRST_TYPES.stream()
+                .filter(type -> type.name().equals(selectedType))
+                .findFirst()
+                .orElse(null);
     }
 
     static List<Tab> getDefaultTabsFor(@Nullable final String selectedType) {
-        final Tab firstTab = SELECTABLE_FIRST_TYPES.stream()
-                .filter(type -> type.name().equals(selectedType))
-                .findFirst()
-                .orElse(Tab.Type.LIVE)
-                .getTab();
+        final Tab.Type selectable = selectableTypeFrom(selectedType);
+        final Tab firstTab = (selectable == null ? Tab.Type.LIVE : selectable).getTab();
 
         return Stream.concat(Stream.of(firstTab), TABS_AFTER_FIRST.stream())
                 .distinct()

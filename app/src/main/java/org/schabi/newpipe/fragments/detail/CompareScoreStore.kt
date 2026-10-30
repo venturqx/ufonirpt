@@ -75,16 +75,20 @@ internal class CompareScoreStore(private val backend: CompareScoreBackend) {
         .mapNotNullTo(LinkedHashSet<CompareKey>(), ::parseCompareKey)
     private val scores = parseScores(backend.readScores()).toMutableMap()
 
+    @Synchronized
     fun isSubmitted(key: CompareKey): Boolean = key in submitted
 
+    @Synchronized
     fun markSubmitted(key: CompareKey) {
         if (submitted.add(key)) {
             saveSubmitted()
         }
     }
 
+    @Synchronized
     fun scoresFor(key: CompareKey): ComparisonScores? = scores[key]
 
+    @Synchronized
     fun recordScores(
         key: CompareKey,
         mainScore: Int? = null,
@@ -102,6 +106,7 @@ internal class CompareScoreStore(private val backend: CompareScoreBackend) {
         return merged
     }
 
+    @Synchronized
     fun forget(key: CompareKey) {
         if (submitted.remove(key)) {
             saveSubmitted()
@@ -111,6 +116,7 @@ internal class CompareScoreStore(private val backend: CompareScoreBackend) {
         }
     }
 
+    @Synchronized
     fun clear() {
         submitted.clear()
         scores.clear()
