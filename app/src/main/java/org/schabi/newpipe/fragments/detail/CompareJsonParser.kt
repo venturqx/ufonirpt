@@ -97,7 +97,7 @@ internal object CompareJsonParser {
     }
 
     fun buildFallbackVideoUrl(uid: String): String? {
-        val videoId = extractYouTubeId(uid) ?: return null
+        val videoId = TournesolUid.parse(uid)?.youTubeId ?: return null
         return "https://www.youtube.com/watch?v=$videoId"
     }
 
@@ -270,16 +270,8 @@ internal object CompareJsonParser {
     }
 
     private fun buildFallbackThumbnailUrl(uid: String): String? {
-        val videoId = extractYouTubeId(uid) ?: return null
+        val videoId = TournesolUid.parse(uid)?.youTubeId ?: return null
         return "https://i.ytimg.com/vi/$videoId/hqdefault.jpg"
-    }
-
-    private fun extractYouTubeId(uid: String): String? {
-        if (!uid.startsWith("yt:")) {
-            return null
-        }
-        val videoId = uid.removePrefix("yt:").trim()
-        return videoId.takeIf { it.isNotEmpty() }
     }
 
     private fun JsonObject.optNullableInt(name: String): Int? {

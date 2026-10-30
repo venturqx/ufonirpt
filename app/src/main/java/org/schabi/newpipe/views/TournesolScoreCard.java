@@ -37,7 +37,6 @@ import org.schabi.newpipe.util.TournesolRating;
 import org.schabi.newpipe.util.TournesolScoreCache;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
@@ -50,61 +49,6 @@ public class TournesolScoreCard extends LinearLayout {
 
     private static final int TOURNESOL_SCORE_COLOR = Color.parseColor("#FFCA1D");
     private static final int CHART_HEIGHT_DP = 28;
-
-    private static final Map<String, Integer> CRITERIA_LABEL_MAP;
-    private static final Map<String, Integer> CRITERIA_ICON_MAP;
-    private static final Map<String, Integer> CRITERIA_DESCRIPTION_MAP;
-    private static final Map<String, Integer> CRITERIA_COLOR_MAP;
-
-    static {
-        final Map<String, Integer> labels = new LinkedHashMap<>();
-        labels.put("reliability", R.string.tournesol_criteria_reliability);
-        labels.put("pedagogy", R.string.tournesol_criteria_pedagogy);
-        labels.put("importance", R.string.tournesol_criteria_importance);
-        labels.put("layman_friendly", R.string.tournesol_criteria_layman_friendly);
-        labels.put("entertaining_relaxing", R.string.tournesol_criteria_entertaining_relaxing);
-        labels.put("engaging", R.string.tournesol_criteria_engaging);
-        labels.put("diversity_inclusion", R.string.tournesol_criteria_diversity_inclusion);
-        labels.put("better_habits", R.string.tournesol_criteria_better_habits);
-        labels.put("backfire_risk", R.string.tournesol_criteria_backfire_risk);
-        CRITERIA_LABEL_MAP = Collections.unmodifiableMap(labels);
-
-        final Map<String, Integer> icons = new LinkedHashMap<>();
-        icons.put("reliability", R.drawable.reliability);
-        icons.put("pedagogy", R.drawable.pedagogy);
-        icons.put("importance", R.drawable.importance);
-        icons.put("layman_friendly", R.drawable.layman_friendly);
-        icons.put("entertaining_relaxing", R.drawable.entertaining_relaxing);
-        icons.put("engaging", R.drawable.engaging);
-        icons.put("diversity_inclusion", R.drawable.diversity_inclusion);
-        icons.put("better_habits", R.drawable.better_habits);
-        icons.put("backfire_risk", R.drawable.backfire_risk);
-        CRITERIA_ICON_MAP = Collections.unmodifiableMap(icons);
-
-        final Map<String, Integer> descs = new LinkedHashMap<>();
-        descs.put("reliability", R.string.compare_criteria_desc_reliability);
-        descs.put("pedagogy", R.string.compare_criteria_desc_pedagogy);
-        descs.put("importance", R.string.compare_criteria_desc_importance);
-        descs.put("layman_friendly", R.string.compare_criteria_desc_layman_friendly);
-        descs.put("entertaining_relaxing", R.string.compare_criteria_desc_entertaining_relaxing);
-        descs.put("engaging", R.string.compare_criteria_desc_engaging);
-        descs.put("diversity_inclusion", R.string.compare_criteria_desc_diversity_inclusion);
-        descs.put("better_habits", R.string.compare_criteria_desc_better_habits);
-        descs.put("backfire_risk", R.string.compare_criteria_desc_backfire_risk);
-        CRITERIA_DESCRIPTION_MAP = Collections.unmodifiableMap(descs);
-
-        final Map<String, Integer> colors = new LinkedHashMap<>();
-        colors.put("reliability", Color.parseColor("#4F77DD"));
-        colors.put("pedagogy", Color.parseColor("#C28BED"));
-        colors.put("importance", Color.parseColor("#DC8A5D"));
-        colors.put("layman_friendly", Color.parseColor("#4BB061"));
-        colors.put("entertaining_relaxing", Color.parseColor("#D8B36D"));
-        colors.put("engaging", Color.parseColor("#DFC642"));
-        colors.put("diversity_inclusion", Color.parseColor("#76C6CB"));
-        colors.put("better_habits", Color.parseColor("#9DD654"));
-        colors.put("backfire_risk", Color.parseColor("#D37A80"));
-        CRITERIA_COLOR_MAP = Collections.unmodifiableMap(colors);
-    }
 
     private final Map<String, CriterionDistribution> criteriaDistributions = new LinkedHashMap<>();
     private final CompositeDisposable disposables = new CompositeDisposable();
@@ -238,28 +182,18 @@ public class TournesolScoreCard extends LinearLayout {
         final List<CriterionEntry> entries = new ArrayList<>();
         for (final CriterionScore item : criteriaScores) {
             final String criteria = item.getCriteria();
-            final Integer labelRes = CRITERIA_LABEL_MAP.get(criteria);
-            final String label = labelRes != null
-                    ? getContext().getString(labelRes)
+            final TournesolCriterionStyle style = TournesolCriterionStyle.find(criteria);
+            final String label = style != null
+                    ? getContext().getString(style.getLabelRes())
                     : criteria.replace("_", " ");
             entries.add(new CriterionEntry(criteria, label, item.getScore()));
         }
 
-        final List<String> keyOrder = new ArrayList<>(CRITERIA_LABEL_MAP.keySet());
-        entries.sort((a, b) -> {
-            int ia = keyOrder.indexOf(a.id);
-            int ib = keyOrder.indexOf(b.id);
-            if (ia < 0) {
-                ia = Integer.MAX_VALUE;
-            }
-            if (ib < 0) {
-                ib = Integer.MAX_VALUE;
-            }
-            return Integer.compare(ia, ib);
-        });
+        final List<CriterionEntry> sortedEntries =
+                TournesolCriterionStyle.sortedByCatalogOrder(entries, entry -> entry.id);
 
-        if (!entries.isEmpty()) {
-            createLollipopChart(entries);
+        if (!sortedEntries.isEmpty()) {
+            createLollipopChart(sortedEntries);
         }
     }
 
@@ -267,9 +201,9 @@ public class TournesolScoreCard extends LinearLayout {
         final List<Drawable> icons = new ArrayList<>();
         final int iconSizePx = dpToPx(32);
         for (final CriterionEntry entry : entries) {
-            final Integer iconRes = CRITERIA_ICON_MAP.get(entry.id);
-            if (iconRes != null) {
-                final Drawable d = ContextCompat.getDrawable(getContext(), iconRes);
+            final TournesolCriterionStyle style = TournesolCriterionStyle.find(entry.id);
+            if (style != null) {
+                final Drawable d = ContextCompat.getDrawable(getContext(), style.getIconRes());
                 if (d != null) {
                     d.setBounds(0, 0, iconSizePx, iconSizePx);
                 }
@@ -285,8 +219,9 @@ public class TournesolScoreCard extends LinearLayout {
         final List<Drawable> icons = loadRadarIcons(entries);
         final int[] colors = new int[entries.size()];
         for (int i = 0; i < entries.size(); i++) {
-            final Integer c = CRITERIA_COLOR_MAP.get(entries.get(i).id);
-            colors[i] = c != null ? c : Color.WHITE;
+            final TournesolCriterionStyle style =
+                    TournesolCriterionStyle.find(entries.get(i).id);
+            colors[i] = style != null ? style.getColor() : Color.WHITE;
         }
 
         final LinearLayout wrapper = new LinearLayout(getContext());
@@ -339,14 +274,12 @@ public class TournesolScoreCard extends LinearLayout {
 
         lollipopView.setOnDimensionClickListener(index -> {
             final CriterionEntry entry = entries.get(index);
-            final Integer iconRes = CRITERIA_ICON_MAP.get(entry.id);
-            final Integer descRes = CRITERIA_DESCRIPTION_MAP.get(entry.id);
-            if (iconRes != null && descRes != null) {
-                descIcon.setImageResource(iconRes);
-                final Integer labelRes = CRITERIA_LABEL_MAP.get(entry.id);
-                final String title = labelRes != null
-                        ? getContext().getString(labelRes) : entry.label;
-                final String full = title + "\n" + getContext().getString(descRes);
+            final TournesolCriterionStyle style = TournesolCriterionStyle.find(entry.id);
+            if (style != null) {
+                descIcon.setImageResource(style.getIconRes());
+                final String title = getContext().getString(style.getLabelRes());
+                final String full = title + "\n"
+                        + getContext().getString(style.getDescriptionRes());
                 final SpannableString spannable = new SpannableString(full);
                 spannable.setSpan(new StyleSpan(Typeface.BOLD),
                         0, title.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);

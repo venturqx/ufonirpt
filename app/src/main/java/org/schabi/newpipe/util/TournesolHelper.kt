@@ -6,65 +6,6 @@ import java.util.LinkedHashSet
 import java.util.Locale
 import java.util.TimeZone
 
-enum class TournesolFilterCriterion(val apiKey: String, val prefKey: String) {
-    LARGELY_RECOMMENDED(
-        "largely_recommended",
-        TournesolHelper.PREF_TOURNESOL_FILTER_WEIGHT_LARGELY_RECOMMENDED
-    ),
-    RELIABILITY(
-        "reliability",
-        TournesolHelper.PREF_TOURNESOL_FILTER_WEIGHT_RELIABILITY
-    ),
-    IMPORTANCE(
-        "importance",
-        TournesolHelper.PREF_TOURNESOL_FILTER_WEIGHT_IMPORTANCE
-    ),
-    PEDAGOGY(
-        "pedagogy",
-        TournesolHelper.PREF_TOURNESOL_FILTER_WEIGHT_PEDAGOGY
-    ),
-    LAYMAN_FRIENDLY(
-        "layman_friendly",
-        TournesolHelper.PREF_TOURNESOL_FILTER_WEIGHT_LAYMAN_FRIENDLY
-    ),
-    ENTERTAINING_RELAXING(
-        "entertaining_relaxing",
-        TournesolHelper.PREF_TOURNESOL_FILTER_WEIGHT_ENTERTAINING_RELAXING
-    ),
-    ENGAGING(
-        "engaging",
-        TournesolHelper.PREF_TOURNESOL_FILTER_WEIGHT_ENGAGING
-    ),
-    DIVERSITY_INCLUSION(
-        "diversity_inclusion",
-        TournesolHelper.PREF_TOURNESOL_FILTER_WEIGHT_DIVERSITY_INCLUSION
-    ),
-    BETTER_HABITS(
-        "better_habits",
-        TournesolHelper.PREF_TOURNESOL_FILTER_WEIGHT_BETTER_HABITS
-    ),
-    BACKFIRE_RISK(
-        "backfire_risk",
-        TournesolHelper.PREF_TOURNESOL_FILTER_WEIGHT_BACKFIRE_RISK
-    )
-}
-
-data class TournesolFilterConfig(
-    val languages: List<String> = emptyList(),
-    val dateKey: String = TournesolHelper.DEFAULT_TOURNESOL_FILTER_DATE_KEY,
-    val includeLowScoreVideos: Boolean = TournesolHelper.DEFAULT_TOURNESOL_FILTER_INCLUDE_LOW_SCORE,
-    val durationMinSeconds: Int = TournesolHelper.DEFAULT_TOURNESOL_FILTER_DURATION_MIN,
-    val durationMaxSeconds: Int = TournesolHelper.DEFAULT_TOURNESOL_FILTER_DURATION_MAX,
-    val weights: Map<TournesolFilterCriterion, Int> = emptyMap()
-) {
-    fun weightFor(criterion: TournesolFilterCriterion): Int = weights[criterion] ?: TournesolHelper.DEFAULT_TOURNESOL_FILTER_WEIGHT
-
-    fun hasActiveAdvancedFilters(quickDateKeys: Set<String>): Boolean = !quickDateKeys.contains(dateKey) ||
-        durationMinSeconds >= 0 ||
-        durationMaxSeconds >= 0 ||
-        TournesolFilterCriterion.entries.any { weightFor(it) >= 0 }
-}
-
 object TournesolHelper {
     const val KIOSK_ID = "Tournesol"
     const val PREF_TOURNESOL_FILTER_LANGUAGES = "tournesol_filter_languages"
@@ -72,16 +13,6 @@ object TournesolHelper {
     const val PREF_TOURNESOL_FILTER_INCLUDE_LOW_SCORE = "tournesol_filter_include_low_score"
     const val PREF_TOURNESOL_FILTER_DURATION_MIN = "tournesol_filter_duration_min"
     const val PREF_TOURNESOL_FILTER_DURATION_MAX = "tournesol_filter_duration_max"
-    const val PREF_TOURNESOL_FILTER_WEIGHT_LARGELY_RECOMMENDED = "tournesol_filter_weight_largely_recommended"
-    const val PREF_TOURNESOL_FILTER_WEIGHT_RELIABILITY = "tournesol_filter_weight_reliability"
-    const val PREF_TOURNESOL_FILTER_WEIGHT_IMPORTANCE = "tournesol_filter_weight_importance"
-    const val PREF_TOURNESOL_FILTER_WEIGHT_PEDAGOGY = "tournesol_filter_weight_pedagogy"
-    const val PREF_TOURNESOL_FILTER_WEIGHT_LAYMAN_FRIENDLY = "tournesol_filter_weight_layman_friendly"
-    const val PREF_TOURNESOL_FILTER_WEIGHT_ENTERTAINING_RELAXING = "tournesol_filter_weight_entertaining_relaxing"
-    const val PREF_TOURNESOL_FILTER_WEIGHT_ENGAGING = "tournesol_filter_weight_engaging"
-    const val PREF_TOURNESOL_FILTER_WEIGHT_DIVERSITY_INCLUSION = "tournesol_filter_weight_diversity_inclusion"
-    const val PREF_TOURNESOL_FILTER_WEIGHT_BETTER_HABITS = "tournesol_filter_weight_better_habits"
-    const val PREF_TOURNESOL_FILTER_WEIGHT_BACKFIRE_RISK = "tournesol_filter_weight_backfire_risk"
 
     /**
      * Returns the default filter languages based on system locale:
@@ -192,6 +123,9 @@ object TournesolHelper {
             "day" -> cal.add(Calendar.DAY_OF_YEAR, -1)
             else -> return null
         }
+        cal.set(Calendar.MINUTE, 0)
+        cal.set(Calendar.SECOND, 0)
+        cal.set(Calendar.MILLISECOND, 0)
 
         val sdf = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.US)
         sdf.timeZone = utc

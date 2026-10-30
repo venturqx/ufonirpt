@@ -97,7 +97,6 @@ import org.schabi.newpipe.fragments.detail.COMPACT_MAIN_CRITERION_ID
 import org.schabi.newpipe.fragments.detail.CompareComparisonVideo
 import org.schabi.newpipe.fragments.detail.CompareCriterion
 import org.schabi.newpipe.fragments.detail.ComparePairSelection
-import org.schabi.newpipe.fragments.detail.CompareRepository
 import org.schabi.newpipe.fragments.detail.CompareSideLabel
 import org.schabi.newpipe.fragments.detail.CompareUiState
 import org.schabi.newpipe.fragments.detail.CompareVideoThumbnailCard
@@ -108,6 +107,7 @@ import org.schabi.newpipe.fragments.detail.SCORE_MAX
 import org.schabi.newpipe.fragments.detail.SCORE_MIN
 import org.schabi.newpipe.fragments.detail.SuggestedVideoThumbnail
 import org.schabi.newpipe.fragments.detail.TournesolLoginDialog
+import org.schabi.newpipe.fragments.detail.TournesolUid
 import org.schabi.newpipe.fragments.detail.dimensionScore
 import org.schabi.newpipe.fragments.detail.tightBorderGlow
 
@@ -235,17 +235,19 @@ internal fun CompareCompactScreen(
     val suggestedLeftUploader = state.suggestedLeft?.uploader.orEmpty()
     val suggestedRightTitle = state.suggestedRight?.title.orEmpty()
     val suggestedRightUploader = state.suggestedRight?.uploader.orEmpty()
-    fun suggestionServiceId(video: CompareComparisonVideo): Int {
-        return video.serviceId ?: CompareRepository.uidToServiceId(video.uid)
+    fun suggestionServiceId(video: CompareComparisonVideo): Int? {
+        return video.serviceId ?: TournesolUid.parse(video.uid)?.serviceId
     }
     val currentPairSelection = if (hasSuggestedLeft && hasSuggestedRight) {
         val leftUrl = state.suggestedLeft.videoUrl
         val rightUrl = state.suggestedRight.videoUrl
-        if (leftUrl != null && rightUrl != null && state.suggestedLeft.uid != state.suggestedRight.uid) {
+        val leftServiceId = suggestionServiceId(state.suggestedLeft)
+        val rightServiceId = suggestionServiceId(state.suggestedRight)
+        if (leftUrl != null && rightUrl != null && leftServiceId != null && rightServiceId != null && state.suggestedLeft.uid != state.suggestedRight.uid) {
             ComparePairSelection(
-                leftServiceId = suggestionServiceId(state.suggestedLeft),
+                leftServiceId = leftServiceId,
                 leftUrl = leftUrl,
-                rightServiceId = suggestionServiceId(state.suggestedRight),
+                rightServiceId = rightServiceId,
                 rightUrl = rightUrl
             )
         } else {
@@ -597,9 +599,10 @@ internal fun CompareCompactScreen(
                                             onLongClick = {
                                                 if (hasSuggestedLeft) {
                                                     val sl = state.suggestedLeft
-                                                    if (sl.videoUrl != null) {
+                                                    val slServiceId = suggestionServiceId(sl)
+                                                    if (sl.videoUrl != null && slServiceId != null) {
                                                         onNavigateToVideo?.invoke(
-                                                            suggestionServiceId(sl),
+                                                            slServiceId,
                                                             sl.videoUrl,
                                                             sl.title
                                                         )
@@ -656,9 +659,10 @@ internal fun CompareCompactScreen(
                                                                 onLongClick = {
                                                                     if (hasSuggestedLeft) {
                                                                         val sl = state.suggestedLeft
-                                                                        if (sl.videoUrl != null) {
+                                                                        val slServiceId = suggestionServiceId(sl)
+                                                                        if (sl.videoUrl != null && slServiceId != null) {
                                                                             onNavigateToVideo?.invoke(
-                                                                                suggestionServiceId(sl),
+                                                                                slServiceId,
                                                                                 sl.videoUrl,
                                                                                 sl.title
                                                                             )
@@ -736,9 +740,10 @@ internal fun CompareCompactScreen(
                                                                 onLongClick = {
                                                                     if (hasSuggestedRight) {
                                                                         val sr = state.suggestedRight
-                                                                        if (sr.videoUrl != null) {
+                                                                        val srServiceId = suggestionServiceId(sr)
+                                                                        if (sr.videoUrl != null && srServiceId != null) {
                                                                             onNavigateToVideo?.invoke(
-                                                                                suggestionServiceId(sr),
+                                                                                srServiceId,
                                                                                 sr.videoUrl,
                                                                                 sr.title
                                                                             )
@@ -817,9 +822,10 @@ internal fun CompareCompactScreen(
                                             onLongClick = {
                                                 if (hasSuggestedRight) {
                                                     val sr = state.suggestedRight
-                                                    if (sr.videoUrl != null) {
+                                                    val srServiceId = suggestionServiceId(sr)
+                                                    if (sr.videoUrl != null && srServiceId != null) {
                                                         onNavigateToVideo?.invoke(
-                                                            suggestionServiceId(sr),
+                                                            srServiceId,
                                                             sr.videoUrl,
                                                             sr.title
                                                         )

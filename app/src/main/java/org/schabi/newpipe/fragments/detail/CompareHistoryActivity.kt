@@ -10,7 +10,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.disposables.Disposable
-import io.reactivex.rxjava3.schedulers.Schedulers
 import org.schabi.newpipe.R
 import org.schabi.newpipe.fragments.detail.compare.CompareComparisonsFullScreen
 import org.schabi.newpipe.ui.theme.AppTheme
@@ -47,7 +46,6 @@ class CompareHistoryActivity : AppCompatActivity() {
         totalCount = null
         disposable?.dispose()
         disposable = TournesolAuthManager.getValidAccessToken(this)
-            .subscribeOn(Schedulers.io())
             .switchIfEmpty(
                 io.reactivex.rxjava3.core.Maybe.error(RuntimeException("login_required"))
             )

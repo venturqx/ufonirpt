@@ -198,6 +198,29 @@ class CompareJsonParserTest {
     }
 
     @Test
+    fun `fallback thumbnail trims the YouTube id`() {
+        val video = CompareJsonParser.parseSuggestedVideos("""[{"uid":"yt:  vid "}]""").single()
+
+        assertEquals("https://i.ytimg.com/vi/vid/hqdefault.jpg", video.thumbnailUrl)
+    }
+
+    @Test
+    fun `fallback video url exists only for a YouTube uid with an id`() {
+        assertEquals(
+            "https://www.youtube.com/watch?v=vid",
+            CompareJsonParser.buildFallbackVideoUrl("yt:vid")
+        )
+        assertEquals(
+            "https://www.youtube.com/watch?v=vid",
+            CompareJsonParser.buildFallbackVideoUrl("yt:  vid ")
+        )
+        assertNull(CompareJsonParser.buildFallbackVideoUrl("yt:   "))
+        assertNull(CompareJsonParser.buildFallbackVideoUrl("sc:vid"))
+        assertNull(CompareJsonParser.buildFallbackVideoUrl("peertube:vid"))
+        assertNull(CompareJsonParser.buildFallbackVideoUrl("entity_a_3"))
+    }
+
+    @Test
     fun `title skips the null literal`() {
         val video = CompareJsonParser.parseSuggestedVideos(
             """[{"uid":"sc:track","metadata":{"title":"null","name":"Real name"}}]"""

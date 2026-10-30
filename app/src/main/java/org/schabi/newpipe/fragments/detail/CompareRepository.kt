@@ -1,6 +1,5 @@
 package org.schabi.newpipe.fragments.detail
 
-import com.grack.nanojson.JsonObject
 import com.grack.nanojson.JsonStringWriter
 import com.grack.nanojson.JsonWriter
 import io.reactivex.rxjava3.core.Maybe
@@ -17,18 +16,19 @@ import okhttp3.RequestBody.Companion.toRequestBody
 import org.schabi.newpipe.DownloaderImpl
 import org.schabi.newpipe.R
 import org.schabi.newpipe.extractor.NewPipe
-import org.schabi.newpipe.extractor.ServiceList
 import org.schabi.newpipe.extractor.exceptions.ExtractionException
 import org.schabi.newpipe.extractor.linkhandler.LinkHandlerFactory
 
 object CompareRepository {
     fun buildTournesolUid(url: String, serviceId: Int): String? {
-        val prefix = getTournesolServicePrefix(serviceId) ?: return null
+        if (!TournesolUid.supports(serviceId)) {
+            return null
+        }
         return try {
             val service = NewPipe.getService(serviceId)
             val factory: LinkHandlerFactory = service.getStreamLHFactory()
             val id = factory.getId(url)
-            "$prefix:$id"
+            TournesolUid.of(serviceId, id)?.value
         } catch (_: ExtractionException) {
             null
         }
@@ -103,15 +103,6 @@ object CompareRepository {
         CompareJsonParser.parseComparisons(send(url, token).bodyOrThrow())
     }.subscribeOn(Schedulers.io())
 
-    internal fun getTournesolServicePrefix(serviceId: Int): String? {
-        return when (serviceId) {
-            ServiceList.YouTube.serviceId -> "yt"
-            ServiceList.SoundCloud.serviceId -> "sc"
-            ServiceList.PeerTube.serviceId -> "peertube"
-            else -> null
-        }
-    }
-
     internal fun buildComparisonPayloadJson(
         lastUid: String,
         currentUid: String,
@@ -147,22 +138,12 @@ object CompareRepository {
         return end()
     }
 
-    internal fun parseComparisons(responseBody: String): CompareComparisonsResult = CompareJsonParser.parseComparisons(responseBody)
-
-    internal fun collectObjectCandidates(
-        value: Any?,
-        candidates: MutableList<JsonObject>,
-        depth: Int = 0
-    ) = CompareJsonParser.collectObjectCandidates(value, candidates, depth)
-
     fun fetchWeeklyComparisons(): Single<Int> = Single.fromCallable {
         val url = apiUrl("stats", TRAILING_SLASH)
             .addQueryParameter("poll", COMPARE_POLL)
             .build()
         CompareJsonParser.parseWeeklyComparisons(send(url).bodyOrThrow())
     }.subscribeOn(Schedulers.io())
-
-    internal fun parseWeeklyComparisons(responseBody: String): Int = CompareJsonParser.parseWeeklyComparisons(responseBody)
 
     fun fetchSuggestedVideos(
         token: String
@@ -182,21 +163,6 @@ object CompareRepository {
             .build()
         CompareJsonParser.parseSuggestedVideos(send(url, token).bodyOrThrow()).firstOrNull()
     }.subscribeOn(Schedulers.io())
-
-    internal fun parseSuggestedVideos(responseBody: String): List<CompareComparisonVideo> = CompareJsonParser.parseSuggestedVideos(responseBody)
-
-    fun uidToServiceId(uid: String): Int {
-        return when {
-            uid.startsWith("yt:") -> ServiceList.YouTube.serviceId
-            uid.startsWith("sc:") -> ServiceList.SoundCloud.serviceId
-            uid.startsWith("peertube:") -> ServiceList.PeerTube.serviceId
-            else -> ServiceList.YouTube.serviceId
-        }
-    }
-
-    fun uidToVideoUrl(uid: String): String? {
-        return CompareJsonParser.buildFallbackVideoUrl(uid)
-    }
 
     private class ApiResponse(val code: Int, val body: String) {
         fun bodyOrThrow(): String {

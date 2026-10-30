@@ -33,8 +33,10 @@ import org.schabi.newpipe.ktx.serializable
 import org.schabi.newpipe.local.history.HistoryRecordManager
 import org.schabi.newpipe.ui.theme.AppTheme
 import org.schabi.newpipe.util.KEY_INFO
+import org.schabi.newpipe.util.MissingTokenException
 import org.schabi.newpipe.util.NavigationHelper
 import org.schabi.newpipe.util.TournesolAuthManager
+import org.schabi.newpipe.util.orMissingToken
 
 class CompareFragment : Fragment() {
     private var currentInfo: StreamInfo? = null
@@ -386,11 +388,8 @@ class CompareFragment : Fragment() {
         recommendationsTotalCount = null
         recommendationsDisposable?.dispose()
         recommendationsDisposable = TournesolAuthManager.getValidAccessToken(requireContext())
-            .subscribeOn(Schedulers.io())
-            .switchIfEmpty(
-                io.reactivex.rxjava3.core.Maybe.error(MissingTokenException())
-            )
-            .flatMapSingle { token ->
+            .orMissingToken()
+            .flatMap { token ->
                 CompareRepository.fetchUserComparisons(
                     token = token,
                     username = COMPARISONS_USERNAME,
@@ -512,11 +511,8 @@ class CompareFragment : Fragment() {
         submitInProgress = true
         disposables.add(
             TournesolAuthManager.getValidAccessToken(requireContext())
-                .subscribeOn(Schedulers.io())
-                .switchIfEmpty(
-                    io.reactivex.rxjava3.core.Maybe.error(MissingTokenException())
-                )
-                .flatMapSingle { token ->
+                .orMissingToken()
+                .flatMap { token ->
                     CompareRepository.submitComparison(token, lastUid, currentUid, score)
                 }
                 .observeOn(AndroidSchedulers.mainThread())
@@ -594,11 +590,8 @@ class CompareFragment : Fragment() {
         submitInProgress = true
         disposables.add(
             TournesolAuthManager.getValidAccessToken(requireContext())
-                .subscribeOn(Schedulers.io())
-                .switchIfEmpty(
-                    io.reactivex.rxjava3.core.Maybe.error(MissingTokenException())
-                )
-                .flatMapSingle { token ->
+                .orMissingToken()
+                .flatMap { token ->
                     if (alreadySubmitted) {
                         CompareRepository.patchComparison(
                             token,
@@ -675,11 +668,8 @@ class CompareFragment : Fragment() {
         submitInProgress = true
         disposables.add(
             TournesolAuthManager.getValidAccessToken(requireContext())
-                .subscribeOn(Schedulers.io())
-                .switchIfEmpty(
-                    io.reactivex.rxjava3.core.Maybe.error(MissingTokenException())
-                )
-                .flatMapSingle { token ->
+                .orMissingToken()
+                .flatMap { token ->
                     if (alreadySubmitted) {
                         CompareRepository.patchComparison(
                             token,
@@ -752,11 +742,8 @@ class CompareFragment : Fragment() {
         submitInProgress = true
         disposables.add(
             TournesolAuthManager.getValidAccessToken(requireContext())
-                .subscribeOn(Schedulers.io())
-                .switchIfEmpty(
-                    io.reactivex.rxjava3.core.Maybe.error(MissingTokenException())
-                )
-                .flatMapSingle { token ->
+                .orMissingToken()
+                .flatMap { token ->
                     CompareRepository.patchComparison(
                         token,
                         key.lastUid,
@@ -814,11 +801,8 @@ class CompareFragment : Fragment() {
         changeInProgress = true
         disposables.add(
             TournesolAuthManager.getValidAccessToken(requireContext())
-                .subscribeOn(Schedulers.io())
-                .switchIfEmpty(
-                    io.reactivex.rxjava3.core.Maybe.error(MissingTokenException())
-                )
-                .flatMapSingle { token ->
+                .orMissingToken()
+                .flatMap { token ->
                     CompareRepository.patchComparison(
                         token,
                         key.lastUid,
@@ -909,11 +893,8 @@ class CompareFragment : Fragment() {
         submitMoreInProgress = true
         disposables.add(
             TournesolAuthManager.getValidAccessToken(requireContext())
-                .subscribeOn(Schedulers.io())
-                .switchIfEmpty(
-                    io.reactivex.rxjava3.core.Maybe.error(MissingTokenException())
-                )
-                .flatMapSingle { token ->
+                .orMissingToken()
+                .flatMap { token ->
                     CompareRepository.patchComparison(
                         token,
                         lastUid,
@@ -1007,7 +988,6 @@ class CompareFragment : Fragment() {
         val key = compareKeyForSelection() ?: return
         checkDisposable?.dispose()
         checkDisposable = TournesolAuthManager.getValidAccessToken(requireContext())
-            .subscribeOn(Schedulers.io())
             .flatMapSingle { token ->
                 CompareRepository.checkComparison(token, key.currentUid, key.lastUid)
             }
@@ -1083,7 +1063,6 @@ class CompareFragment : Fragment() {
         }
     }
 
-    private class MissingTokenException : RuntimeException()
     private data class PreparedHistory(
         val entries: List<StreamHistoryEntry>,
         val messageRes: Int?
@@ -1304,11 +1283,8 @@ class CompareFragment : Fragment() {
         suggestionsLoading = true
         suggestionsDisposable?.dispose()
         suggestionsDisposable = TournesolAuthManager.getValidAccessToken(requireContext())
-            .subscribeOn(Schedulers.io())
-            .switchIfEmpty(
-                io.reactivex.rxjava3.core.Maybe.error(MissingTokenException())
-            )
-            .flatMapSingle { token ->
+            .orMissingToken()
+            .flatMap { token ->
                 CompareRepository.fetchSuggestedVideos(token)
             }
             .observeOn(AndroidSchedulers.mainThread())

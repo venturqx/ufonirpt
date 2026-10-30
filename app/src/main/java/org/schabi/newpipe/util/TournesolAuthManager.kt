@@ -20,6 +20,10 @@ import org.schabi.newpipe.DownloaderImpl
 
 data class TournesolProfile(val username: String?, val comparisonCount: Int?)
 
+class MissingTokenException : RuntimeException()
+
+fun Maybe<String>.orMissingToken(): Single<String> = switchIfEmpty(Single.error(MissingTokenException()))
+
 object TournesolAuthManager {
     private const val TAG = "TournesolAuthManager"
     private const val SHARED_PREF_AUTH_STATE = "tournesol_auth_state"
@@ -255,7 +259,7 @@ object TournesolAuthManager {
                 AccessTokenResult.LoggedOut -> null
                 is AccessTokenResult.Failed -> throw result.cause
             }
-        }
+        }.subscribeOn(Schedulers.io())
     }
 
     fun performPasswordLogin(username: String, password: String): Single<TokenResponse> = performTokenRequestWithFallback(TokenCommand.Password(username, password))

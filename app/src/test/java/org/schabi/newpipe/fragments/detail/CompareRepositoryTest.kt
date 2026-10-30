@@ -21,7 +21,6 @@ import org.junit.Assert.assertTrue
 import org.junit.Test
 import org.schabi.newpipe.DownloaderImpl
 import org.schabi.newpipe.R
-import org.schabi.newpipe.extractor.ServiceList
 
 class CompareRepositoryTest {
 
@@ -291,7 +290,7 @@ class CompareRepositoryTest {
             """.trimIndent()
         )
         val candidates = ArrayList<JsonObject>()
-        CompareRepository.collectObjectCandidates(json, candidates)
+        CompareJsonParser.collectObjectCandidates(json, candidates)
 
         // Root + metadata + nested = 3 distinct objects (previously visited 5 times due to duplicate traversal)
         assertEquals(3, candidates.size)
@@ -324,7 +323,7 @@ class CompareRepositoryTest {
             }
         """.trimIndent()
 
-        val result = CompareRepository.parseComparisons(responseJson)
+        val result = CompareJsonParser.parseComparisons(responseJson)
         assertEquals(42, result.totalCount)
         assertEquals(1, result.comparisons.size)
 
@@ -357,7 +356,7 @@ class CompareRepositoryTest {
                 }
             ]
         """.trimIndent()
-        val listFromArray = CompareRepository.parseSuggestedVideos(arrayJson)
+        val listFromArray = CompareJsonParser.parseSuggestedVideos(arrayJson)
         assertEquals(1, listFromArray.size)
         assertEquals("Orbital Mechanics", listFromArray[0].title)
         assertEquals("NASA", listFromArray[0].uploader)
@@ -369,7 +368,7 @@ class CompareRepositoryTest {
                 ]
             }
         """.trimIndent()
-        val listFromObj = CompareRepository.parseSuggestedVideos(objectJson)
+        val listFromObj = CompareJsonParser.parseSuggestedVideos(objectJson)
         assertEquals(1, listFromObj.size)
         assertEquals("sc:track1", listFromObj[0].uid)
         assertEquals("Telemetry Signal", listFromObj[0].title)
@@ -379,8 +378,8 @@ class CompareRepositoryTest {
     @Test
     fun `parseWeeklyComparisons extracts added_current_week count safely`() {
         val statsJson = """{"polls":[{"comparisons":{"added_current_week":128}}]}"""
-        assertEquals(128, CompareRepository.parseWeeklyComparisons(statsJson))
-        assertEquals(0, CompareRepository.parseWeeklyComparisons("""{"polls":[]}"""))
+        assertEquals(128, CompareJsonParser.parseWeeklyComparisons(statsJson))
+        assertEquals(0, CompareJsonParser.parseWeeklyComparisons("""{"polls":[]}"""))
     }
 
     @Test
@@ -396,15 +395,5 @@ class CompareRepositoryTest {
         assertThrows(IOException::class.java) {
             CompareRepository.resolveSubmitStatusRes(500, "Internal Server Error")
         }
-    }
-
-    @Test
-    fun `uidToServiceId maps prefixes to NewPipe services`() {
-        assertEquals(ServiceList.YouTube.serviceId, CompareRepository.uidToServiceId("yt:123"))
-        assertEquals(ServiceList.SoundCloud.serviceId, CompareRepository.uidToServiceId("sc:123"))
-        assertEquals(
-            ServiceList.PeerTube.serviceId,
-            CompareRepository.uidToServiceId("peertube:123")
-        )
     }
 }
