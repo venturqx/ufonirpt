@@ -1,0 +1,48 @@
+config:
+  validation: true
+  warningsAsErrors: false
+
+console-reports:
+  active: false
+
+exceptions:
+  active: true
+  SwallowedException:
+    active: true
+  TooGenericExceptionCaught:
+    active: true
+
+complexity:
+  active: true
+  CyclomaticComplexMethod:
+    active: true
+  LargeClass:
+    active: true
+  LongParameterList:
+    active: true
+
+potential-bugs:
+  active: true
+  UnreachableCode:
+    active: true
+  UnsafeCallOnNullableType:
+    active: true
+  IgnoredReturnValue:
+    active: true
+    returnValueTypes:
+      - 'kotlin.Function*'
+      - 'kotlin.sequences.Sequence'
+      - 'kotlinx.coroutines.flow.*Flow'
+      - 'java.util.stream.*Stream'
+      - 'io.reactivex.rxjava3.disposables.Disposable'
+
+Compose:
+  active: true
+  RememberMissing:
+    active: true
+  MutableParams:
+    active: true
+  UnstableCollections:
+    active: true
+  ViewModelForwarding:
+    active: true

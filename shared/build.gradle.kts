@@ -3,6 +3,8 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
+import dev.detekt.gradle.Detekt
+
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.jetbrains.kotlin.multiplatform)
@@ -11,6 +13,7 @@ plugins {
     alias(libs.plugins.koin)
     alias(libs.plugins.jetbrains.kotlinx.serialization)
     alias(libs.plugins.about.libraries)
+    alias(libs.plugins.detekt)
 }
 
 // Better than adding a third-party dependency for something as simple as this
@@ -146,6 +149,27 @@ kotlin {
 
 dependencies {
     androidRuntimeClasspath(libs.jetbrains.compose.tooling)
+    detektPlugins(libs.nlopez.compose.rules.detekt)
+}
+
+composeCompiler {
+    reportsDestination = layout.buildDirectory.dir("compose_compiler")
+    metricsDestination = layout.buildDirectory.dir("compose_compiler")
+}
+
+detekt {
+    config.setFrom(rootProject.file("config/detekt/detekt.yml"))
+    basePath = rootProject.layout.projectDirectory
+    ignoreFailures = true
+}
+
+tasks.withType<Detekt>().configureEach {
+    reports {
+        checkstyle.required = false
+        html.required = false
+        markdown.required = false
+        sarif.required = true
+    }
 }
 
 koinCompiler {
