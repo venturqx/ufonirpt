@@ -1,6 +1,7 @@
 package org.schabi.newpipe.util
 
 import java.net.URLDecoder
+import java.net.URLEncoder
 import org.schabi.newpipe.extractor.services.youtube.extractors.kiosk.TournesolKioskExtractor
 
 data class TournesolKioskQuery(
@@ -26,22 +27,40 @@ data class TournesolKioskQuery(
         }
     }
 
-    private fun withParam(key: String, value: String): TournesolKioskQuery = when (key) {
-        "languages" -> copy(languages = value.split(",").dropLastWhile { it.isEmpty() })
+    fun toUrl(): String = buildList<String> {
+        languages?.let { codes -> add("languages=" + codes.joinToString(",") { encode(it) }) }
+        dateGte?.let { add("date_gte=" + encodeKeepingColons(it)) }
+        uploader?.let { add("uploader=" + encode(it)) }
+        if (includeUnsafe) add("unsafe=true")
+        if (durationGte >= 0) add("duration_gte=$durationGte")
+        if (durationLte >= 0) add("duration_lte=$durationLte")
+        for ((param, criterion) in CRITERIA_BY_PARAM) {
+            val weight = weightFor(criterion)
+            if (weight >= 0) add("$param=$weight")
+        }
+    }.joinToString("&", prefix = "${TournesolHelper.KIOSK_ID}?")
 
-        "date_gte" -> copy(dateGte = value)
+    private fun withParam(key: String, rawValue: String): TournesolKioskQuery {
+        val value = decodeOrRaw(rawValue)
+        return when (key) {
+            "languages" -> copy(
+                languages = rawValue.split(",").dropLastWhile { it.isEmpty() }.map { decodeOrRaw(it) }
+            )
 
-        "uploader" -> copy(uploader = value)
+            "date_gte" -> copy(dateGte = value)
 
-        "unsafe" -> copy(includeUnsafe = value.equals("true", ignoreCase = true))
+            "uploader" -> copy(uploader = value)
 
-        "duration_gte" -> copy(durationGte = value.toIntOrNull() ?: UNSET)
+            "unsafe" -> copy(includeUnsafe = value.equals("true", ignoreCase = true))
 
-        "duration_lte" -> copy(durationLte = value.toIntOrNull() ?: UNSET)
+            "duration_gte" -> copy(durationGte = value.toIntOrNull() ?: UNSET)
 
-        else -> CRITERIA_BY_PARAM[key]
-            ?.let { copy(weights = weights + (it to (value.toIntOrNull() ?: UNSET))) }
-            ?: this
+            "duration_lte" -> copy(durationLte = value.toIntOrNull() ?: UNSET)
+
+            else -> CRITERIA_BY_PARAM[key]
+                ?.let { copy(weights = weights + (it to (value.toIntOrNull() ?: UNSET))) }
+                ?: this
+        }
     }
 
     companion object {
@@ -56,8 +75,19 @@ data class TournesolKioskQuery(
             .map { it.split('=') }
             .filter { it.size == 2 }
             .fold(TournesolKioskQuery(includeUnsafe = defaultIncludeUnsafe)) { query, (key, value) ->
-                query.withParam(key, decodeOrRaw(value))
+                query.withParam(key, value)
             }
+
+        @JvmStatic
+        fun forUploader(uploader: String): TournesolKioskQuery = TournesolKioskQuery(
+            includeUnsafe = true,
+            languages = emptyList(),
+            uploader = uploader
+        )
+
+        private fun encode(value: String): String = URLEncoder.encode(value, Charsets.UTF_8.name())
+
+        private fun encodeKeepingColons(value: String): String = encode(value).replace("%3A", ":")
 
         private fun decodeOrRaw(value: String): String = try {
             URLDecoder.decode(value, Charsets.UTF_8.name())

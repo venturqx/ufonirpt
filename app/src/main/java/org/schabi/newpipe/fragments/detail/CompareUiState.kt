@@ -1,39 +1,39 @@
 package org.schabi.newpipe.fragments.detail
 
+import androidx.compose.runtime.Stable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
+import org.schabi.newpipe.R
 import org.schabi.newpipe.database.history.model.StreamHistoryEntry
 
-data class CompareUiState(
-    val historyEntries: List<StreamHistoryEntry> = emptyList(),
-    val currentEntry: StreamHistoryEntry? = null,
-    val selectedIndex: Int = 0,
-    val historyMessageRes: Int? = null,
-    val score: Int = 0,
-    val extraScores: Map<String, Int> = defaultExtraScores(),
-    val storedMainScore: Int? = null,
-    val storedExtraScores: Map<String, Int> = emptyMap(),
-    val submitted: Boolean = false,
-    val submittedConfirmed: Boolean = false,
-    val extraSubmitted: Boolean = false,
-    val submitInProgress: Boolean = false,
-    val changeInProgress: Boolean = false,
-    val submitMoreInProgress: Boolean = false,
-    val recommendations: List<CompareRecommendationItem> = emptyList(),
-    val recommendationsTotalCount: Int? = null,
-    val recommendationsLoading: Boolean = false,
-    val recommendationsError: String? = null,
-    val showRecommendationsDialog: Boolean = false,
-    val showLoginDialog: Boolean = false,
-    val loginInProgress: Boolean = false,
-    val loginError: String? = null,
-    val compactPopupVisible: Boolean = false,
-    val suggestedLeft: CompareComparisonVideo? = null,
-    val suggestedRight: CompareComparisonVideo? = null,
-    val suggestionsLoading: Boolean = false,
-    val weeklyComparisons: Int? = null,
-    val dailyComparisons: Int? = null,
-    val username: String? = null,
-    val comparisonCount: Int? = null
-) {
-    val selectedEntry: StreamHistoryEntry?
-        get() = historyEntries.getOrNull(selectedIndex)
+@Stable
+class CompareUiState {
+    var historyEntries by mutableStateOf<List<StreamHistoryEntry>>(emptyList())
+    var currentEntry by mutableStateOf<StreamHistoryEntry?>(null)
+    var historyMessageRes by mutableStateOf<Int?>(R.string.compare_loading_history)
+    var score by mutableIntStateOf(0)
+    var extraScores by mutableStateOf(defaultExtraScores())
+    var storedMainScore by mutableStateOf<Int?>(null)
+    var storedExtraScores by mutableStateOf<Map<String, Int>>(emptyMap())
+    var submitted by mutableStateOf(false)
+    var extraSubmitted by mutableStateOf(false)
+    var submitInProgress by mutableStateOf(false)
+    var recommendations by mutableStateOf<List<CompareRecommendationItem>>(emptyList())
+    var recommendationsTotalCount by mutableStateOf<Int?>(null)
+    var recommendationsLoading by mutableStateOf(false)
+    var recommendationsError by mutableStateOf<String?>(null)
+    var showRecommendationsDialog by mutableStateOf(false)
+    var showLoginDialog by mutableStateOf(false)
+    var loginInProgress by mutableStateOf(false)
+    var loginError by mutableStateOf<String?>(null)
+    var compactPopupVisible by mutableStateOf(false)
+    var suggestedLeft by mutableStateOf<CompareComparisonVideo?>(null)
+    var suggestedRight by mutableStateOf<CompareComparisonVideo?>(null)
+    var suggestionsLoading by mutableStateOf(false)
+    var weeklyComparisons by mutableStateOf<Int?>(null)
+    var dailyComparisons by mutableStateOf<Int?>(null)
+    var username by mutableStateOf<String?>(null)
+    var comparisonCount by mutableStateOf<Int?>(null)
 }

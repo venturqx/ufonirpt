@@ -51,14 +51,12 @@ import org.schabi.newpipe.extractor.linkhandler.ListLinkHandler;
 import org.schabi.newpipe.extractor.playlist.PlaylistInfo;
 import org.schabi.newpipe.extractor.search.SearchInfo;
 import org.schabi.newpipe.extractor.services.youtube.extractors.kiosk.TournesolKioskExtractor;
-import org.schabi.newpipe.extractor.services.youtube.linkHandler.YoutubeSearchQueryHandlerFactory;
 import org.schabi.newpipe.extractor.stream.StreamInfo;
 import org.schabi.newpipe.extractor.stream.StreamInfoItem;
 import org.schabi.newpipe.extractor.suggestion.SuggestionExtractor;
 import org.schabi.newpipe.util.text.TextLinkifier;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -198,10 +196,7 @@ public final class ExtractorHelper {
             return;
         }
 
-        TournesolKioskQuery.parse(url, PreferenceManager
-                        .getDefaultSharedPreferences(App.getInstance())
-                        .getBoolean(TournesolHelper.PREF_TOURNESOL_FILTER_INCLUDE_LOW_SCORE,
-                                TournesolHelper.DEFAULT_TOURNESOL_FILTER_INCLUDE_LOW_SCORE))
+        TournesolKioskQuery.parse(url, readIncludeLowScoreVideos())
                 .applyTo((TournesolKioskExtractor) extractor);
     }
 
@@ -226,24 +221,15 @@ public final class ExtractorHelper {
     @NonNull
     private static List<String> enrichTournesolSearchFilters(
             @NonNull final List<String> contentFilters) {
-        final boolean isTournesolSearch = !contentFilters.isEmpty()
-                && YoutubeSearchQueryHandlerFactory.TOURNESOL.equals(contentFilters.get(0));
-        if (!isTournesolSearch) {
-            return contentFilters;
-        }
+        return TournesolHelper.withLowScoreSearchFilter(
+                contentFilters, readIncludeLowScoreVideos());
+    }
 
-        final boolean includeLowScoreVideos = PreferenceManager
+    private static boolean readIncludeLowScoreVideos() {
+        return PreferenceManager
                 .getDefaultSharedPreferences(App.getInstance())
                 .getBoolean(TournesolHelper.PREF_TOURNESOL_FILTER_INCLUDE_LOW_SCORE,
                         TournesolHelper.DEFAULT_TOURNESOL_FILTER_INCLUDE_LOW_SCORE);
-        if (!includeLowScoreVideos
-                || contentFilters.contains(YoutubeSearchQueryHandlerFactory.TOURNESOL_UNSAFE)) {
-            return contentFilters;
-        }
-
-        final List<String> enrichedFilters = new ArrayList<>(contentFilters);
-        enrichedFilters.add(YoutubeSearchQueryHandlerFactory.TOURNESOL_UNSAFE);
-        return enrichedFilters;
     }
 
     public static Single<InfoItemsPage<StreamInfoItem>> getMoreKioskItems(final int serviceId,

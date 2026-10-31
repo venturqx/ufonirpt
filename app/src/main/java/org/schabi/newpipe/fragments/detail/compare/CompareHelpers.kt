@@ -1,7 +1,6 @@
 package org.schabi.newpipe.fragments.detail.compare
 
 import androidx.compose.runtime.staticCompositionLocalOf
-import kotlin.math.abs
 import org.schabi.newpipe.R
 import org.schabi.newpipe.fragments.detail.COMPACT_MAIN_CRITERION_ID
 
@@ -49,8 +48,4 @@ internal fun requestDisallowParentIntercept(view: android.view.View, disallow: B
         currentParent.requestDisallowInterceptTouchEvent(disallow)
         currentParent = currentParent.parent
     }
-}
-
-internal fun formatScoreMagnitude(score: Int): String {
-    return abs(score).toString()
 }

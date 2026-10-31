@@ -75,7 +75,7 @@ public final class Localization {
     private static final LocaleKeyedCache<CompactDecimalFormat> COMPACT_FORMATS =
             new LocaleKeyedCache<>(locale -> CompactDecimalFormat.getInstance(locale,
                     CompactDecimalFormat.CompactStyle.SHORT));
-    private static PrettyTime prettyTime;
+    private static volatile PrettyTime prettyTime;
 
     private Localization() { }
 
@@ -166,6 +166,9 @@ public final class Localization {
     }
 
     public static Locale getAppLocale() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            return Locale.getDefault();
+        }
         final Locale customLocale = AppCompatDelegate.getApplicationLocales().get(0);
         return customLocale != null ? customLocale : Locale.getDefault();
     }
@@ -412,9 +415,9 @@ public final class Localization {
     //////////////////////////////////////////////////////////////////////////*/
 
     public static void initPrettyTime(@NonNull final PrettyTime time) {
-        prettyTime = time;
         // Do not use decades as YouTube doesn't either.
-        prettyTime.removeUnit(Decade.class);
+        time.removeUnit(Decade.class);
+        prettyTime = time;
     }
 
     public static PrettyTime resolvePrettyTime() {

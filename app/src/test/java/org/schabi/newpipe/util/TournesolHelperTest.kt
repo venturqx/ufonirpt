@@ -7,6 +7,7 @@ import org.junit.Assert.assertNotEquals
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
+import org.schabi.newpipe.extractor.services.youtube.linkHandler.YoutubeSearchQueryHandlerFactory
 
 class TournesolHelperTest {
 
@@ -163,6 +164,53 @@ class TournesolHelperTest {
                 "&weight_backfire_risk=0",
             url
         )
+    }
+
+    @Test
+    fun `buildTournesolUrl keeps an empty languages param and the raw date colons`() {
+        val config = TournesolFilterConfig()
+
+        assertEquals(
+            "Tournesol?languages=&date_gte=2026-03-15T12:00:00.000Z",
+            TournesolHelper.buildTournesolUrl(config, fixedNowMillis)
+        )
+    }
+
+    @Test
+    fun `buildTournesolUrl omits unset durations, unset store weights, and a forever date`() {
+        val config = TournesolFilterConfig(
+            languages = listOf("en", "de"),
+            dateKey = "forever",
+            weights = TournesolFilterCriterion.entries.associateWith { -1 }
+        )
+
+        assertEquals(
+            "Tournesol?languages=en,de",
+            TournesolHelper.buildTournesolUrl(config, fixedNowMillis)
+        )
+    }
+
+    @Test
+    fun `withLowScoreSearchFilter adds the unsafe filter only to an opted-in Tournesol search`() {
+        val tournesol = YoutubeSearchQueryHandlerFactory.TOURNESOL
+        val unsafe = YoutubeSearchQueryHandlerFactory.TOURNESOL_UNSAFE
+        val cases = listOf(
+            Triple(listOf(tournesol), true, listOf(tournesol, unsafe)),
+            Triple(listOf(tournesol), false, listOf(tournesol)),
+            Triple(listOf(tournesol, unsafe), true, listOf(tournesol, unsafe)),
+            Triple(listOf(tournesol, unsafe), false, listOf(tournesol, unsafe)),
+            Triple(listOf("videos"), true, listOf("videos")),
+            Triple(listOf("videos", tournesol), true, listOf("videos", tournesol)),
+            Triple(emptyList<String>(), true, emptyList<String>())
+        )
+
+        for ((filters, includeLowScoreVideos, expected) in cases) {
+            assertEquals(
+                "$filters $includeLowScoreVideos",
+                expected,
+                TournesolHelper.withLowScoreSearchFilter(filters, includeLowScoreVideos)
+            )
+        }
     }
 
     @Test

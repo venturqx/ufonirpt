@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
@@ -23,6 +24,8 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -32,48 +35,44 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.DialogFragment
-import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
-import io.reactivex.rxjava3.disposables.Disposable
-import io.reactivex.rxjava3.schedulers.Schedulers
+import androidx.lifecycle.ViewModelProvider
 import org.schabi.newpipe.R
 import org.schabi.newpipe.ui.theme.AppTheme
 
 class TournesolLoginDialog : DialogFragment() {
-
-    private var onLoginSuccessCallback: (() -> Unit)? = null
-    private var loginDisposable: Disposable? = null
-    private var loginInProgress by mutableStateOf(false)
-    private var loginError by mutableStateOf<String?>(null)
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+        val viewModel = ViewModelProvider(this)[TournesolLoginViewModel::class.java]
         dialog?.window?.setBackgroundDrawableResource(android.R.color.transparent)
         return ComposeView(requireContext()).apply {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnDetachedFromWindow)
             setContent {
+                val state = viewModel.state
+                val inProgress = state == TournesolLoginState.InProgress
+                SideEffect { isCancelable = !inProgress }
+                LaunchedEffect(state) {
+                    if (state == TournesolLoginState.Succeeded) onLoginSucceeded()
+                }
                 AppTheme {
                     LoginDialogContent(
-                        inProgress = loginInProgress,
-                        errorMessage = loginError,
-                        onDismiss = { if (!loginInProgress) dismiss() },
+                        inProgress = inProgress,
+                        errorMessage = (state as? TournesolLoginState.Failed)
+                            ?.let { stringResource(it.failure.messageRes) },
+                        onDismiss = { if (!inProgress) dismiss() },
                         onRegister = { openRegisterPage() },
-                        onLogin = { username, password -> performLogin(username, password) }
+                        onLogin = viewModel::login
                     )
                 }
             }
         }
-    }
-
-    override fun onDestroyView() {
-        loginDisposable?.dispose()
-        loginDisposable = null
-        super.onDestroyView()
     }
 
     private fun openRegisterPage() {
@@ -82,50 +81,24 @@ class TournesolLoginDialog : DialogFragment() {
         requireContext().startActivity(intent)
     }
 
-    private fun performLogin(username: String, password: String) {
-        loginError = null
-        loginInProgress = true
-        loginDisposable?.dispose()
-        loginDisposable = TournesolAuthManager.performPasswordLogin(username, password)
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(
-                { tokenResponse ->
-                    TournesolAuthManager.saveUsername(requireContext(), username)
-                    TournesolAuthManager.saveAuthState(requireContext(), tokenResponse)
-                    loginInProgress = false
-                    dismiss()
-                    onLoginSuccessCallback?.invoke()
-                    Toast.makeText(
-                        requireContext(),
-                        getString(R.string.tournesol_login_success),
-                        Toast.LENGTH_SHORT
-                    ).show()
-                },
-                { error ->
-                    loginInProgress = false
-                    val message = error.message
-                    loginError = if (message.isNullOrBlank()) {
-                        getString(R.string.tournesol_login_failed)
-                    } else {
-                        getString(R.string.tournesol_login_failed_with_message, message)
-                    }
-                }
-            )
+    private fun onLoginSucceeded() {
+        Toast.makeText(
+            requireContext(),
+            getString(R.string.tournesol_login_success),
+            Toast.LENGTH_SHORT
+        ).show()
+        parentFragmentManager.setFragmentResult(REQUEST_KEY, Bundle.EMPTY)
+        dismissAllowingStateLoss()
     }
 
     companion object {
+        const val REQUEST_KEY = "tournesol_login_request"
         private const val REGISTER_URL = "https://tournesol.app/signup"
-
-        @JvmStatic
-        fun create(onLoginSuccess: Runnable) = TournesolLoginDialog().apply {
-            onLoginSuccessCallback = { onLoginSuccess.run() }
-        }
     }
 }
 
 @Composable
-private fun LoginDialogContent(
+internal fun LoginDialogContent(
     inProgress: Boolean,
     errorMessage: String?,
     onDismiss: () -> Unit,
@@ -187,6 +160,7 @@ private fun LoginDialogContent(
                 label = { Text(stringResource(R.string.tournesol_password_hint)) },
                 singleLine = true,
                 visualTransformation = PasswordVisualTransformation(),
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
                 enabled = !inProgress,
                 modifier = Modifier.fillMaxWidth()
             )
@@ -224,7 +198,7 @@ private fun LoginDialogContent(
                                 localError = missingFieldsText
                             } else {
                                 localError = null
-                                onLogin(username.trim(), password.trim())
+                                onLogin(username.trim(), password)
                             }
                         },
                         enabled = !inProgress

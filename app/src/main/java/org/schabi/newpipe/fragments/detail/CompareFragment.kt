@@ -7,10 +7,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.core.os.bundleOf
@@ -31,7 +27,6 @@ import org.schabi.newpipe.database.history.model.StreamHistoryEntry
 import org.schabi.newpipe.database.stream.model.StreamEntity
 import org.schabi.newpipe.extractor.stream.StreamInfo
 import org.schabi.newpipe.fragments.detail.compare.CompareCompactScreen
-import org.schabi.newpipe.fragments.detail.compare.CompareScreen
 import org.schabi.newpipe.fragments.detail.compare.CompareSuggestionPool
 import org.schabi.newpipe.fragments.detail.compare.SuggestionFetch
 import org.schabi.newpipe.fragments.detail.compare.SuggestionSlot
@@ -43,67 +38,63 @@ import org.schabi.newpipe.util.KEY_INFO
 import org.schabi.newpipe.util.MissingTokenException
 import org.schabi.newpipe.util.NavigationHelper
 import org.schabi.newpipe.util.TournesolAuthManager
+import org.schabi.newpipe.util.TournesolLoginFailure
 import org.schabi.newpipe.util.orMissingToken
 
 class CompareFragment : Fragment() {
     private var currentInfo: StreamInfo? = null
-    private var useCompactUi = false
     private var embedInDetail = false
     private var externalScroll = false
     private val disposables = CompositeDisposable()
     private val authDisposables = CompositeDisposable()
+    private val uiState = CompareUiState()
 
-    private var currentHistoryEntry: StreamHistoryEntry? = null
-    private var historyEntries by mutableStateOf<List<StreamHistoryEntry>>(emptyList())
-    private var historyMessageRes by mutableStateOf<Int?>(R.string.compare_loading_history)
-    private var selectedIndex by mutableIntStateOf(0)
+    private var currentHistoryEntry by uiState::currentEntry
+    private var historyEntries by uiState::historyEntries
+    private var historyMessageRes by uiState::historyMessageRes
     private var selectedStreamId: Long? = null
-    private var score by mutableIntStateOf(0)
-    private var extraScores by mutableStateOf(defaultExtraScores())
-    private var storedMainScore by mutableStateOf<Int?>(null)
-    private var storedExtraScores by mutableStateOf<Map<String, Int>>(emptyMap())
-    private var submitted by mutableStateOf(false)
-    private var submittedConfirmed by mutableStateOf(false)
-    private var extraSubmitted by mutableStateOf(false)
-    private var submitInProgress by mutableStateOf(false)
-    private var changeInProgress by mutableStateOf(false)
-    private var submitMoreInProgress by mutableStateOf(false)
-    private var compactPopupVisible by mutableStateOf(false)
-    private var recommendations by mutableStateOf<List<CompareRecommendationItem>>(emptyList())
-    private var recommendationsTotalCount by mutableStateOf<Int?>(null)
-    private var recommendationsLoading by mutableStateOf(false)
-    private var recommendationsError by mutableStateOf<String?>(null)
-    private var showRecommendationsDialog by mutableStateOf(false)
-    private var showLoginDialog by mutableStateOf(false)
-    private var loginInProgress by mutableStateOf(false)
-    private var loginError by mutableStateOf<String?>(null)
+    private var score by uiState::score
+    private var extraScores by uiState::extraScores
+    private var storedMainScore by uiState::storedMainScore
+    private var storedExtraScores by uiState::storedExtraScores
+    private var submitted by uiState::submitted
+    private var extraSubmitted by uiState::extraSubmitted
+    private var submitInProgress by uiState::submitInProgress
+    private var compactPopupVisible by uiState::compactPopupVisible
+    private var recommendations by uiState::recommendations
+    private var recommendationsTotalCount by uiState::recommendationsTotalCount
+    private var recommendationsLoading by uiState::recommendationsLoading
+    private var recommendationsError by uiState::recommendationsError
+    private var showRecommendationsDialog by uiState::showRecommendationsDialog
+    private var showLoginDialog by uiState::showLoginDialog
+    private var loginInProgress by uiState::loginInProgress
+    private var loginError by uiState::loginError
     private var loginDisposable: Disposable? = null
     private var recommendationsDisposable: Disposable? = null
     private var checkDisposable: Disposable? = null
     private lateinit var scoreStore: CompareScoreStore
     private var compactPairSelection: ComparePairSelection? = null
-    private var suggestedLeft by mutableStateOf<CompareComparisonVideo?>(null)
-    private var suggestedRight by mutableStateOf<CompareComparisonVideo?>(null)
-    private var suggestionsLoading by mutableStateOf(false)
+    private var suggestedLeft by uiState::suggestedLeft
+    private var suggestedRight by uiState::suggestedRight
+    private var suggestionsLoading by uiState::suggestionsLoading
     private var suggestionsDisposable: Disposable? = null
     private lateinit var suggestionPool: CompareSuggestionPool
-    private var weeklyComparisons by mutableStateOf<Int?>(null)
+    private var weeklyComparisons by uiState::weeklyComparisons
     private var weeklyStatsDisposable: Disposable? = null
-    private var dailyComparisons by mutableStateOf<Int?>(null)
-    private var username by mutableStateOf<String?>(null)
-    private var comparisonCount by mutableStateOf<Int?>(null)
+    private var dailyComparisons by uiState::dailyComparisons
+    private var username by uiState::username
+    private var comparisonCount by uiState::comparisonCount
     private var profileDisposable: Disposable? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         currentInfo = arguments?.serializable<StreamInfo>(KEY_INFO)
-        useCompactUi = arguments?.getBoolean(KEY_COMPACT_UI) == true
         embedInDetail = arguments?.getBoolean(KEY_EMBED_IN_DETAIL) == true
         externalScroll = arguments?.getBoolean(KEY_EXTERNAL_SCROLL) == true
         currentHistoryEntry = currentInfo?.let { buildCurrentEntry(it) }
         scoreStore = CompareScoreStore.shared(requireContext())
         suggestionPool = CompareSuggestionPool(
-            historyPairAllowed = useCompactUi && currentInfo == null,
+            historyPairAllowed = currentInfo == null,
             random = Random.Default,
             toVideo = ::buildHistorySuggestion
         )
@@ -139,9 +130,9 @@ class CompareFragment : Fragment() {
             historyEntries = emptyList()
             historyMessageRes = R.string.compare_history_unavailable
         }
-        if (currentInfo == null && useCompactUi) {
+        if (currentInfo == null) {
             loadRandomPair()
-        } else if (useCompactUi) {
+        } else {
             prefetchPool()
         }
         loadWeeklyStats()
@@ -155,98 +146,48 @@ class CompareFragment : Fragment() {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
                 AppTheme {
-                    val uiState = CompareUiState(
-                        historyEntries = historyEntries,
-                        currentEntry = currentHistoryEntry,
-                        selectedIndex = selectedIndex,
-                        historyMessageRes = historyMessageRes,
-                        score = score,
-                        extraScores = extraScores,
-                        storedMainScore = storedMainScore,
-                        storedExtraScores = storedExtraScores,
-                        submitted = submitted,
-                        submittedConfirmed = submittedConfirmed,
-                        extraSubmitted = extraSubmitted,
-                        submitInProgress = submitInProgress,
-                        changeInProgress = changeInProgress,
-                        submitMoreInProgress = submitMoreInProgress,
-                        recommendations = recommendations,
-                        recommendationsTotalCount = recommendationsTotalCount,
-                        recommendationsLoading = recommendationsLoading,
-                        recommendationsError = recommendationsError,
-                        showRecommendationsDialog = showRecommendationsDialog,
-                        showLoginDialog = showLoginDialog,
-                        loginInProgress = loginInProgress,
-                        loginError = loginError,
-                        compactPopupVisible = compactPopupVisible,
-                        suggestedLeft = suggestedLeft,
-                        suggestedRight = suggestedRight,
-                        suggestionsLoading = suggestionsLoading,
-                        weeklyComparisons = weeklyComparisons,
-                        dailyComparisons = dailyComparisons,
-                        username = username,
-                        comparisonCount = comparisonCount
-                    )
                     val onExtraScoreChange = { criteria: String, value: Int ->
                         updateExtraScore(criteria, value)
                     }
-                    if (useCompactUi) {
-                        CompareCompactScreen(
-                            state = uiState,
-                            onScoreChange = { score = it },
-                            onExtraScoreChange = onExtraScoreChange,
-                            onSubmitCriterion = { criterionId, value, onSuccess ->
-                                if (criterionId == COMPACT_MAIN_CRITERION_ID) {
-                                    sendCompactMainComparison(value, onSuccess)
-                                } else {
-                                    sendCompactSingleCriterion(criterionId, value, onSuccess)
-                                }
-                            },
-                            onSubmitExtrasBatch = { criteriaScores, onSuccess ->
-                                sendCompactExtrasBatch(criteriaScores, onSuccess)
-                            },
-                            onPairSelectionChange = { selection ->
-                                updateCompactPairSelection(selection)
-                            },
-                            onDismissRecommendations = { dismissRecommendationsDialog() },
-                            onDismissLogin = { dismissLoginDialog() },
-                            onShowLogin = { showLoginDialog() },
-                            onRegister = { openRegisterPage() },
-                            onLogin = { username, password -> performLogin(username, password) },
-                            onNavigateToVideo = { serviceId, url, title ->
-                                navigateToVideo(serviceId, url, title)
-                            },
-                            onRandomizeLeft = { randomize(SuggestionSlot.LEFT) },
-                            onRandomizeRight = { randomize(SuggestionSlot.RIGHT) },
-                            showGreeting = currentInfo == null,
-                            reserveMiniPlayerSpace = !embedInDetail,
-                            externalScroll = externalScroll,
-                            onContentMeasured = if (embedInDetail) {
-                                { heightPx ->
-                                    (parentFragment as? VideoDetailFragment)
-                                        ?.onCompareContentMeasured(heightPx)
-                                }
+                    CompareCompactScreen(
+                        state = uiState,
+                        onScoreChange = { score = it },
+                        onExtraScoreChange = onExtraScoreChange,
+                        onSubmitCriterion = { criterionId, value, onSuccess ->
+                            if (criterionId == COMPACT_MAIN_CRITERION_ID) {
+                                sendCompactMainComparison(value, onSuccess)
                             } else {
-                                null
+                                sendCompactSingleCriterion(criterionId, value, onSuccess)
                             }
-                        )
-                    } else {
-                        CompareScreen(
-                            state = uiState,
-                            onSelectIndex = { selectIndex(it) },
-                            onScoreChange = { score = it },
-                            onSubmit = { sendComparison(score) },
-                            onChangeMainScore = { sendMainScoreChange() },
-                            onExtraScoreChange = onExtraScoreChange,
-                            onSubmitMore = { sendAdditionalCriteria() },
-                            onDismissLogin = { dismissLoginDialog() },
-                            onRegister = { openRegisterPage() },
-                            onLogin = { username, password -> performLogin(username, password) },
-                            onNavigateToVideo = { serviceId, url, title ->
-                                navigateToVideo(serviceId, url, title)
+                        },
+                        onSubmitExtrasBatch = { criteriaScores, onSuccess ->
+                            sendCompactExtrasBatch(criteriaScores, onSuccess)
+                        },
+                        onPairSelectionChange = { selection ->
+                            updateCompactPairSelection(selection)
+                        },
+                        onDismissRecommendations = { dismissRecommendationsDialog() },
+                        onDismissLogin = { dismissLoginDialog() },
+                        onShowLogin = { showLoginDialog() },
+                        onRegister = { openRegisterPage() },
+                        onLogin = { username, password -> performLogin(username, password) },
+                        onNavigateToVideo = { serviceId, url, title ->
+                            navigateToVideo(serviceId, url, title)
+                        },
+                        onRandomizeLeft = { randomize(SuggestionSlot.LEFT) },
+                        onRandomizeRight = { randomize(SuggestionSlot.RIGHT) },
+                        showGreeting = currentInfo == null,
+                        reserveMiniPlayerSpace = !embedInDetail,
+                        externalScroll = externalScroll,
+                        onContentMeasured = if (embedInDetail) {
+                            { heightPx ->
+                                (parentFragment?.parentFragment as? VideoDetailFragment)
+                                    ?.onCompareContentMeasured(heightPx)
                             }
-                        )
-                    }
+                        } else {
+                            null
+                        }
+                    )
                 }
             }
         }
@@ -285,8 +226,6 @@ class CompareFragment : Fragment() {
     private fun cancelAuthenticatedWork() {
         authDisposables.clear()
         submitInProgress = false
-        changeInProgress = false
-        submitMoreInProgress = false
         recommendationsDisposable?.dispose()
         recommendationsDisposable = null
         recommendationsLoading = false
@@ -325,18 +264,8 @@ class CompareFragment : Fragment() {
         historyEntries = filtered
         historyMessageRes = prepared.messageRes
 
-        val existingIndex = selectedStreamId?.let { id ->
-            filtered.indexOfFirst { it.streamId == id }
-        } ?: -1
-
-        val newIndex = when {
-            filtered.isEmpty() -> 0
-            existingIndex >= 0 -> existingIndex
-            else -> 0
-        }
-
-        val newSelectedId = filtered.getOrNull(newIndex)?.streamId
-        selectedIndex = newIndex
+        val existingId = selectedStreamId?.takeIf { id -> filtered.any { it.streamId == id } }
+        val newSelectedId = existingId ?: filtered.firstOrNull()?.streamId
         if (newSelectedId != selectedStreamId) {
             resetSelectionState()
             selectedStreamId = newSelectedId
@@ -347,22 +276,8 @@ class CompareFragment : Fragment() {
         publishSuggestions()
     }
 
-    private fun selectIndex(newIndex: Int) {
-        if (historyEntries.isEmpty()) {
-            return
-        }
-        val clampedIndex = newIndex.coerceIn(0, historyEntries.lastIndex)
-        if (clampedIndex == selectedIndex) {
-            return
-        }
-        selectedIndex = clampedIndex
-        selectedStreamId = historyEntries[clampedIndex].streamId
-        resetSelectionState()
-        refreshSubmittedState()
-    }
-
     private fun updateCompactPairSelection(selection: ComparePairSelection?) {
-        if (!useCompactUi || compactPairSelection == selection) {
+        if (compactPairSelection == selection) {
             return
         }
         compactPairSelection = selection
@@ -491,88 +406,10 @@ class CompareFragment : Fragment() {
                 },
                 { error ->
                     loginInProgress = false
-                    val message = error.message
-                    loginError = if (message.isNullOrBlank()) {
-                        getString(R.string.tournesol_login_failed)
-                    } else {
-                        getString(R.string.tournesol_login_failed_with_message, message)
-                    }
+                    loginError = getString(TournesolLoginFailure.from(error).messageRes)
                 }
             )
         loginDisposable?.let { disposables.add(it) }
-    }
-
-    private fun sendComparison(score: Int) {
-        if (submitInProgress) {
-            return
-        }
-        val info = currentInfo
-        if (info == null) {
-            Toast.makeText(
-                requireContext(),
-                getString(R.string.compare_current_unavailable),
-                Toast.LENGTH_SHORT
-            ).show()
-            return
-        }
-        val selectedEntry = historyEntries.getOrNull(selectedIndex)
-        if (selectedEntry == null) {
-            val messageRes = historyMessageRes ?: R.string.compare_history_unavailable
-            Toast.makeText(
-                requireContext(),
-                getString(messageRes),
-                Toast.LENGTH_SHORT
-            ).show()
-            return
-        }
-
-        val lastUid = CompareRepository.buildTournesolUid(
-            selectedEntry.streamEntity.url,
-            selectedEntry.streamEntity.serviceId
-        )
-        val currentUid = CompareRepository.buildTournesolUid(
-            info.url,
-            info.serviceId
-        )
-
-        if (lastUid == null || currentUid == null) {
-            Toast.makeText(
-                requireContext(),
-                getString(R.string.compare_service_not_supported),
-                Toast.LENGTH_SHORT
-            ).show()
-            return
-        }
-
-        val entities = entitiesForLeftRight(currentUid, lastUid)
-
-        runAuthenticated(
-            inProgress = ::submitInProgress,
-            request = { token ->
-                CompareRepository.submitComparison(
-                    token,
-                    entities.entityA,
-                    entities.entityB,
-                    score
-                )
-            },
-            onResult = { result ->
-                markSubmitted(entities.entityA, entities.entityB)
-                storeSubmittedScores(
-                    CompareKey(entities.entityA, entities.entityB),
-                    mainScore = score
-                )
-                if (result == SaveResult.CREATED) {
-                    TournesolAuthManager.incrementComparisonCount(requireContext())
-                    refreshUserInfo()
-                }
-                Toast.makeText(
-                    requireContext(),
-                    getString(saveResultMessageRes(result)),
-                    Toast.LENGTH_LONG
-                ).show()
-            }
-        )
     }
 
     private fun resolveCompactCompareKey(): CompareKey? {
@@ -729,111 +566,6 @@ class CompareFragment : Fragment() {
         )
     }
 
-    private fun sendMainScoreChange() {
-        if (changeInProgress || !submittedConfirmed) {
-            return
-        }
-        val key = compareKeyForSelection() ?: return
-        val newScore = score
-        val storedScore = scoreStore.scoresFor(key)?.mainScore
-        if (storedScore != null && storedScore == newScore) {
-            return
-        }
-
-        runAuthenticated(
-            inProgress = ::changeInProgress,
-            request = { token ->
-                CompareRepository.patchComparison(
-                    token,
-                    key.entityA,
-                    key.entityB,
-                    listOf(CriteriaScore("largely_recommended", newScore))
-                )
-            },
-            onResult = {
-                storeSubmittedScores(key, mainScore = newScore)
-                Toast.makeText(
-                    requireContext(),
-                    getString(R.string.compare_score_updated),
-                    Toast.LENGTH_LONG
-                ).show()
-            }
-        )
-    }
-
-    private fun sendAdditionalCriteria() {
-        if (submitMoreInProgress || !submitted) {
-            return
-        }
-        val info = currentInfo
-        if (info == null) {
-            Toast.makeText(
-                requireContext(),
-                getString(R.string.compare_current_unavailable),
-                Toast.LENGTH_SHORT
-            ).show()
-            return
-        }
-        val selectedEntry = historyEntries.getOrNull(selectedIndex)
-        if (selectedEntry == null) {
-            val messageRes = historyMessageRes ?: R.string.compare_history_unavailable
-            Toast.makeText(
-                requireContext(),
-                getString(messageRes),
-                Toast.LENGTH_SHORT
-            ).show()
-            return
-        }
-
-        val lastUid = CompareRepository.buildTournesolUid(
-            selectedEntry.streamEntity.url,
-            selectedEntry.streamEntity.serviceId
-        )
-        val currentUid = CompareRepository.buildTournesolUid(
-            info.url,
-            info.serviceId
-        )
-
-        if (lastUid == null || currentUid == null) {
-            Toast.makeText(
-                requireContext(),
-                getString(R.string.compare_service_not_supported),
-                Toast.LENGTH_SHORT
-            ).show()
-            return
-        }
-
-        val newExtraScores = extraScores
-        val criteriaScores = EXTRA_CRITERIA.map { criterion ->
-            CriteriaScore(criterion.id, newExtraScores[criterion.id] ?: 0)
-        }
-
-        val entities = entitiesForLeftRight(currentUid, lastUid)
-
-        runAuthenticated(
-            inProgress = ::submitMoreInProgress,
-            request = { token ->
-                CompareRepository.patchComparison(
-                    token,
-                    entities.entityA,
-                    entities.entityB,
-                    criteriaScores
-                )
-            },
-            onResult = { messageRes ->
-                storeSubmittedScores(
-                    CompareKey(entities.entityA, entities.entityB),
-                    extraScores = newExtraScores
-                )
-                Toast.makeText(
-                    requireContext(),
-                    getString(messageRes),
-                    Toast.LENGTH_LONG
-                ).show()
-            }
-        )
-    }
-
     private fun <T : Any> runAuthenticated(
         inProgress: KMutableProperty0<Boolean>,
         request: (String) -> Single<T>,
@@ -888,14 +620,11 @@ class CompareFragment : Fragment() {
 
     private fun resetSelectionState() {
         submitInProgress = false
-        changeInProgress = false
-        submitMoreInProgress = false
         score = 0
         extraScores = defaultExtraScores()
         storedMainScore = null
         storedExtraScores = emptyMap()
         extraSubmitted = false
-        submittedConfirmed = false
         applyStoredScoresForSelection()
     }
 
@@ -917,7 +646,6 @@ class CompareFragment : Fragment() {
 
     private fun updateSubmittedState() {
         submitted = compareKeyForSelection()?.let(scoreStore::isSubmitted) == true
-        submittedConfirmed = false
     }
 
     private fun refreshSubmittedState() {
@@ -955,35 +683,20 @@ class CompareFragment : Fragment() {
                 extraSubmitted = false
             }
             submitted = false
-            submittedConfirmed = false
         }
     }
 
     private fun compareKeyForSelection(): CompareKey? {
-        if (useCompactUi) {
-            val pair = compactPairSelection ?: return null
-            val leftUid = CompareRepository.buildTournesolUid(
-                pair.leftUrl,
-                pair.leftServiceId
-            ) ?: return null
-            val rightUid = CompareRepository.buildTournesolUid(
-                pair.rightUrl,
-                pair.rightServiceId
-            ) ?: return null
-            val entities = entitiesForLeftRight(leftUid, rightUid)
-            return CompareKey(entities.entityA, entities.entityB)
-        }
-        val info = currentInfo ?: return null
-        val selectedEntry = historyEntries.getOrNull(selectedIndex) ?: return null
-        val lastUid = CompareRepository.buildTournesolUid(
-            selectedEntry.streamEntity.url,
-            selectedEntry.streamEntity.serviceId
+        val pair = compactPairSelection ?: return null
+        val leftUid = CompareRepository.buildTournesolUid(
+            pair.leftUrl,
+            pair.leftServiceId
         ) ?: return null
-        val currentUid = CompareRepository.buildTournesolUid(
-            info.url,
-            info.serviceId
+        val rightUid = CompareRepository.buildTournesolUid(
+            pair.rightUrl,
+            pair.rightServiceId
         ) ?: return null
-        val entities = entitiesForLeftRight(currentUid, lastUid)
+        val entities = entitiesForLeftRight(leftUid, rightUid)
         return CompareKey(entities.entityA, entities.entityB)
     }
 
@@ -997,7 +710,6 @@ class CompareFragment : Fragment() {
         scoreStore.markSubmitted(key)
         if (compareKeyForSelection() == key) {
             submitted = true
-            submittedConfirmed = true
         }
     }
 
@@ -1163,7 +875,6 @@ class CompareFragment : Fragment() {
         @JvmStatic
         var pendingOpenComparisons = false
 
-        private const val KEY_COMPACT_UI = "compare_compact_ui"
         private const val KEY_EMBED_IN_DETAIL = "compare_embed_in_detail"
         private const val KEY_EXTERNAL_SCROLL = "compare_external_scroll"
         private const val COMPARISONS_USERNAME = "me"
@@ -1173,14 +884,12 @@ class CompareFragment : Fragment() {
         @JvmOverloads
         fun getInstance(
             info: StreamInfo?,
-            useCompactUi: Boolean = false,
             embedInDetail: Boolean = false,
             externalScroll: Boolean = false
         ): CompareFragment {
             return CompareFragment().apply {
                 arguments = bundleOf(
                     KEY_INFO to info,
-                    KEY_COMPACT_UI to useCompactUi,
                     KEY_EMBED_IN_DETAIL to embedInDetail,
                     KEY_EXTERNAL_SCROLL to externalScroll
                 )

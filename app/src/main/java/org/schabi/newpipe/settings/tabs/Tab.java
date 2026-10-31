@@ -619,7 +619,7 @@ public abstract class Tab {
 
         @Override
         public Fragment getFragment(final Context context) {
-            return CompareFragment.getInstance(null, true);
+            return CompareFragment.getInstance(null);
         }
     }
 

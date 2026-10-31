@@ -16,7 +16,188 @@ class TournesolKioskQueryTest {
 
     private val fixedNowMillis = 1781524800000L
 
+    private val hostileUploader = "AT&T = 100% \"Ünï\" + more"
+    private val awkwardValues = listOf(
+        "a&b",
+        "a,b",
+        ",",
+        "a=b",
+        "=",
+        "100%",
+        "%",
+        "%2C",
+        "%3A",
+        "%zz",
+        "a+b",
+        "+",
+        "a b",
+        " ",
+        "a:b",
+        "a?b",
+        "a#b",
+        "Ünï",
+        "日本語",
+        "🙂",
+        hostileUploader
+    )
+
     private fun parse(url: String, defaultIncludeUnsafe: Boolean = false) = TournesolKioskQuery.parse(url, defaultIncludeUnsafe)
+
+    @Test
+    fun `toUrl round trips awkward values in every text field`() {
+        val queries = awkwardValues.flatMap { value ->
+            listOf(
+                TournesolKioskQuery(includeUnsafe = false, uploader = value),
+                TournesolKioskQuery(includeUnsafe = false, dateGte = value),
+                TournesolKioskQuery(includeUnsafe = false, languages = listOf(value)),
+                TournesolKioskQuery(includeUnsafe = false, languages = listOf("en", value, "fr")),
+                TournesolKioskQuery(
+                    includeUnsafe = true,
+                    languages = listOf(value, value),
+                    dateGte = value,
+                    uploader = value
+                )
+            )
+        }
+
+        for (query in queries) {
+            assertEquals(query.toString(), query, parse(query.toUrl()))
+        }
+    }
+
+    @Test
+    fun `toUrl round trips absent, empty, zero, and full fields`() {
+        val queries = listOf(
+            TournesolKioskQuery(includeUnsafe = false),
+            TournesolKioskQuery(includeUnsafe = true),
+            TournesolKioskQuery(includeUnsafe = false, languages = emptyList()),
+            TournesolKioskQuery(includeUnsafe = false, dateGte = ""),
+            TournesolKioskQuery(includeUnsafe = false, uploader = ""),
+            TournesolKioskQuery(includeUnsafe = false, durationGte = 0, durationLte = 0),
+            TournesolKioskQuery(
+                includeUnsafe = false,
+                weights = TournesolFilterCriterion.entries.associateWith { 0 }
+            ),
+            TournesolKioskQuery(
+                includeUnsafe = true,
+                languages = listOf("en", "fr"),
+                dateGte = "2026-05-15T12:00:00.000Z",
+                uploader = "ESA",
+                durationGte = 60,
+                durationLte = 1800,
+                weights = TournesolFilterCriterion.entries.associateWith { it.ordinal }
+            )
+        )
+
+        for (query in queries) {
+            assertEquals(query.toString(), query, parse(query.toUrl()))
+        }
+    }
+
+    @Test
+    fun `toUrl keeps existing url shapes byte identical`() {
+        val expectedByQuery = mapOf(
+            TournesolKioskQuery(includeUnsafe = false, languages = emptyList()) to
+                "Tournesol?languages=",
+            TournesolKioskQuery(
+                includeUnsafe = false,
+                languages = listOf("en", "fr"),
+                dateGte = "2026-05-15T12:00:00.000Z"
+            ) to "Tournesol?languages=en,fr&date_gte=2026-05-15T12:00:00.000Z",
+            TournesolKioskQuery(
+                includeUnsafe = true,
+                languages = listOf("zh-Hans"),
+                durationGte = 60,
+                durationLte = 1800
+            ) to "Tournesol?languages=zh-Hans&unsafe=true&duration_gte=60&duration_lte=1800",
+            TournesolKioskQuery.forUploader("ESA") to
+                "Tournesol?languages=&uploader=ESA&unsafe=true",
+            TournesolKioskQuery.forUploader("") to
+                "Tournesol?languages=&uploader=&unsafe=true"
+        )
+
+        for ((query, expected) in expectedByQuery) {
+            assertEquals(expected, query.toUrl())
+        }
+    }
+
+    @Test
+    fun `toUrl keeps colons in date_gte but encodes them in uploader`() {
+        val query = TournesolKioskQuery(includeUnsafe = false, dateGte = "a:b", uploader = "a:b")
+
+        assertEquals("Tournesol?date_gte=a:b&uploader=a%3Ab", query.toUrl())
+    }
+
+    @Test
+    fun `toUrl writes weights in criterion order and skips unset ones`() {
+        val query = TournesolKioskQuery(
+            includeUnsafe = false,
+            weights = mapOf(
+                TournesolFilterCriterion.BACKFIRE_RISK to 0,
+                TournesolFilterCriterion.PEDAGOGY to -1,
+                TournesolFilterCriterion.RELIABILITY to 75
+            )
+        )
+
+        assertEquals("Tournesol?weight_reliability=75&weight_backfire_risk=0", query.toUrl())
+    }
+
+    @Test
+    fun `forUploader encodes a hostile uploader exactly like the legacy rank url`() {
+        val url = TournesolKioskQuery.forUploader(hostileUploader).toUrl()
+
+        assertEquals(
+            "Tournesol?languages=&uploader=AT%26T+%3D+100%25+%22%C3%9Cn%C3%AF%22+%2B+more&unsafe=true",
+            url
+        )
+        assertEquals(
+            TournesolHelper.KIOSK_ID + "?languages=&uploader=" +
+                URLEncoder.encode(hostileUploader, Charsets.UTF_8.name()) + "&unsafe=true",
+            url
+        )
+    }
+
+    @Test
+    fun `forUploader round trips and survives a default of false`() {
+        val expected = TournesolKioskQuery(
+            includeUnsafe = true,
+            languages = emptyList(),
+            uploader = hostileUploader
+        )
+
+        val url = TournesolKioskQuery.forUploader(hostileUploader).toUrl()
+
+        assertEquals(expected, parse(url, defaultIncludeUnsafe = false))
+        assertEquals(expected, parse(url, defaultIncludeUnsafe = true))
+    }
+
+    @Test
+    fun `includeUnsafe false is written as absent so parse falls back to the default`() {
+        val url = TournesolKioskQuery(includeUnsafe = false).toUrl()
+
+        assertFalse(parse(url, defaultIncludeUnsafe = false).includeUnsafe)
+        assertTrue(parse(url, defaultIncludeUnsafe = true).includeUnsafe)
+    }
+
+    @Test
+    fun `an encoded comma stays inside one language`() {
+        assertEquals(listOf("a,b", "c"), parse("Tournesol?languages=a%2Cb,c").languages)
+    }
+
+    @Test
+    fun `malformed percent sequences keep the raw value field by field`() {
+        assertEquals("%zz", parse("Tournesol?uploader=%zz").uploader)
+        assertEquals("2026%", parse("Tournesol?date_gte=2026%").dateGte)
+        assertEquals(
+            listOf("en", "100%", "a b"),
+            parse("Tournesol?languages=en,100%,a%20b").languages
+        )
+    }
+
+    @Test
+    fun `a plus decodes to a space and an encoded plus stays a plus`() {
+        assertEquals("a b+c", parse("Tournesol?uploader=a+b%2Bc").uploader)
+    }
 
     @Test
     fun `round trips every filter built by buildTournesolUrl`() {

@@ -3,8 +3,6 @@ package org.schabi.newpipe.fragments.detail.compare
 import android.graphics.Typeface
 import android.view.MotionEvent
 import androidx.activity.compose.BackHandler
-import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
@@ -43,6 +41,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -118,6 +117,14 @@ private val COMPACT_DIMENSIONS = listOf(
 ) + EXTRA_CRITERIA
 
 @Composable
+private fun WithScores(
+    state: CompareUiState,
+    content: @Composable (scores: Map<String, Int>, mainScore: Int) -> Unit
+) {
+    content(state.extraScores, state.score)
+}
+
+@Composable
 @OptIn(ExperimentalFoundationApi::class)
 internal fun CompareCompactScreen(
     state: CompareUiState,
@@ -148,13 +155,6 @@ internal fun CompareCompactScreen(
     }
     val activeIndexSafe = activeIndex.coerceIn(0, dimensions.lastIndex)
     val activeDimension = dimensions[activeIndexSafe]
-    val activeScore = dimensionScore(state, activeDimension)
-    val animatedScore by animateFloatAsState(
-        targetValue = activeScore.toFloat(),
-        animationSpec = tween(durationMillis = 90),
-        label = "compactScore"
-    )
-    val displayScore = animatedScore.roundToInt()
     val activeDescription = stringResource(compactDescriptionRes(activeDimension.id))
     var selectedIds by remember { mutableStateOf(setOf<String>()) }
     val onSelectionChange: (String, Boolean) -> Unit = { id, selected ->
@@ -186,8 +186,10 @@ internal fun CompareCompactScreen(
             onExtraScoreChange(activeDimension.id, clamped)
         }
     }
-    val latestActiveScore by rememberUpdatedState(activeScore)
     val latestActiveIndex by rememberUpdatedState(activeIndexSafe)
+    val latestActiveScore by remember {
+        derivedStateOf { dimensionScore(state, dimensions[latestActiveIndex]) }
+    }
     val latestScoreUpdater by rememberUpdatedState(onActiveScoreChange)
     val latestIndexUpdater by rememberUpdatedState { index: Int -> activeIndex = index }
     val latestMaxIndex by rememberUpdatedState(maxIndex)
@@ -196,6 +198,9 @@ internal fun CompareCompactScreen(
     val embedInDetail = !reserveMiniPlayerSpace
     val pickerActiveIndex = remember { mutableIntStateOf(-1) }
     val pickerDragScore = remember { mutableStateOf<Int?>(null) }
+    val isDragging by remember { derivedStateOf { pickerDragScore.value != null } }
+    val isDraggingLeft by remember { derivedStateOf { (pickerDragScore.value ?: 0) < 0 } }
+    val isDraggingRight by remember { derivedStateOf { (pickerDragScore.value ?: 0) > 0 } }
     val pickerTouchedCriteria = remember { mutableStateOf(setOf<String>()) }
     var showHistoryOverlay by remember { mutableStateOf(false) }
     var hasOpenedHistoryOverlay by rememberSaveable { mutableStateOf(false) }
@@ -226,15 +231,17 @@ internal fun CompareCompactScreen(
         ?: leftEntries.firstOrNull()
     val selectedHistoryEntryRight = rightEntries.getOrNull(rightHistoryIndex)
         ?: rightEntries.firstOrNull()
-    val hasSuggestedLeft = state.suggestedLeft != null
-    val hasSuggestedRight = state.suggestedRight != null
+    val suggestedLeft = state.suggestedLeft
+    val suggestedRight = state.suggestedRight
+    val hasSuggestedLeft = suggestedLeft != null
+    val hasSuggestedRight = suggestedRight != null
     val hasSuggestions = hasSuggestedLeft || hasSuggestedRight
-    val suggestedLeftTitle = state.suggestedLeft?.title.orEmpty()
-    val suggestedLeftUploader = state.suggestedLeft?.uploader.orEmpty()
-    val suggestedRightTitle = state.suggestedRight?.title.orEmpty()
-    val suggestedRightUploader = state.suggestedRight?.uploader.orEmpty()
+    val suggestedLeftTitle = suggestedLeft?.title.orEmpty()
+    val suggestedLeftUploader = suggestedLeft?.uploader.orEmpty()
+    val suggestedRightTitle = suggestedRight?.title.orEmpty()
+    val suggestedRightUploader = suggestedRight?.uploader.orEmpty()
     val currentPairSelection = if (hasSuggestedLeft && hasSuggestedRight) {
-        suggestedPair(state.suggestedLeft, state.suggestedRight)
+        suggestedPair(suggestedLeft, suggestedRight)
     } else if (selectedHistoryEntryLeft != null && selectedHistoryEntryRight != null) {
         historyPair(
             leftServiceId = selectedHistoryEntryLeft.streamEntity.serviceId,
@@ -572,7 +579,7 @@ internal fun CompareCompactScreen(
                                             },
                                             onLongClick = {
                                                 if (hasSuggestedLeft) {
-                                                    val sl = state.suggestedLeft
+                                                    val sl = suggestedLeft
                                                     val slServiceId = suggestionServiceId(sl)
                                                     if (sl.videoUrl != null && slServiceId != null) {
                                                         onNavigateToVideo?.invoke(
@@ -611,8 +618,7 @@ internal fun CompareCompactScreen(
                                                     modifier = Modifier.weight(1f),
                                                     contentAlignment = Alignment.Center
                                                 ) {
-                                                    val leftDragScore = pickerDragScore.value
-                                                    if (leftDragScore != null && leftDragScore < 0) {
+                                                    if (isDraggingLeft) {
                                                         Image(
                                                             painter = painterResource(R.drawable.ic_arrow_drop_down),
                                                             contentDescription = null,
@@ -632,7 +638,7 @@ internal fun CompareCompactScreen(
                                                                 },
                                                                 onLongClick = {
                                                                     if (hasSuggestedLeft) {
-                                                                        val sl = state.suggestedLeft
+                                                                        val sl = suggestedLeft
                                                                         val slServiceId = suggestionServiceId(sl)
                                                                         if (sl.videoUrl != null && slServiceId != null) {
                                                                             onNavigateToVideo?.invoke(
@@ -657,7 +663,7 @@ internal fun CompareCompactScreen(
                                                         ) {
                                                             if (hasSuggestedLeft) {
                                                                 SuggestedVideoThumbnail(
-                                                                    thumbnailUrl = state.suggestedLeft.thumbnailUrl,
+                                                                    thumbnailUrl = suggestedLeft.thumbnailUrl,
                                                                     thumbnailHeight = 52.dp * scale
                                                                 )
                                                             } else {
@@ -692,8 +698,7 @@ internal fun CompareCompactScreen(
                                                     modifier = Modifier.weight(1f),
                                                     contentAlignment = Alignment.Center
                                                 ) {
-                                                    val rightDragScore = pickerDragScore.value
-                                                    if (rightDragScore != null && rightDragScore > 0) {
+                                                    if (isDraggingRight) {
                                                         Image(
                                                             painter = painterResource(R.drawable.ic_arrow_drop_down),
                                                             contentDescription = null,
@@ -713,7 +718,7 @@ internal fun CompareCompactScreen(
                                                                 },
                                                                 onLongClick = {
                                                                     if (hasSuggestedRight) {
-                                                                        val sr = state.suggestedRight
+                                                                        val sr = suggestedRight
                                                                         val srServiceId = suggestionServiceId(sr)
                                                                         if (sr.videoUrl != null && srServiceId != null) {
                                                                             onNavigateToVideo?.invoke(
@@ -738,7 +743,7 @@ internal fun CompareCompactScreen(
                                                         ) {
                                                             if (hasSuggestedRight) {
                                                                 SuggestedVideoThumbnail(
-                                                                    thumbnailUrl = state.suggestedRight.thumbnailUrl,
+                                                                    thumbnailUrl = suggestedRight.thumbnailUrl,
                                                                     thumbnailHeight = 52.dp * scale
                                                                 )
                                                             } else {
@@ -795,7 +800,7 @@ internal fun CompareCompactScreen(
                                             },
                                             onLongClick = {
                                                 if (hasSuggestedRight) {
-                                                    val sr = state.suggestedRight
+                                                    val sr = suggestedRight
                                                     val srServiceId = suggestionServiceId(sr)
                                                     if (sr.videoUrl != null && srServiceId != null) {
                                                         onNavigateToVideo?.invoke(
@@ -845,22 +850,24 @@ internal fun CompareCompactScreen(
                                     .fillMaxWidth()
                                     .background(Color(0xFF181818))
                             ) {
-                                LollipopPickerWithIntro(
-                                    pairKey = currentPairSelection,
-                                    scores = state.extraScores,
-                                    onScoreChange = onExtraScoreChange,
-                                    mainScore = state.score,
-                                    onMainScoreChange = onScoreChange,
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(horizontal = horizontalPadding),
-                                    hoistedActiveIndex = if (embedInDetail) pickerActiveIndex else null,
-                                    hoistedDragScore = pickerDragScore,
-                                    hoistedTouchedCriteria = pickerTouchedCriteria,
-                                    showDescription = !embedInDetail,
-                                    onSubmit1Request = onSubmitCriterion,
-                                    onSubmitExtrasBatch = onSubmitExtrasBatch
-                                )
+                                WithScores(state) { scores, mainScore ->
+                                    LollipopPickerWithIntro(
+                                        pairKey = currentPairSelection,
+                                        scores = scores,
+                                        onScoreChange = onExtraScoreChange,
+                                        mainScore = mainScore,
+                                        onMainScoreChange = onScoreChange,
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(horizontal = horizontalPadding),
+                                        hoistedActiveIndex = if (embedInDetail) pickerActiveIndex else null,
+                                        hoistedDragScore = pickerDragScore,
+                                        hoistedTouchedCriteria = pickerTouchedCriteria,
+                                        showDescription = !embedInDetail,
+                                        onSubmit1Request = onSubmitCriterion,
+                                        onSubmitExtrasBatch = onSubmitExtrasBatch
+                                    )
+                                }
                             }
                         }
 
@@ -874,7 +881,6 @@ internal fun CompareCompactScreen(
                         ) {
                             val currentExtra = (pickerActiveIndex.intValue + 1).coerceIn(0, 9)
                             val statusAlpha = 0.55f
-                            val isDragging = pickerDragScore.value != null
                             if (isDragging) {
                                 val cancelText = buildAnnotatedString {
                                     withStyle(SpanStyle(color = Color.White.copy(alpha = statusAlpha))) {
@@ -910,7 +916,6 @@ internal fun CompareCompactScreen(
                                 )
                                 // Text B — extra criteria
                                 val textB = when {
-                                    state.submitMoreInProgress -> " - Submitting extra.."
                                     state.extraSubmitted -> " - Submitted extra"
                                     else -> " - Rating extra $currentExtra/9"
                                 }

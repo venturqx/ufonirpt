@@ -43,6 +43,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.content.edit
 import androidx.core.net.toUri
 import androidx.core.os.postDelayed
+import androidx.core.view.children
 import androidx.core.view.isGone
 import androidx.core.view.isVisible
 import androidx.preference.PreferenceManager
@@ -907,6 +908,7 @@ class VideoDetailFragment :
             ?.let { tag -> selectedTabTag = tag }
 
         pageAdapter.clearAllItems()
+        compareContentHeightPx = 0
         tabIcons.clear()
         tabContentDescriptions.clear()
 
@@ -975,32 +977,49 @@ class VideoDetailFragment :
     /**
      * Adjust the AppBar's collapse range when the compare tab is active.
      * The allowed collapse equals the content overflow (content height minus
-     * the visible area when the AppBar is fully expanded). Each AppBar child
-     * is given [AppBarLayout.LayoutParams.SCROLL_FLAG_EXIT_UNTIL_COLLAPSED]
-     * with a `minHeight` that limits how far it can collapse, consuming the
-     * overflow budget in order. If there is no overflow the child is pinned.
+     * the visible area when the AppBar is fully expanded). AppBarLayout ends
+     * its scroll range at the first child with
+     * [AppBarLayout.LayoutParams.SCROLL_FLAG_EXIT_UNTIL_COLLAPSED], so only the
+     * child where the overflow budget runs out gets that flag, with a
+     * `minHeight` that limits how far it can collapse. If there is no overflow
+     * the child is pinned.
      */
     private fun applyCompareAppBarLimits() {
         val appBar = binding.appBarLayout
-        val coordinator = binding.detailMainContent
-        val visibleHeight = coordinator.height - appBar.height
-        if (visibleHeight <= 0) return
+        val children = appBar.children.filter { it.layoutParams is AppBarLayout.LayoutParams }.toList()
+        val limits = compareAppBarLimits(
+            contentHeight = compareContentHeightPx,
+            visibleHeight = binding.detailMainContent.height - appBar.height,
+            childHeights = children.map { it.height }
+        ) ?: return
 
-        var remainingOverflow = max(0, compareContentHeightPx - visibleHeight)
-        for (i in 0 until appBar.childCount) {
-            val child = appBar.getChildAt(i)
-            val lp = child.layoutParams as? AppBarLayout.LayoutParams ?: continue
-            val childHeight = child.height
-            if (remainingOverflow <= 0 || childHeight <= 0) {
-                lp.scrollFlags = 0
-                child.minimumHeight = 0
-            } else {
-                val collapse = min(remainingOverflow, childHeight)
-                lp.scrollFlags = AppBarLayout.LayoutParams.SCROLL_FLAG_SCROLL or
-                    AppBarLayout.LayoutParams.SCROLL_FLAG_EXIT_UNTIL_COLLAPSED
-                child.minimumHeight = childHeight - collapse
-                remainingOverflow -= collapse
+        children.zip(limits).forEach { (child, limit) ->
+            when (limit) {
+                AppBarChildLimit.Pinned -> setAppBarChildScroll(child, 0, 0)
+
+                AppBarChildLimit.ScrollsAway -> setAppBarChildScroll(
+                    child,
+                    AppBarLayout.LayoutParams.SCROLL_FLAG_SCROLL,
+                    0
+                )
+
+                is AppBarChildLimit.Collapsible -> setAppBarChildScroll(
+                    child,
+                    AppBarLayout.LayoutParams.SCROLL_FLAG_SCROLL or
+                        AppBarLayout.LayoutParams.SCROLL_FLAG_EXIT_UNTIL_COLLAPSED,
+                    limit.minimumHeight
+                )
             }
+        }
+    }
+
+    private fun setAppBarChildScroll(child: View, scrollFlags: Int, minimumHeight: Int) {
+        val lp = child.layoutParams as? AppBarLayout.LayoutParams ?: return
+        if (child.minimumHeight != minimumHeight) {
+            child.minimumHeight = minimumHeight
+        }
+        if (lp.scrollFlags != scrollFlags) {
+            lp.scrollFlags = scrollFlags
             child.layoutParams = lp
         }
     }
@@ -1010,12 +1029,8 @@ class VideoDetailFragment :
      * leaving the compare tab).
      */
     private fun restoreAppBarScrollFlags() {
-        for (i in 0 until binding.appBarLayout.childCount) {
-            val child = binding.appBarLayout.getChildAt(i)
-            val lp = child.layoutParams as? AppBarLayout.LayoutParams ?: continue
-            lp.scrollFlags = AppBarLayout.LayoutParams.SCROLL_FLAG_SCROLL
-            child.minimumHeight = 0
-            child.layoutParams = lp
+        for (child in binding.appBarLayout.children) {
+            setAppBarChildScroll(child, AppBarLayout.LayoutParams.SCROLL_FLAG_SCROLL, 0)
         }
     }
 

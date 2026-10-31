@@ -52,7 +52,6 @@ class TournesolFragment : Fragment() {
         val info = arguments?.serializable<StreamInfo>(KEY_INFO) ?: return
         val compareFragment = CompareFragment.getInstance(
             info,
-            useCompactUi = true,
             embedInDetail = true,
             externalScroll = true
         )

@@ -404,11 +404,14 @@ public class MainActivity extends AppCompatActivity {
     private void setupDrawerHeader() {
         drawerHeaderBinding.drawerHeaderActionButton.setOnClickListener(view -> toggleServices());
 
+        getSupportFragmentManager().setFragmentResultListener(
+                TournesolLoginDialog.REQUEST_KEY, this, (requestKey, result) -> {
+                    updateProfileHeader();
+                    notifyCompareAuthChanged();
+                });
+
         drawerHeaderBinding.drawerHeaderLoginButton.setOnClickListener(view -> {
-            TournesolLoginDialog.create(() -> {
-                updateProfileHeader();
-                notifyCompareAuthChanged();
-            }).show(getSupportFragmentManager(), null);
+            new TournesolLoginDialog().show(getSupportFragmentManager(), null);
         });
 
         drawerHeaderBinding.drawerHeaderRegisterButton.setOnClickListener(view -> {

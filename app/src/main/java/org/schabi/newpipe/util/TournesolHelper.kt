@@ -4,6 +4,7 @@ import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
 import java.util.TimeZone
+import org.schabi.newpipe.extractor.services.youtube.linkHandler.YoutubeSearchQueryHandlerFactory
 
 object TournesolHelper {
     const val KIOSK_ID = "Tournesol"
@@ -41,37 +42,34 @@ object TournesolHelper {
     fun buildTournesolUrl(
         config: TournesolFilterConfig,
         nowMillis: Long = System.currentTimeMillis()
-    ): String {
-        val sb = StringBuilder(KIOSK_ID)
-        sb.append("?languages=").append(config.languages.joinToString(","))
-
-        val dateGte = calculateDateGte(config.dateKey, nowMillis)
-        if (dateGte != null) {
-            sb.append("&date_gte=").append(dateGte)
-        }
-        if (config.includeLowScoreVideos) {
-            sb.append("&unsafe=true")
-        }
-        if (config.durationMinSeconds >= 0) {
-            sb.append("&duration_gte=").append(config.durationMinSeconds)
-        }
-        if (config.durationMaxSeconds >= 0) {
-            sb.append("&duration_lte=").append(config.durationMaxSeconds)
-        }
-        for (criterion in TournesolFilterCriterion.entries) {
-            val weight = config.weightFor(criterion)
-            if (weight >= 0) {
-                sb.append("&weight_").append(criterion.apiKey).append("=").append(weight)
-            }
-        }
-        return sb.toString()
-    }
+    ): String = TournesolKioskQuery(
+        includeUnsafe = config.includeLowScoreVideos,
+        languages = config.languages,
+        dateGte = calculateDateGte(config.dateKey, nowMillis),
+        durationGte = config.durationMinSeconds,
+        durationLte = config.durationMaxSeconds,
+        weights = config.weights
+    ).toUrl()
 
     @JvmStatic
     fun hasInsufficientReason(reasons: List<String>?): Boolean {
         return reasons?.any {
             it == REASON_INSUFFICIENT_TOURNESOL_SCORE || it == REASON_INSUFFICIENT_TRUST
         } == true
+    }
+
+    @JvmStatic
+    fun withLowScoreSearchFilter(
+        contentFilters: List<String>,
+        includeLowScoreVideos: Boolean
+    ): List<String> {
+        val isTournesolSearch = contentFilters.firstOrNull() == YoutubeSearchQueryHandlerFactory.TOURNESOL
+        val hasUnsafeFilter = YoutubeSearchQueryHandlerFactory.TOURNESOL_UNSAFE in contentFilters
+        return if (isTournesolSearch && includeLowScoreVideos && !hasUnsafeFilter) {
+            contentFilters + YoutubeSearchQueryHandlerFactory.TOURNESOL_UNSAFE
+        } else {
+            contentFilters
+        }
     }
 
     @JvmOverloads
