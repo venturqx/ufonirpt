@@ -7,7 +7,6 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.AndroidViewModel
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.disposables.Disposable
-import io.reactivex.rxjava3.schedulers.Schedulers
 
 internal sealed interface TournesolLoginState {
     data object Idle : TournesolLoginState
@@ -28,14 +27,10 @@ class TournesolLoginViewModel(application: Application) : AndroidViewModel(appli
     fun login(username: String, password: String) {
         state = TournesolLoginState.InProgress
         loginDisposable?.dispose()
-        loginDisposable = TournesolAuthManager.performPasswordLogin(username, password)
-            .subscribeOn(Schedulers.io())
+        loginDisposable = TournesolAuthManager.login(getApplication<Application>(), username, password)
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(
-                { tokenResponse ->
-                    val context = getApplication<Application>()
-                    TournesolAuthManager.saveUsername(context, username)
-                    TournesolAuthManager.saveAuthState(context, tokenResponse)
+                {
                     state = TournesolLoginState.Succeeded
                 },
                 { error ->

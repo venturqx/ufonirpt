@@ -450,7 +450,6 @@ private fun LargelyRecommendedSlider(
                         hostView.parent?.requestDisallowInterceptTouchEvent(true)
                         val left = sidePaddingPx
                         val right = size.width - sidePaddingPx
-                        val canvasBottom = size.height.toFloat()
                         fun xToScore(x: Float): Int = positionToScore(x, left, right)
                         val scoreBeforeDrag = latestScore
                         var finalScore = xToScore(down.position.x)

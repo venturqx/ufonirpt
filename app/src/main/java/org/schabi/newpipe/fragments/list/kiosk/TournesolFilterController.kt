@@ -46,11 +46,13 @@ class TournesolFilterController(
     fun init(rootView: View) {
         currentConfig = filterStore().load()
         setupTournesolHeader(rootView)
-        val restoredSheet = fragment.parentFragmentManager.findFragmentByTag(FILTER_SHEET_TAG)
-        (restoredSheet as? TournesolFilterFragment)?.setListener(::applySheetConfig)
     }
 
     fun onResume() {
+        fragment.parentFragmentManager.setFragmentResultListener(
+            TournesolFilterFragment.REQUEST_KEY,
+            fragment.viewLifecycleOwner
+        ) { _, _ -> onSheetApplied() }
         val previous = currentConfig
         currentConfig = filterStore().load()
         if (previous != currentConfig) {
@@ -164,15 +166,11 @@ class TournesolFilterController(
     }
 
     private fun openFilterSheet() {
-        val filterFragment = TournesolFilterFragment()
-        filterFragment.setInitialData(currentConfig)
-        filterFragment.setListener(::applySheetConfig)
-        filterFragment.show(fragment.parentFragmentManager, FILTER_SHEET_TAG)
+        TournesolFilterFragment().show(fragment.parentFragmentManager, FILTER_SHEET_TAG)
     }
 
-    private fun applySheetConfig(newConfig: TournesolFilterConfig) {
-        currentConfig = newConfig
-        filterStore().save(currentConfig)
+    private fun onSheetApplied() {
+        currentConfig = filterStore().load()
         updateQuickChipSelection()
         notifyFiltersChanged()
     }

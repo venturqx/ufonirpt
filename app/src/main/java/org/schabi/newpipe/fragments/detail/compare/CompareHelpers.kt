@@ -16,11 +16,6 @@ internal fun computeCompareScale(maxWidthDp: Float): Float {
 
 internal val LocalCompareScale = staticCompositionLocalOf { 1f }
 
-internal enum class DragAxis {
-    HORIZONTAL,
-    VERTICAL
-}
-
 internal enum class OverlayTarget {
     LEFT,
     RIGHT
@@ -39,13 +34,5 @@ internal fun compactDescriptionRes(criterionId: String): Int {
         "better_habits" -> R.string.compare_criteria_desc_better_habits
         "backfire_risk" -> R.string.compare_criteria_desc_backfire_risk
         else -> R.string.compare_criteria_desc_largely_recommended
-    }
-}
-
-internal fun requestDisallowParentIntercept(view: android.view.View, disallow: Boolean) {
-    var currentParent = view.parent
-    while (currentParent != null) {
-        currentParent.requestDisallowInterceptTouchEvent(disallow)
-        currentParent = currentParent.parent
     }
 }

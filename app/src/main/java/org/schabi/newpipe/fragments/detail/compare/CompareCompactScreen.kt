@@ -1,7 +1,6 @@
 package org.schabi.newpipe.fragments.detail.compare
 
 import android.graphics.Typeface
-import android.view.MotionEvent
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -11,7 +10,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.gestures.awaitEachGesture
 import androidx.compose.foundation.gestures.awaitFirstDown
-import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -46,7 +44,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -58,14 +55,12 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.input.pointer.consumeAllChanges
 import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.input.pointer.pointerInteropFilter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.boundsInRoot
 import androidx.compose.ui.layout.layout
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.platform.rememberNestedScrollInteropConnection
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
@@ -99,11 +94,8 @@ import org.schabi.newpipe.fragments.detail.CompareVideoThumbnailCard
 import org.schabi.newpipe.fragments.detail.CriteriaScore
 import org.schabi.newpipe.fragments.detail.EXTRA_CRITERIA
 import org.schabi.newpipe.fragments.detail.LollipopDescriptionRow
-import org.schabi.newpipe.fragments.detail.SCORE_MAX
-import org.schabi.newpipe.fragments.detail.SCORE_MIN
 import org.schabi.newpipe.fragments.detail.SuggestedVideoThumbnail
 import org.schabi.newpipe.fragments.detail.TournesolLoginDialog
-import org.schabi.newpipe.fragments.detail.dimensionScore
 import org.schabi.newpipe.fragments.detail.tightBorderGlow
 
 private val COMPACT_DIMENSIONS = listOf(
@@ -144,53 +136,8 @@ internal fun CompareCompactScreen(
     externalScroll: Boolean = false,
     onContentMeasured: ((Int) -> Unit)? = null
 ) {
-    val dimensions = remember { COMPACT_DIMENSIONS }
-    var activeIndex by rememberSaveable { mutableIntStateOf(0) }
-    LaunchedEffect(dimensions.size) {
-        if (activeIndex !in dimensions.indices) {
-            activeIndex = 0
-        }
-    }
-    val activeIndexSafe = activeIndex.coerceIn(0, dimensions.lastIndex)
-    val activeDimension = dimensions[activeIndexSafe]
-    val activeDescription = stringResource(compactDescriptionRes(activeDimension.id))
-    var selectedIds by remember { mutableStateOf(setOf<String>()) }
-    val onSelectionChange: (String, Boolean) -> Unit = { id, selected ->
-        selectedIds = if (selected) {
-            selectedIds + id
-        } else {
-            selectedIds - id
-        }
-        if (!selected) {
-            if (id == COMPACT_MAIN_CRITERION_ID) {
-                onScoreChange(0)
-            } else {
-                onExtraScoreChange(id, 0)
-            }
-        }
-    }
-    val latestSelectionUpdater by rememberUpdatedState(onSelectionChange)
-    val latestActiveDimensionId by rememberUpdatedState(activeDimension.id)
-    val maxIndex = dimensions.lastIndex
     val context = LocalContext.current
     val density = LocalDensity.current
-    val pxPerScore = with(density) { 4.dp.toPx() } / 2f
-    val verticalStepPx = with(density) { 28.dp.toPx() } / 0.6f
-    val onActiveScoreChange: (Int) -> Unit = { newValue ->
-        val clamped = newValue.coerceIn(SCORE_MIN, SCORE_MAX)
-        if (activeDimension.id == COMPACT_MAIN_CRITERION_ID) {
-            onScoreChange(clamped)
-        } else {
-            onExtraScoreChange(activeDimension.id, clamped)
-        }
-    }
-    val latestActiveIndex by rememberUpdatedState(activeIndexSafe)
-    val latestActiveScore by remember {
-        derivedStateOf { dimensionScore(state, dimensions[latestActiveIndex]) }
-    }
-    val latestScoreUpdater by rememberUpdatedState(onActiveScoreChange)
-    val latestIndexUpdater by rememberUpdatedState { index: Int -> activeIndex = index }
-    val latestMaxIndex by rememberUpdatedState(maxIndex)
     val miniPlayerHeight = dimensionResource(R.dimen.mini_player_height)
     val bottomContentPadding = if (reserveMiniPlayerSpace) miniPlayerHeight + 12.dp else 0.dp
     val embedInDetail = !reserveMiniPlayerSpace
@@ -233,7 +180,6 @@ internal fun CompareCompactScreen(
     val suggestedRight = state.suggestedRight
     val hasSuggestedLeft = suggestedLeft != null
     val hasSuggestedRight = suggestedRight != null
-    val hasSuggestions = hasSuggestedLeft || hasSuggestedRight
     val suggestedLeftTitle = suggestedLeft?.title.orEmpty()
     val suggestedLeftUploader = suggestedLeft?.uploader.orEmpty()
     val suggestedRightTitle = suggestedRight?.title.orEmpty()
@@ -320,7 +266,6 @@ internal fun CompareCompactScreen(
                     onExtraScoreChange(criterion.id, 0)
                 }
             }
-            selectedIds = emptySet()
         }
     }
     LaunchedEffect(showHistoryOverlay, activeOverlayTarget, overlayEntries.size, overlayPageSize) {
@@ -333,8 +278,6 @@ internal fun CompareCompactScreen(
     LaunchedEffect(currentPairSelection) {
         onPairSelectionChange(currentPairSelection)
     }
-    val hasStoredScores = state.storedMainScore != null || state.storedExtraScores.isNotEmpty()
-    val hasValidPairSelection = currentPairSelection != null
     val openHistoryOverlay: (OverlayTarget) -> Unit = { target ->
         val targetEntries = if (target == OverlayTarget.RIGHT) {
             rightEntries
@@ -353,51 +296,6 @@ internal fun CompareCompactScreen(
         }
     }
 
-    val gestureModifier = Modifier.pointerInput(Unit) {
-        val tracker = CompareDragTracker(
-            pxPerScore = pxPerScore,
-            verticalStepPx = verticalStepPx,
-            horizontalSensitivity = 1.2f,
-            verticalSensitivity = 1.3f,
-            scoreMin = SCORE_MIN,
-            scoreMax = SCORE_MAX,
-            maxIndex = { latestMaxIndex }
-        )
-        detectDragGestures(
-            onDragStart = {
-                tracker.start(latestActiveIndex, latestActiveScore)
-            },
-            onDragEnd = {
-                tracker.onEnd()?.let { latestIndexUpdater(it.index) }
-            },
-            onDragCancel = {
-                tracker.cancel()
-            },
-            onDrag = { change, dragAmount ->
-                tracker.onDrag(dragAmount.x, dragAmount.y).forEach { action ->
-                    when (action) {
-                        DragAction.MarkSelected -> latestSelectionUpdater(latestActiveDimensionId, true)
-                        DragAction.ConsumePointer -> change.consume()
-                        is DragAction.SetScore -> latestScoreUpdater(action.score)
-                        is DragAction.SetIndex -> latestIndexUpdater(action.index)
-                    }
-                }
-            }
-        )
-    }
-    val hostView = LocalView.current
-    val criteriaTouchLockModifier = Modifier.pointerInteropFilter { motionEvent ->
-        when (motionEvent.actionMasked) {
-            MotionEvent.ACTION_DOWN, MotionEvent.ACTION_MOVE -> {
-                requestDisallowParentIntercept(hostView, true)
-            }
-
-            MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
-                requestDisallowParentIntercept(hostView, false)
-            }
-        }
-        false
-    }
     val compactNestedScrollInterop = rememberNestedScrollInteropConnection()
     BoxWithConstraints(
         modifier = Modifier

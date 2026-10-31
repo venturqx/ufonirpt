@@ -74,7 +74,7 @@ data class StreamEntity(
     @Ignore
     constructor(info: StreamInfo) : this(
         serviceId = info.serviceId, url = info.url, title = info.name,
-        streamType = info.streamType, duration = info.duration, uploader = info.uploaderName,
+        streamType = info.streamType, duration = info.duration, uploader = info.uploaderName.orEmpty(),
         uploaderUrl = info.uploaderUrl,
         thumbnailUrl = ImageStrategy.imageListToDbUrl(info.thumbnails), viewCount = info.viewCount,
         textualUploadDate = info.textualUploadDate, uploadDate = info.uploadDate?.offsetDateTime(),

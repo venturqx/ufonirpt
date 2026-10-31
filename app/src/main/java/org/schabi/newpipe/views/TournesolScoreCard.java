@@ -22,7 +22,6 @@ import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 
 import org.schabi.newpipe.R;
-import org.schabi.newpipe.extractor.stream.StreamInfo;
 import org.schabi.newpipe.util.CriterionDistribution;
 import org.schabi.newpipe.util.CriterionScore;
 import org.schabi.newpipe.util.TournesolEntityApi;
@@ -30,6 +29,7 @@ import org.schabi.newpipe.util.TournesolEntityParser;
 import org.schabi.newpipe.util.TournesolHelper;
 import org.schabi.newpipe.util.TournesolRating;
 import org.schabi.newpipe.util.TournesolScoreCache;
+import org.schabi.newpipe.util.TournesolVideoRef;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -79,7 +79,7 @@ public class TournesolScoreCard extends LinearLayout {
     private FrameLayout tournesolLollipopContainer;
 
     @Nullable
-    private StreamInfo streamInfo;
+    private TournesolVideoRef video;
     @Nullable
     private RatingListener ratingListener;
 
@@ -114,9 +114,9 @@ public class TournesolScoreCard extends LinearLayout {
         tournesolLollipopContainer = findViewById(R.id.tournesol_lollipop_container);
     }
 
-    public void bind(@NonNull final StreamInfo info,
+    public void bind(@NonNull final TournesolVideoRef videoRef,
                      @NonNull final RatingListener listener) {
-        this.streamInfo = info;
+        this.video = videoRef;
         this.ratingListener = listener;
 
         tournesolInfoSection.setVisibility(GONE);
@@ -156,11 +156,11 @@ public class TournesolScoreCard extends LinearLayout {
     }
 
     private void fetchTournesolInfo() {
-        if (streamInfo == null) {
+        if (video == null) {
             return;
         }
         disposables.add(
-                TournesolEntityApi.fetchRating(streamInfo.getServiceId(), streamInfo.getId())
+                TournesolEntityApi.fetchRating(video.getServiceId(), video.getVideoId())
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnTerminate(() -> load.onFinished(ScoreCardLoad.Fetch.INFO))
                 .subscribe(
@@ -171,14 +171,14 @@ public class TournesolScoreCard extends LinearLayout {
     }
 
     private void displayTournesolInfo(final TournesolRating rating) {
-        if (streamInfo == null) {
+        if (video == null) {
             return;
         }
         final double tournesolScore = rating.getScore();
         final List<String> unsafeReasons = rating.getUnsafeReasons();
 
         final long roundedScore = Math.round(tournesolScore);
-        cacheScore(streamInfo, roundedScore, unsafeReasons);
+        cacheScore(video, roundedScore, unsafeReasons);
 
         final int nComparisons = rating.getComparisonCount();
         final int nContributors = rating.getContributorCount();
@@ -204,9 +204,9 @@ public class TournesolScoreCard extends LinearLayout {
         tournesolInfoSection.setVisibility(VISIBLE);
     }
 
-    private static void cacheScore(final StreamInfo info, final long roundedScore,
+    private static void cacheScore(final TournesolVideoRef videoRef, final long roundedScore,
                                    final List<String> unsafeReasons) {
-        for (final String url : ScoreCacheUrls.of(info.getOriginalUrl(), info.getUrl())) {
+        for (final String url : ScoreCacheUrls.of(videoRef.getOriginalUrl(), videoRef.getUrl())) {
             TournesolScoreCache.INSTANCE.put(url, roundedScore, unsafeReasons);
         }
     }
@@ -379,11 +379,11 @@ public class TournesolScoreCard extends LinearLayout {
     }
 
     private void fetchTournesolDistribution() {
-        if (streamInfo == null) {
+        if (video == null) {
             return;
         }
         disposables.add(
-                TournesolEntityApi.fetchDistributions(streamInfo.getServiceId(), streamInfo.getId())
+                TournesolEntityApi.fetchDistributions(video.getServiceId(), video.getVideoId())
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnTerminate(() -> load.onFinished(ScoreCardLoad.Fetch.DISTRIBUTION))
                 .subscribe(

@@ -56,7 +56,6 @@
     <color name="playlist_stream_count_background_color">#e6000000</color>
     <color name="duration_text_color">#EEFFFFFF</color>
     <color name="video_overlay_color">#64000000</color>
-    <color name="compare_video_a">#FFCA1D</color>
 
     <color name="subscribe_text_color">#0F0F0F</color>
     <color name="subscribed_background_color">#d6d6d6</color>

@@ -24,8 +24,6 @@ import kotlin.random.Random
 import kotlin.reflect.KMutableProperty0
 import org.schabi.newpipe.R
 import org.schabi.newpipe.database.history.model.StreamHistoryEntry
-import org.schabi.newpipe.database.stream.model.StreamEntity
-import org.schabi.newpipe.extractor.stream.StreamInfo
 import org.schabi.newpipe.fragments.detail.compare.CompareCompactScreen
 import org.schabi.newpipe.fragments.detail.compare.CompareSuggestionPool
 import org.schabi.newpipe.fragments.detail.compare.SuggestionFetch
@@ -33,15 +31,15 @@ import org.schabi.newpipe.fragments.detail.compare.SuggestionSlot
 import org.schabi.newpipe.ktx.serializable
 import org.schabi.newpipe.local.history.HistoryRecordManager
 import org.schabi.newpipe.ui.theme.AppTheme
-import org.schabi.newpipe.util.KEY_INFO
 import org.schabi.newpipe.util.MissingTokenException
 import org.schabi.newpipe.util.NavigationHelper
 import org.schabi.newpipe.util.TournesolAuthManager
 import org.schabi.newpipe.util.TournesolLoginFailure
+import org.schabi.newpipe.util.TournesolVideoRef
 import org.schabi.newpipe.util.orMissingToken
 
 class CompareFragment : Fragment() {
-    private var currentInfo: StreamInfo? = null
+    private var currentVideo: TournesolVideoRef? = null
     private var embedInDetail = false
     private var externalScroll = false
     private val disposables = CompositeDisposable()
@@ -86,13 +84,13 @@ class CompareFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        currentInfo = arguments?.serializable<StreamInfo>(KEY_INFO)
+        currentVideo = arguments?.serializable<TournesolVideoRef>(KEY_VIDEO)
         embedInDetail = arguments?.getBoolean(KEY_EMBED_IN_DETAIL) == true
         externalScroll = arguments?.getBoolean(KEY_EXTERNAL_SCROLL) == true
-        currentHistoryEntry = currentInfo?.let { buildCurrentEntry(it) }
+        currentHistoryEntry = currentVideo?.let { buildCurrentEntry(it) }
         scoreStore = CompareScoreStore.shared(requireContext())
         suggestionPool = CompareSuggestionPool(
-            historyPairAllowed = currentInfo == null,
+            historyPairAllowed = currentVideo == null,
             random = Random.Default,
             toVideo = ::buildHistorySuggestion
         )
@@ -128,7 +126,7 @@ class CompareFragment : Fragment() {
             historyEntries = emptyList()
             historyMessageRes = R.string.compare_history_unavailable
         }
-        if (currentInfo == null) {
+        if (currentVideo == null) {
             loadRandomPair()
         } else {
             prefetchPool()
@@ -170,7 +168,7 @@ class CompareFragment : Fragment() {
                         },
                         onRandomizeLeft = { randomize(SuggestionSlot.LEFT) },
                         onRandomizeRight = { randomize(SuggestionSlot.RIGHT) },
-                        showGreeting = currentInfo == null,
+                        showGreeting = currentVideo == null,
                         reserveMiniPlayerSpace = !embedInDetail,
                         externalScroll = externalScroll,
                         onContentMeasured = if (embedInDetail) {
@@ -198,7 +196,7 @@ class CompareFragment : Fragment() {
         profileDisposable?.dispose()
         profileDisposable = null
         // Drop the large lists so a kept Fragment instance does not pin them in heap.
-        // currentInfo, currentHistoryEntry and stored scores are small, set only in
+        // currentVideo, currentHistoryEntry and stored scores are small, set only in
         // onCreate/applyStored..., and must survive for a recreated view.
         historyEntries = emptyList()
         recommendations = emptyList()
@@ -232,7 +230,7 @@ class CompareFragment : Fragment() {
 
     private fun prepareHistory(entries: List<StreamHistoryEntry>): PreparedHistory {
         val sorted = entries.sortedByDescending { it.accessDate }
-        val current = currentInfo
+        val current = currentVideo
         val filtered = if (current == null) {
             sorted
         } else {
@@ -284,12 +282,11 @@ class CompareFragment : Fragment() {
         return prefs.getBoolean(key, false)
     }
 
-    private fun buildCurrentEntry(info: StreamInfo): StreamHistoryEntry {
-        val entity = StreamEntity(info)
-        val hash = info.url.hashCode().toLong()
+    private fun buildCurrentEntry(video: TournesolVideoRef): StreamHistoryEntry {
+        val hash = video.url.hashCode().toLong()
         val syntheticId = if (hash == 0L) -1L else -abs(hash)
         return StreamHistoryEntry(
-            streamEntity = entity,
+            streamEntity = video.stream,
             streamId = syntheticId,
             accessDate = OffsetDateTime.now(),
             repeatCount = 0
@@ -380,13 +377,10 @@ class CompareFragment : Fragment() {
         loginError = null
         loginInProgress = true
         loginDisposable?.dispose()
-        loginDisposable = TournesolAuthManager.performPasswordLogin(username, password)
-            .subscribeOn(Schedulers.io())
+        loginDisposable = TournesolAuthManager.login(requireContext(), username, password)
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(
-                { tokenResponse ->
-                    TournesolAuthManager.saveUsername(requireContext(), username)
-                    TournesolAuthManager.saveAuthState(requireContext(), tokenResponse)
+                {
                     loginInProgress = false
                     showLoginDialog = false
                     refreshUserInfo()
@@ -747,6 +741,7 @@ class CompareFragment : Fragment() {
         @JvmStatic
         var pendingOpenComparisons = false
 
+        private const val KEY_VIDEO = "compare_video"
         private const val KEY_EMBED_IN_DETAIL = "compare_embed_in_detail"
         private const val KEY_EXTERNAL_SCROLL = "compare_external_scroll"
         private const val COMPARISONS_USERNAME = "me"
@@ -755,13 +750,13 @@ class CompareFragment : Fragment() {
         @JvmStatic
         @JvmOverloads
         fun getInstance(
-            info: StreamInfo?,
+            video: TournesolVideoRef?,
             embedInDetail: Boolean = false,
             externalScroll: Boolean = false
         ): CompareFragment {
             return CompareFragment().apply {
                 arguments = bundleOf(
-                    KEY_INFO to info,
+                    KEY_VIDEO to video,
                     KEY_EMBED_IN_DETAIL to embedInDetail,
                     KEY_EXTERNAL_SCROLL to externalScroll
                 )

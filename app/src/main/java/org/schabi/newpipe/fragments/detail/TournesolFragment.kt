@@ -9,7 +9,7 @@ import androidx.fragment.app.Fragment
 import org.schabi.newpipe.R
 import org.schabi.newpipe.extractor.stream.StreamInfo
 import org.schabi.newpipe.ktx.serializable
-import org.schabi.newpipe.util.KEY_INFO
+import org.schabi.newpipe.util.TournesolVideoRef
 import org.schabi.newpipe.views.TournesolScoreCard
 
 class TournesolFragment : Fragment() {
@@ -25,10 +25,10 @@ class TournesolFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val info = arguments?.serializable<StreamInfo>(KEY_INFO) ?: return
+        val video = arguments?.serializable<TournesolVideoRef>(KEY_VIDEO) ?: return
         val scoreCard = view.findViewById<TournesolScoreCard>(R.id.tournesol_score_card)
         val detailFragment = parentFragment as? VideoDetailFragment
-        scoreCard.bind(info) { hasInsufficientReason, score ->
+        scoreCard.bind(video) { hasInsufficientReason, score ->
             detailFragment?.updateTournesolDetailIcon(hasInsufficientReason, score)
         }
         attachCompareIfRequested()
@@ -52,9 +52,9 @@ class TournesolFragment : Fragment() {
             return
         }
 
-        val info = arguments?.serializable<StreamInfo>(KEY_INFO) ?: return
+        val video = arguments?.serializable<TournesolVideoRef>(KEY_VIDEO) ?: return
         val compareFragment = CompareFragment.getInstance(
-            info,
+            video,
             embedInDetail = true,
             externalScroll = true
         )
@@ -65,10 +65,11 @@ class TournesolFragment : Fragment() {
 
     companion object {
         private const val TAG_COMPARE = "tournesol_compare"
+        private const val KEY_VIDEO = "tournesol_video"
 
         fun getInstance(info: StreamInfo): TournesolFragment {
             return TournesolFragment().apply {
-                arguments = bundleOf(KEY_INFO to info)
+                arguments = bundleOf(KEY_VIDEO to TournesolVideoRef.from(info))
             }
         }
     }

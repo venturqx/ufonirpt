@@ -111,26 +111,16 @@ import org.schabi.newpipe.R
 import org.schabi.newpipe.database.history.model.StreamHistoryEntry
 import org.schabi.newpipe.fragments.detail.compare.CompactInitialPromptHeader
 import org.schabi.newpipe.fragments.detail.compare.CompareHistoryOverlayGridCard
-import org.schabi.newpipe.fragments.detail.compare.DragAxis
 import org.schabi.newpipe.fragments.detail.compare.LollipopPicker
 import org.schabi.newpipe.fragments.detail.compare.OverlayTarget
 import org.schabi.newpipe.fragments.detail.compare.UserGreetingBanner
 import org.schabi.newpipe.fragments.detail.compare.compactDescriptionRes
 import org.schabi.newpipe.fragments.detail.compare.computeCompareScale
-import org.schabi.newpipe.fragments.detail.compare.requestDisallowParentIntercept
 import org.schabi.newpipe.ui.components.items.Stream
 import org.schabi.newpipe.ui.components.items.stream.StreamThumbnail
 import org.schabi.newpipe.util.LoginDialogContent
 
 internal const val COMPACT_MAIN_CRITERION_ID = "largely_recommended"
-
-internal fun dimensionScore(state: CompareUiState, criterion: CompareCriterion): Int {
-    return if (criterion.id == COMPACT_MAIN_CRITERION_ID) {
-        state.score
-    } else {
-        state.extraScores[criterion.id] ?: 0
-    }
-}
 
 @Composable
 internal fun CompareComparisonRow(item: CompareRecommendationItem, index: Int = 0) {

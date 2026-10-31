@@ -70,21 +70,6 @@ import org.schabi.newpipe.util.TournesolFilterCriterion
 import org.schabi.newpipe.util.TournesolFilterStore
 
 class TournesolFilterFragment : BottomSheetDialogFragment() {
-    fun interface FilterListener {
-        fun onApply(config: TournesolFilterConfig)
-    }
-
-    private var listener: FilterListener? = null
-    private var initialConfig: TournesolFilterConfig? = null
-
-    fun setListener(listener: FilterListener) {
-        this.listener = listener
-    }
-
-    fun setInitialData(config: TournesolFilterConfig) {
-        this.initialConfig = config
-    }
-
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val dialog = super.onCreateDialog(savedInstanceState)
         dialog.setOnShowListener { dialogInterface ->
@@ -105,11 +90,10 @@ class TournesolFilterFragment : BottomSheetDialogFragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        val cfg = initialConfig ?: TournesolFilterStore(
-            PreferenceManager.getDefaultSharedPreferences(requireContext())
-        ).load()
-
         val appContext = requireContext().applicationContext
+        val store = TournesolFilterStore(PreferenceManager.getDefaultSharedPreferences(appContext))
+        val cfg = store.load()
+
         return ComposeView(requireContext()).apply {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
@@ -117,12 +101,19 @@ class TournesolFilterFragment : BottomSheetDialogFragment() {
                     TournesolFilterSheet(
                         initialConfig = cfg,
                         appContext = appContext,
-                        onApply = { config -> listener?.onApply(config) },
+                        onApply = { config ->
+                            store.save(config)
+                            parentFragmentManager.setFragmentResult(REQUEST_KEY, Bundle.EMPTY)
+                        },
                         onClose = { dismiss() }
                     )
                 }
             }
         }
+    }
+
+    companion object {
+        const val REQUEST_KEY = "tournesol_filter_applied"
     }
 }
 

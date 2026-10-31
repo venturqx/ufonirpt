@@ -2,8 +2,10 @@ package org.schabi.newpipe.util
 
 import android.content.Context
 import android.content.SharedPreferences
+import io.reactivex.rxjava3.core.Completable
 import io.reactivex.rxjava3.core.Maybe
 import io.reactivex.rxjava3.core.Observable
+import io.reactivex.rxjava3.core.Scheduler
 import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.schedulers.Schedulers
 import io.reactivex.rxjava3.subjects.PublishSubject
@@ -25,6 +27,15 @@ data class TournesolProfile(
 class MissingTokenException : RuntimeException()
 
 fun Maybe<String>.orMissingToken(): Single<String> = switchIfEmpty(Single.error(MissingTokenException()))
+
+internal fun <T : Any> authenticateThenPersist(
+    auth: Single<T>,
+    scheduler: Scheduler,
+    persist: (T) -> Boolean
+): Completable = auth
+    .doOnSuccess { check(persist(it)) { "Tournesol login could not be persisted" } }
+    .ignoreElement()
+    .subscribeOn(scheduler)
 
 object TournesolAuthManager {
     private const val SHARED_PREF_AUTH_STATE = TournesolAuthStorage.AUTH_STATE_KEY
@@ -162,22 +173,18 @@ object TournesolAuthManager {
 
     fun signedOut(): Observable<Unit> = signedOutEvents.observeOn(Schedulers.io())
 
-    fun saveAuthState(context: Context, authState: AuthState) {
-        val prefs = getAuthStatePrefs(context, resetIfUnreadable = true) ?: return
-        prefs.edit().putString(SHARED_PREF_AUTH_STATE, authState.jsonSerializeString()).commit()
+    private fun saveAuthState(context: Context, authState: AuthState): Boolean {
+        val prefs = getAuthStatePrefs(context, resetIfUnreadable = true) ?: return false
+        return prefs.edit().putString(SHARED_PREF_AUTH_STATE, authState.jsonSerializeString()).commit()
     }
 
-    fun saveAuthState(context: Context, tokenResponse: TokenResponse) {
-        val config = AuthorizationServiceConfiguration(
-            android.net.Uri.parse(AUTH_URL),
-            android.net.Uri.parse(TOKEN_URL)
-        )
-        val authState = AuthState(config)
+    fun saveAuthState(context: Context, tokenResponse: TokenResponse): Boolean {
+        val authState = AuthState(serviceConfiguration())
         authState.update(tokenResponse, null)
-        saveAuthState(context, authState)
+        return saveAuthState(context, authState)
     }
 
-    fun getAuthState(context: Context): AuthState? {
+    private fun getAuthState(context: Context): AuthState? {
         val prefs = getAuthStatePrefs(context) ?: return null
         val json = prefs.getString(SHARED_PREF_AUTH_STATE, null) ?: return null
         return try {
@@ -199,6 +206,15 @@ object TournesolAuthManager {
                 is AccessTokenResult.Failed -> throw result.cause
             }
         }.subscribeOn(Schedulers.io())
+    }
+
+    fun login(context: Context, username: String, password: String): Completable {
+        val appContext = context.applicationContext
+        val auth = performPasswordLogin(username, password)
+        return authenticateThenPersist(auth, Schedulers.io()) { tokenResponse ->
+            saveUsername(appContext, username)
+            saveAuthState(appContext, tokenResponse)
+        }
     }
 
     fun performPasswordLogin(username: String, password: String): Single<TokenResponse> = performTokenRequestWithFallback(TokenCommand.Password(username, password))
@@ -233,12 +249,13 @@ object TournesolAuthManager {
             .toTokenResponse(clientId, command)
     }
 
+    private fun serviceConfiguration() = AuthorizationServiceConfiguration(
+        android.net.Uri.parse(AUTH_URL),
+        android.net.Uri.parse(TOKEN_URL)
+    )
+
     private fun TokenGrant.toTokenResponse(clientId: String, command: TokenCommand): TokenResponse {
-        val config = AuthorizationServiceConfiguration(
-            android.net.Uri.parse(AUTH_URL),
-            android.net.Uri.parse(TOKEN_URL)
-        )
-        val requestBuilder = TokenRequest.Builder(config, clientId)
+        val requestBuilder = TokenRequest.Builder(serviceConfiguration(), clientId)
             .setGrantType(command.grantType)
         if (command is TokenCommand.Refresh) {
             requestBuilder.setRefreshToken(command.refreshToken)

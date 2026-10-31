@@ -224,7 +224,6 @@
     <string name="clear_views_history_title">Clear watch history</string>
     <string name="clear_views_history_summary">Deletes the history of played streams and the playback positions</string>
     <string name="delete_view_history_alert">Delete entire watch history?</string>
-    <string name="delete_view_history_description">Your watching history will be permanently erased</string>
     <string name="watch_history_deleted">Watch history deleted</string>
     <string name="clear_playback_states_title">Delete playback positions</string>
     <string name="clear_playback_states_summary">Deletes all playback positions</string>
@@ -288,7 +287,6 @@
     <string name="detail_dislikes_img_view_description">Dislikes</string>
     <string name="comments_tab_description">Comments</string>
     <string name="related_items_tab_description">Related items</string>
-    <string name="compare_tab_description">Compare</string>
     <string name="tournesol_tab_description">Tournesol</string>
     <string name="manifesto_tab_description">Manifesto</string>
     <string name="description_tab_description">Description</string>
@@ -408,8 +406,6 @@
     <string name="history_sort_date">Date</string>
     <string name="history_sort_views">Views</string>
     <!-- Content -->
-    <string name="recommendation_algorithm_title">Recommendation Algorithm</string>
-    <string name="recommendation_algorithm_summary">Choose the service used for recommendations</string>
     <string name="recommendation_algorithm_key">recommendation_algorithm_key</string>
     <string name="recommendation_algorithm_youtube">YouTube</string>
     <string name="recommendation_algorithm_tournesol">Tournesol</string>
@@ -428,10 +424,8 @@
     <string name="no_playlist_bookmarked_yet">No playlist bookmarks yet</string>
     <string name="select_a_kiosk">Select a kiosk</string>
     <string name="filter_tournesol">Filter Tournesol</string>
-    <string name="filter_content">Content</string>
     <string name="filter_languages">Languages</string>
     <string name="filter_date">Date</string>
-    <string name="include_low_score_videos">Include low score videos</string>
     <string name="include_low_score_videos_short">Low score allowed</string>
     <string name="date_since_forever">No restriction</string>
     <string name="date_last_year">Less than 1 year</string>
@@ -446,8 +440,6 @@
     <string name="date_short_year">1Y</string>
     <string name="filter_advanced">Advanced</string>
     <string name="filter_duration">Duration</string>
-    <string name="filter_duration_min">Min: %1$s</string>
-    <string name="filter_duration_max">Max: %1$s</string>
     <string name="filter_duration_no_limit">No limit</string>
     <string name="filter_duration_minutes">%1$d min</string>
     <string name="filter_criteria">Criteria weight</string>
@@ -461,8 +453,6 @@
     <string name="filter_criteria_diversity_inclusion">Diversity &amp; inclusion</string>
     <string name="filter_criteria_better_habits">Better habits</string>
     <string name="filter_criteria_backfire_risk">Resilience to backfiring</string>
-    <string name="filter_unsafe_short">More</string>
-    <string name="apply">Apply</string>
 
     <!-- Language names for Tournesol filter -->
     <string name="language_english">English</string>
@@ -472,24 +462,19 @@
     <string name="language_italian">Italiano</string>
     <string name="language_portuguese">Portugues</string>
     <string name="tournesol_hi_greeting">Hi</string>
-    <string name="tournesol_hi_user">Hi %1$s,</string>
     <string name="tournesol_login_title">Log in to Tournesol</string>
     <string name="tournesol_username_hint">Username</string>
     <string name="tournesol_password_hint">Password</string>
     <string name="tournesol_login_button">Login</string>
     <string name="tournesol_register_button">Register</string>
     <string name="tournesol_logout_button">Logout</string>
-    <string name="tournesol_login_action">Log in to Tournesol</string>
     <string name="tournesol_login_missing_fields">Please enter username and password</string>
     <string name="tournesol_login_in_progress">Extracting and logging in...</string>
     <string name="tournesol_login_success">Login successful</string>
     <string name="tournesol_login_failed">Login failed</string>
     <string name="tournesol_login_invalid_credentials">Incorrect username or password</string>
-    <string name="tournesol_auth_cancelled">Tournesol auth cancelled</string>
-    <string name="tournesol_score_label">%1$s</string>
     <string name="tournesol_detail_contributors">%1$d contributors</string>
     <string name="tournesol_detail_comparisons">%1$d comparisons</string>
-    <string name="tournesol_detail_unsafe_warning">⚠ Flagged as unsafe</string>
     <string name="tournesol_criteria_reliability">Reliable &amp; not misleading</string>
     <string name="tournesol_criteria_importance">Important &amp; actionable</string>
     <string name="tournesol_criteria_engaging">Engaging &amp; thought-provoking</string>
@@ -511,23 +496,9 @@
     <string name="compare_history_unavailable">History unavailable</string>
     <string name="compare_history_empty">No videos in history</string>
     <string name="compare_no_comparisons_available">No comparisons available</string>
-    <string name="compare_score_label">Score: %1$d</string>
-    <string name="compare_action_button">Compare</string>
     <string name="compare_see_history">Your comparisons</string>
     <string name="compare_you_submitted">You submitted %1$d comparisons.</string>
-    <string name="compare_see_stats">Tournesol stats</string>
-    <string name="compare_more_criteria_title">More criteria</string>
-    <string name="compare_submit_with_score">%1$s %2$d</string>
-    <string name="compare_login_label">Login</string>
-    <string name="compare_logged_in_label">Logged in</string>
-    <string name="compare_previous_video">Previous video</string>
-    <string name="compare_next_video">Next video</string>
     <string name="compare_thumbnail_description">Video thumbnail</string>
-    <string name="compare_score_accessibility">Comparison score: %1$d from %2$d to %3$d</string>
-    <string name="compare_score_no">NO</string>
-    <string name="compare_score_yes">YES</string>
-    <string name="compare_item_info">Title: %1$s\nURL: %2$s</string>
-    <string name="compare_current_label">CURRENT</string>
     <string name="compare_login_required">Tournesol login required</string>
     <string name="compare_greeting">Hi %1$s,</string>
     <string name="compare_greeting_comparisons">You\'ve made %1$d comparisons!</string>
@@ -536,10 +507,8 @@
     <string name="compare_submitted">Comparison submitted</string>
     <string name="compare_score_updated">Comparison updated</string>
     <string name="compare_more_submitted">Additional criteria submitted</string>
-    <string name="compare_already_submitted">Comparison already submitted</string>
     <string name="compare_failed">Compare failed</string>
     <string name="compare_failed_with_message">Compare failed: %1$s</string>
-    <string name="compare_select_criteria">Select at least one criterion</string>
     <string name="compare_criteria_largely_recommended">Largely recommended</string>
     <string name="compare_compact_initial_prompt">Please start rating by sliding up and down the %1$s icon.</string>
     <string name="compare_criteria_desc_largely_recommended">Overall, should be recommended widely to a broad audience.</string>
@@ -1038,9 +1007,7 @@
     <string name="auto_queue_description">Next</string>
     <string name="newpipe_extractor_description">NewPipeExtractor is a library for extracting things from streaming sites. It is a core component of NewPipe, but could be used independently.</string>
     <string name="history_sort_label">Sort by</string>
-    <string name="clear_history_description">Button to clear watch history</string>
     <string name="playlist_content_description">Thumbnail for playlist %1$s</string>
-    <string name="stream_content_description">Thumbnail for stream %1$s</string>
     <plurals name="comments">
         <item quantity="one">%d comment</item>
         <item quantity="other">%d comments</item>
