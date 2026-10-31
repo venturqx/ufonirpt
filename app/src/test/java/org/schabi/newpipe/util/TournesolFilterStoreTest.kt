@@ -13,7 +13,7 @@ class TournesolFilterStoreTest {
 
     private fun defaults(vararg languages: String) = TournesolFilterConfig(
         languages = languages.toList(),
-        dateKey = "3_months",
+        dateRange = TournesolDateRange.THREE_MONTHS,
         includeLowScoreVideos = false,
         durationMinSeconds = -1,
         durationMaxSeconds = -1,
@@ -26,7 +26,7 @@ class TournesolFilterStoreTest {
     fun `save then load returns an equal config with every field set`() {
         val config = TournesolFilterConfig(
             languages = listOf("en", "fr"),
-            dateKey = "forever",
+            dateRange = TournesolDateRange.FOREVER,
             includeLowScoreVideos = true,
             durationMinSeconds = 120,
             durationMaxSeconds = 1800,
@@ -52,7 +52,7 @@ class TournesolFilterStoreTest {
     @Test
     fun `sparse weights come back total with the same meaning`() {
         val config = TournesolFilterConfig(
-            dateKey = "forever",
+            dateRange = TournesolDateRange.FOREVER,
             weights = mapOf(TournesolFilterCriterion.RELIABILITY to 75)
         )
 
@@ -114,7 +114,7 @@ class TournesolFilterStoreTest {
         assertEquals(
             TournesolFilterConfig(
                 languages = listOf("fr", "de"),
-                dateKey = "week",
+                dateRange = TournesolDateRange.WEEK,
                 includeLowScoreVideos = true,
                 durationMinSeconds = 60,
                 durationMaxSeconds = 600,
@@ -138,6 +138,23 @@ class TournesolFilterStoreTest {
         legacyStore.save(loaded)
 
         assertEquals(legacy, legacyPrefs.values)
+    }
+
+    @Test
+    fun `every date range persists its key and loads back`() {
+        for (dateRange in TournesolDateRange.entries) {
+            store.save(TournesolFilterConfig(dateRange = dateRange))
+
+            assertEquals(dateRange.key, prefs.values["tournesol_filter_date_key"])
+            assertEquals(dateRange, store.load().dateRange)
+        }
+    }
+
+    @Test
+    fun `garbage stored date key loads the default instead of forever`() {
+        val loaded = storeWith("tournesol_filter_date_key" to "fortnight").load()
+
+        assertEquals(TournesolDateRange.THREE_MONTHS, loaded.dateRange)
     }
 
     @Test

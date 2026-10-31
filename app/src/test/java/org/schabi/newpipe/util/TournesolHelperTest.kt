@@ -14,7 +14,13 @@ class TournesolHelperTest {
     // Fixed UTC timestamp: 2026-06-15T12:00:00.000Z (1781524800000L)
     private val fixedNowMillis = 1781524800000L
     private val oneHourMillis = 3_600_000L
-    private val datedKeys = listOf("day", "week", "month", "3_months", "year")
+    private val datedRanges = listOf(
+        TournesolDateRange.DAY,
+        TournesolDateRange.WEEK,
+        TournesolDateRange.MONTH,
+        TournesolDateRange.THREE_MONTHS,
+        TournesolDateRange.YEAR
+    )
 
     private fun millisOf(instant: String) = Instant.parse(instant).toEpochMilli()
 
@@ -27,28 +33,27 @@ class TournesolHelperTest {
     }
 
     @Test
-    fun `calculateDateGte computes deterministic UTC timestamps and returns null for forever or invalid`() {
-        assertNull(TournesolHelper.calculateDateGte("forever", fixedNowMillis))
-        assertNull(TournesolHelper.calculateDateGte("unknown_corrupt_key", fixedNowMillis))
+    fun `calculateDateGte computes deterministic UTC timestamps and returns null for forever`() {
+        assertNull(TournesolHelper.calculateDateGte(TournesolDateRange.FOREVER, fixedNowMillis))
         assertEquals(
             "2025-06-15T12:00:00.000Z",
-            TournesolHelper.calculateDateGte("year", fixedNowMillis)
+            TournesolHelper.calculateDateGte(TournesolDateRange.YEAR, fixedNowMillis)
         )
         assertEquals(
             "2026-03-15T12:00:00.000Z",
-            TournesolHelper.calculateDateGte("3_months", fixedNowMillis)
+            TournesolHelper.calculateDateGte(TournesolDateRange.THREE_MONTHS, fixedNowMillis)
         )
         assertEquals(
             "2026-05-15T12:00:00.000Z",
-            TournesolHelper.calculateDateGte("month", fixedNowMillis)
+            TournesolHelper.calculateDateGte(TournesolDateRange.MONTH, fixedNowMillis)
         )
         assertEquals(
             "2026-06-08T12:00:00.000Z",
-            TournesolHelper.calculateDateGte("week", fixedNowMillis)
+            TournesolHelper.calculateDateGte(TournesolDateRange.WEEK, fixedNowMillis)
         )
         assertEquals(
             "2026-06-14T12:00:00.000Z",
-            TournesolHelper.calculateDateGte("day", fixedNowMillis)
+            TournesolHelper.calculateDateGte(TournesolDateRange.DAY, fixedNowMillis)
         )
     }
 
@@ -56,11 +61,11 @@ class TournesolHelperTest {
     fun `calculateDateGte zeroes minutes, seconds and millis`() {
         val midHour = millisOf("2026-06-15T12:42:17.123Z")
 
-        assertEquals("2025-06-15T12:00:00.000Z", TournesolHelper.calculateDateGte("year", midHour))
-        assertEquals("2026-03-15T12:00:00.000Z", TournesolHelper.calculateDateGte("3_months", midHour))
-        assertEquals("2026-05-15T12:00:00.000Z", TournesolHelper.calculateDateGte("month", midHour))
-        assertEquals("2026-06-08T12:00:00.000Z", TournesolHelper.calculateDateGte("week", midHour))
-        assertEquals("2026-06-14T12:00:00.000Z", TournesolHelper.calculateDateGte("day", midHour))
+        assertEquals("2025-06-15T12:00:00.000Z", TournesolHelper.calculateDateGte(TournesolDateRange.YEAR, midHour))
+        assertEquals("2026-03-15T12:00:00.000Z", TournesolHelper.calculateDateGte(TournesolDateRange.THREE_MONTHS, midHour))
+        assertEquals("2026-05-15T12:00:00.000Z", TournesolHelper.calculateDateGte(TournesolDateRange.MONTH, midHour))
+        assertEquals("2026-06-08T12:00:00.000Z", TournesolHelper.calculateDateGte(TournesolDateRange.WEEK, midHour))
+        assertEquals("2026-06-14T12:00:00.000Z", TournesolHelper.calculateDateGte(TournesolDateRange.DAY, midHour))
     }
 
     @Test
@@ -73,32 +78,32 @@ class TournesolHelperTest {
         )
 
         for ((now, expected) in expectedByNow) {
-            assertEquals(now, expected, TournesolHelper.calculateDateGte("day", millisOf(now)))
+            assertEquals(now, expected, TournesolHelper.calculateDateGte(TournesolDateRange.DAY, millisOf(now)))
         }
     }
 
     @Test
     fun `calculateDateGte truncates after clamping month-end dates`() {
         val cases = listOf(
-            Triple("month", "2026-03-31T18:45:30.500Z", "2026-02-28T18:00:00.000Z"),
-            Triple("month", "2024-03-31T18:45:30.500Z", "2024-02-29T18:00:00.000Z"),
-            Triple("3_months", "2026-05-31T18:45:30.500Z", "2026-02-28T18:00:00.000Z"),
-            Triple("year", "2024-02-29T18:45:30.500Z", "2023-02-28T18:00:00.000Z"),
-            Triple("week", "2026-01-03T05:20:00.000Z", "2025-12-27T05:00:00.000Z")
+            Triple(TournesolDateRange.MONTH, "2026-03-31T18:45:30.500Z", "2026-02-28T18:00:00.000Z"),
+            Triple(TournesolDateRange.MONTH, "2024-03-31T18:45:30.500Z", "2024-02-29T18:00:00.000Z"),
+            Triple(TournesolDateRange.THREE_MONTHS, "2026-05-31T18:45:30.500Z", "2026-02-28T18:00:00.000Z"),
+            Triple(TournesolDateRange.YEAR, "2024-02-29T18:45:30.500Z", "2023-02-28T18:00:00.000Z"),
+            Triple(TournesolDateRange.WEEK, "2026-01-03T05:20:00.000Z", "2025-12-27T05:00:00.000Z")
         )
 
-        for ((dateKey, now, expected) in cases) {
-            assertEquals("$dateKey $now", expected, TournesolHelper.calculateDateGte(dateKey, millisOf(now)))
+        for ((dateRange, now, expected) in cases) {
+            assertEquals("$dateRange $now", expected, TournesolHelper.calculateDateGte(dateRange, millisOf(now)))
         }
     }
 
     @Test
     fun `buildTournesolUrl is stable within a UTC hour so the cache key does not change`() {
-        for (dateKey in datedKeys) {
-            val config = TournesolFilterConfig(languages = listOf("en"), dateKey = dateKey)
+        for (dateRange in datedRanges) {
+            val config = TournesolFilterConfig(languages = listOf("en"), dateRange = dateRange)
 
             assertEquals(
-                dateKey,
+                dateRange.key,
                 TournesolHelper.buildTournesolUrl(config, fixedNowMillis),
                 TournesolHelper.buildTournesolUrl(config, fixedNowMillis + oneHourMillis - 1)
             )
@@ -107,14 +112,42 @@ class TournesolHelperTest {
 
     @Test
     fun `buildTournesolUrl changes in the next UTC hour`() {
-        for (dateKey in datedKeys) {
-            val config = TournesolFilterConfig(languages = listOf("en"), dateKey = dateKey)
+        for (dateRange in datedRanges) {
+            val config = TournesolFilterConfig(languages = listOf("en"), dateRange = dateRange)
 
             assertNotEquals(
-                dateKey,
+                dateRange.key,
                 TournesolHelper.buildTournesolUrl(config, fixedNowMillis + oneHourMillis - 1),
                 TournesolHelper.buildTournesolUrl(config, fixedNowMillis + oneHourMillis)
             )
+        }
+    }
+
+    @Test
+    fun `every date range key is pinned to its persisted literal`() {
+        val expected = mapOf(
+            TournesolDateRange.FOREVER to "forever",
+            TournesolDateRange.YEAR to "year",
+            TournesolDateRange.THREE_MONTHS to "3_months",
+            TournesolDateRange.MONTH to "month",
+            TournesolDateRange.WEEK to "week",
+            TournesolDateRange.DAY to "day"
+        )
+
+        assertEquals(expected, TournesolDateRange.entries.associateWith { it.key })
+    }
+
+    @Test
+    fun `every date range key round trips through the parser`() {
+        for (dateRange in TournesolDateRange.entries) {
+            assertEquals(dateRange.key, dateRange, TournesolDateRange.fromKey(dateRange.key))
+        }
+    }
+
+    @Test
+    fun `null, empty, and unknown date keys parse to the three months default`() {
+        for (key in listOf(null, "", "garbage", "3_MONTHS", "FOREVER", " day")) {
+            assertEquals("$key", TournesolDateRange.THREE_MONTHS, TournesolDateRange.fromKey(key))
         }
     }
 
@@ -140,7 +173,7 @@ class TournesolHelperTest {
     fun `buildTournesolUrl encodes languages, date, duration, unsafe, and typed criterion weights`() {
         val config = TournesolFilterConfig(
             languages = listOf("en", "fr"),
-            dateKey = "month",
+            dateRange = TournesolDateRange.MONTH,
             includeLowScoreVideos = true,
             durationMinSeconds = 120,
             durationMaxSeconds = 1800,
@@ -180,7 +213,7 @@ class TournesolHelperTest {
     fun `buildTournesolUrl omits unset durations, unset store weights, and a forever date`() {
         val config = TournesolFilterConfig(
             languages = listOf("en", "de"),
-            dateKey = "forever",
+            dateRange = TournesolDateRange.FOREVER,
             weights = TournesolFilterCriterion.entries.associateWith { -1 }
         )
 
@@ -215,17 +248,24 @@ class TournesolHelperTest {
 
     @Test
     fun `hasActiveAdvancedFilters detects non-quick dates, durations, or active weights`() {
-        val quickKeys = setOf("day", "week", "month", "3_months", "year")
+        val base = TournesolFilterConfig(dateRange = TournesolDateRange.THREE_MONTHS)
+        assertFalse(base.hasActiveAdvancedFilters())
 
-        val base = TournesolFilterConfig(dateKey = "3_months")
-        assertFalse(base.hasActiveAdvancedFilters(quickKeys))
-
-        assertTrue(base.copy(dateKey = "forever").hasActiveAdvancedFilters(quickKeys))
-        assertTrue(base.copy(durationMinSeconds = 60).hasActiveAdvancedFilters(quickKeys))
+        assertTrue(base.copy(dateRange = TournesolDateRange.FOREVER).hasActiveAdvancedFilters())
+        assertTrue(base.copy(durationMinSeconds = 60).hasActiveAdvancedFilters())
         assertTrue(
             base.copy(weights = mapOf(TournesolFilterCriterion.IMPORTANCE to 50))
-                .hasActiveAdvancedFilters(quickKeys)
+                .hasActiveAdvancedFilters()
         )
+    }
+
+    @Test
+    fun `hasActiveAdvancedFilters is false for every quick range and true for forever`() {
+        for (dateRange in datedRanges) {
+            assertFalse(dateRange.key, TournesolFilterConfig(dateRange = dateRange).hasActiveAdvancedFilters())
+        }
+
+        assertTrue(TournesolFilterConfig(dateRange = TournesolDateRange.FOREVER).hasActiveAdvancedFilters())
     }
 
     @Test

@@ -10,10 +10,20 @@ import com.google.android.material.badge.BadgeDrawable
 import com.google.android.material.badge.BadgeUtils
 import com.google.android.material.chip.Chip
 import org.schabi.newpipe.R
+import org.schabi.newpipe.util.TournesolDateRange
 import org.schabi.newpipe.util.TournesolFilterConfig
 import org.schabi.newpipe.util.TournesolFilterStore
 
 private const val FILTER_SHEET_TAG = "TournesolFilters"
+
+private fun quickChipId(dateRange: TournesolDateRange): Int = when (dateRange) {
+    TournesolDateRange.DAY -> R.id.chip_day
+    TournesolDateRange.WEEK -> R.id.chip_week
+    TournesolDateRange.MONTH -> R.id.chip_month
+    TournesolDateRange.THREE_MONTHS -> R.id.chip_3_months
+    TournesolDateRange.YEAR -> R.id.chip_year
+    TournesolDateRange.FOREVER -> View.NO_ID
+}
 
 class TournesolFilterController(
     private val fragment: Fragment,
@@ -29,13 +39,9 @@ class TournesolFilterController(
     private var tournesolHeaderView: View? = null
     private var advancedBadge: BadgeDrawable? = null
 
-    private val quickDateChips = linkedMapOf(
-        "day" to R.id.chip_day,
-        "week" to R.id.chip_week,
-        "month" to R.id.chip_month,
-        "3_months" to R.id.chip_3_months,
-        "year" to R.id.chip_year
-    )
+    private val quickDateChips = TournesolDateRange.entries
+        .filter { it.isQuick }
+        .associateWith(::quickChipId)
 
     fun init(rootView: View) {
         currentConfig = filterStore().load()
@@ -77,9 +83,9 @@ class TournesolFilterController(
                 .inflate(R.layout.tournesol_header, headerContainer, false)
 
             // Wire up quick date chips
-            for ((dateKey, chipId) in quickDateChips) {
+            for ((dateRange, chipId) in quickDateChips) {
                 tournesolHeaderView?.findViewById<Chip>(chipId)?.setOnClickListener {
-                    onQuickDateSelected(dateKey)
+                    onQuickDateSelected(dateRange)
                 }
             }
 
@@ -133,9 +139,9 @@ class TournesolFilterController(
         notifyFiltersChanged()
     }
 
-    private fun onQuickDateSelected(dateKey: String) {
-        if (currentConfig.dateKey == dateKey) return
-        currentConfig = currentConfig.copy(dateKey = dateKey)
+    private fun onQuickDateSelected(dateRange: TournesolDateRange) {
+        if (currentConfig.dateRange == dateRange) return
+        currentConfig = currentConfig.copy(dateRange = dateRange)
         filterStore().save(currentConfig)
         updateQuickChipSelection()
         notifyFiltersChanged()
@@ -144,9 +150,9 @@ class TournesolFilterController(
     private fun updateQuickChipSelection() {
         val headerView = tournesolHeaderView ?: return
 
-        for ((dateKey, chipId) in quickDateChips) {
+        for ((dateRange, chipId) in quickDateChips) {
             val chip = headerView.findViewById<Chip>(chipId) ?: continue
-            chip.isChecked = dateKey == currentConfig.dateKey
+            chip.isChecked = dateRange == currentConfig.dateRange
         }
 
         // Sync Unsafe chip
@@ -154,7 +160,7 @@ class TournesolFilterController(
             currentConfig.includeLowScoreVideos
 
         // Highlight Advanced chip if a non-quick filter is active
-        advancedBadge?.isVisible = currentConfig.hasActiveAdvancedFilters(quickDateChips.keys)
+        advancedBadge?.isVisible = currentConfig.hasActiveAdvancedFilters()
     }
 
     private fun openFilterSheet() {

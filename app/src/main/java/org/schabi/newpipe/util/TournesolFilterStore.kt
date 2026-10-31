@@ -9,10 +9,9 @@ class TournesolFilterStore(private val prefs: SharedPreferences) {
         languages = TournesolHelper.parseFilterLanguages(
             prefs.getString(TournesolHelper.PREF_TOURNESOL_FILTER_LANGUAGES, defaultLanguages).orEmpty()
         ),
-        dateKey = prefs.getString(
-            TournesolHelper.PREF_TOURNESOL_FILTER_DATE_KEY,
-            TournesolHelper.DEFAULT_TOURNESOL_FILTER_DATE_KEY
-        ) ?: TournesolHelper.DEFAULT_TOURNESOL_FILTER_DATE_KEY,
+        dateRange = TournesolDateRange.fromKey(
+            prefs.getString(TournesolHelper.PREF_TOURNESOL_FILTER_DATE_KEY, null)
+        ),
         includeLowScoreVideos = prefs.getBoolean(
             TournesolHelper.PREF_TOURNESOL_FILTER_INCLUDE_LOW_SCORE,
             TournesolHelper.DEFAULT_TOURNESOL_FILTER_INCLUDE_LOW_SCORE
@@ -36,7 +35,7 @@ class TournesolFilterStore(private val prefs: SharedPreferences) {
                 TournesolHelper.PREF_TOURNESOL_FILTER_LANGUAGES,
                 config.languages.joinToString(",")
             )
-            .putString(TournesolHelper.PREF_TOURNESOL_FILTER_DATE_KEY, config.dateKey)
+            .putString(TournesolHelper.PREF_TOURNESOL_FILTER_DATE_KEY, config.dateRange.key)
             .putBoolean(
                 TournesolHelper.PREF_TOURNESOL_FILTER_INCLUDE_LOW_SCORE,
                 config.includeLowScoreVideos

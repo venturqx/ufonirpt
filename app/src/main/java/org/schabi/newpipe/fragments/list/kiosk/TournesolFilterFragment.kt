@@ -64,6 +64,7 @@ import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import org.schabi.newpipe.R
 import org.schabi.newpipe.ui.theme.AppTheme
+import org.schabi.newpipe.util.TournesolDateRange
 import org.schabi.newpipe.util.TournesolFilterConfig
 import org.schabi.newpipe.util.TournesolFilterCriterion
 import org.schabi.newpipe.util.TournesolFilterStore
@@ -136,6 +137,16 @@ private fun weightLevelLabel(value: Int): String = when (value) {
 }
 
 @StringRes
+private fun dateRangeLabelRes(dateRange: TournesolDateRange): Int = when (dateRange) {
+    TournesolDateRange.FOREVER -> R.string.date_since_forever
+    TournesolDateRange.YEAR -> R.string.date_last_year
+    TournesolDateRange.THREE_MONTHS -> R.string.date_last_3_months
+    TournesolDateRange.MONTH -> R.string.date_last_month
+    TournesolDateRange.WEEK -> R.string.date_last_week
+    TournesolDateRange.DAY -> R.string.date_last_day
+}
+
+@StringRes
 private fun criterionLabelRes(criterion: TournesolFilterCriterion): Int = when (criterion) {
     TournesolFilterCriterion.LARGELY_RECOMMENDED -> R.string.filter_criteria_largely_recommended
     TournesolFilterCriterion.RELIABILITY -> R.string.filter_criteria_reliability
@@ -182,7 +193,7 @@ private fun TournesolFilterSheet(
     val selectedLanguages = remember {
         mutableStateListOf<String>().apply { addAll(initialForm.languages) }
     }
-    var selectedDateKey by remember { mutableStateOf(initialForm.dateKey) }
+    var selectedDateRange by remember { mutableStateOf(initialForm.dateRange) }
     var includeLowScoreVideos by remember { mutableStateOf(initialForm.includeLowScoreVideos) }
 
     // Duration: store as minutes in slider, convert to seconds for API
@@ -209,7 +220,7 @@ private fun TournesolFilterSheet(
         onApply(
             TournesolFilterForm(
                 languages = selectedLanguages.toList(),
-                dateKey = selectedDateKey,
+                dateRange = selectedDateRange,
                 includeLowScoreVideos = includeLowScoreVideos,
                 durationMinMinutes = durationMinMinutes,
                 durationMaxMinutes = durationMaxMinutes,
@@ -229,16 +240,7 @@ private fun TournesolFilterSheet(
             FilterOption("pt", R.string.language_portuguese)
         )
     }
-    val dateOptions = remember {
-        listOf(
-            FilterOption("forever", R.string.date_since_forever),
-            FilterOption("year", R.string.date_last_year),
-            FilterOption("3_months", R.string.date_last_3_months),
-            FilterOption("month", R.string.date_last_month),
-            FilterOption("week", R.string.date_last_week),
-            FilterOption("day", R.string.date_last_day)
-        )
-    }
+    val dateOptions = TournesolDateRange.entries
 
     val baseDensity = LocalDensity.current
     val scaledDensity = remember(baseDensity) {
@@ -332,17 +334,17 @@ private fun TournesolFilterSheet(
                     horizontalArrangement = Arrangement.spacedBy(6.dp),
                     verticalArrangement = Arrangement.spacedBy(6.dp)
                 ) {
-                    dateOptions.forEach { option ->
-                        val isSelected = selectedDateKey == option.key
+                    dateOptions.forEach { dateRange ->
+                        val isSelected = selectedDateRange == dateRange
                         FilterChip(
                             selected = isSelected,
                             onClick = {
                                 if (!isSelected) {
-                                    selectedDateKey = option.key
+                                    selectedDateRange = dateRange
                                     applyAll()
                                 }
                             },
-                            label = { Text(text = stringResource(option.labelResId), style = chipTextStyle) },
+                            label = { Text(text = stringResource(dateRangeLabelRes(dateRange)), style = chipTextStyle) },
                             colors = chipColors,
                             shape = chipShape,
                             border = null,

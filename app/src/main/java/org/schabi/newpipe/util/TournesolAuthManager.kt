@@ -2,16 +2,11 @@ package org.schabi.newpipe.util
 
 import android.content.Context
 import android.content.SharedPreferences
-import android.util.Log
-import androidx.preference.PreferenceManager
-import androidx.security.crypto.EncryptedSharedPreferences
-import androidx.security.crypto.MasterKeys
 import io.reactivex.rxjava3.core.Maybe
 import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.schedulers.Schedulers
 import io.reactivex.rxjava3.subjects.PublishSubject
-import java.io.File
 import java.util.concurrent.TimeUnit
 import net.openid.appauth.AuthState
 import net.openid.appauth.AuthorizationServiceConfiguration
@@ -32,19 +27,17 @@ class MissingTokenException : RuntimeException()
 fun Maybe<String>.orMissingToken(): Single<String> = switchIfEmpty(Single.error(MissingTokenException()))
 
 object TournesolAuthManager {
-    private const val TAG = "TournesolAuthManager"
-    private const val SHARED_PREF_AUTH_STATE = "tournesol_auth_state"
+    private const val SHARED_PREF_AUTH_STATE = TournesolAuthStorage.AUTH_STATE_KEY
     private const val SHARED_PREF_USERNAME = "tournesol_username"
     private const val SHARED_PREF_COMPARISON_COUNT = "tournesol_comparison_count"
     private const val SHARED_PREF_DAILY_BASELINE_DATE = "tournesol_daily_baseline_date"
     private const val SHARED_PREF_DAILY_BASELINE_COUNT = "tournesol_daily_baseline_count"
-    private const val AUTH_STATE_PREFS_NAME = "tournesol_auth_state_prefs"
     private const val AUTH_URL = "https://api.tournesol.app/o/authorize/"
     private const val TOKEN_URL = "https://api.tournesol.app/o/token/"
     private const val DEFAULT_MIN_TTL_MS = 2 * 60 * 1000L
 
     @Volatile
-    private var authStatePrefs: SharedPreferences? = null
+    private var storage: TournesolAuthStorage? = null
 
     @Volatile
     private var session: TournesolSession<TokenResponse>? = null
@@ -80,91 +73,15 @@ object TournesolAuthManager {
         .onErrorReturn { classifyRefreshError(it) }
         .blockingGet()
 
+    private fun storage(context: Context): TournesolAuthStorage = storage ?: synchronized(this) {
+        storage ?: TournesolAuthStorage.create(context.applicationContext)
+            .also { storage = it }
+    }
+
     private fun getAuthStatePrefs(
         context: Context,
         resetIfUnreadable: Boolean = false
-    ): SharedPreferences? {
-        authStatePrefs?.let { return it }
-        return synchronized(this) {
-            authStatePrefs
-                ?: openAuthStatePrefs(context.applicationContext, resetIfUnreadable)
-                    ?.also { authStatePrefs = it }
-        }
-    }
-
-    private fun openAuthStatePrefs(
-        appContext: Context,
-        resetIfUnreadable: Boolean
-    ): SharedPreferences? {
-        val encryptedPrefs = try {
-            createEncryptedAuthPrefs(appContext)
-        } catch (firstFailure: Exception) {
-            if (!resetIfUnreadable) {
-                Log.w(TAG, "Encrypted auth prefs are unavailable.", firstFailure)
-                return null
-            }
-            Log.w(TAG, "Encrypted auth prefs are unreadable. Resetting auth storage.", firstFailure)
-            clearAuthStateStorage(appContext)
-            try {
-                createEncryptedAuthPrefs(appContext)
-            } catch (secondFailure: Exception) {
-                Log.e(TAG, "Failed to recreate encrypted auth prefs after reset", secondFailure)
-                null
-            }
-        } ?: return null
-
-        migrateLegacyAuthState(appContext, encryptedPrefs)
-
-        return encryptedPrefs
-    }
-
-    private fun createEncryptedAuthPrefs(appContext: Context): SharedPreferences {
-        val masterKeyAlias = MasterKeys.getOrCreate(MasterKeys.AES256_GCM_SPEC)
-        return EncryptedSharedPreferences.create(
-            AUTH_STATE_PREFS_NAME,
-            masterKeyAlias,
-            appContext,
-            EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
-            EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
-        )
-    }
-
-    private fun clearAuthStateStorage(appContext: Context) {
-        runCatching {
-            appContext.getSharedPreferences(AUTH_STATE_PREFS_NAME, Context.MODE_PRIVATE)
-                .edit()
-                .clear()
-                .apply()
-        }
-        runCatching {
-            appContext.deleteSharedPreferences(AUTH_STATE_PREFS_NAME)
-        }
-        runCatching {
-            val prefsFile = File(
-                appContext.applicationInfo.dataDir,
-                "shared_prefs/$AUTH_STATE_PREFS_NAME.xml"
-            )
-            if (prefsFile.exists()) {
-                prefsFile.delete()
-            }
-        }
-    }
-
-    private fun migrateLegacyAuthState(
-        context: Context,
-        encryptedPrefs: SharedPreferences
-    ) {
-        val legacyPrefs = PreferenceManager.getDefaultSharedPreferences(context)
-        if (!legacyPrefs.contains(SHARED_PREF_AUTH_STATE)) {
-            return
-        }
-
-        val legacyValue = legacyPrefs.getString(SHARED_PREF_AUTH_STATE, null)
-        if (!legacyValue.isNullOrBlank() && !encryptedPrefs.contains(SHARED_PREF_AUTH_STATE)) {
-            encryptedPrefs.edit().putString(SHARED_PREF_AUTH_STATE, legacyValue).apply()
-        }
-        legacyPrefs.edit().remove(SHARED_PREF_AUTH_STATE).apply()
-    }
+    ): SharedPreferences? = storage(context).prefs(resetIfUnreadable)
 
     fun saveUsername(context: Context, username: String) {
         val prefs = getAuthStatePrefs(context, resetIfUnreadable = true) ?: return
@@ -247,7 +164,7 @@ object TournesolAuthManager {
 
     fun saveAuthState(context: Context, authState: AuthState) {
         val prefs = getAuthStatePrefs(context, resetIfUnreadable = true) ?: return
-        prefs.edit().putString(SHARED_PREF_AUTH_STATE, authState.jsonSerializeString()).apply()
+        prefs.edit().putString(SHARED_PREF_AUTH_STATE, authState.jsonSerializeString()).commit()
     }
 
     fun saveAuthState(context: Context, tokenResponse: TokenResponse) {

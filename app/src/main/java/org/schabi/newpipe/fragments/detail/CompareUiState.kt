@@ -28,7 +28,6 @@ class CompareUiState {
     var showLoginDialog by mutableStateOf(false)
     var loginInProgress by mutableStateOf(false)
     var loginError by mutableStateOf<String?>(null)
-    var compactPopupVisible by mutableStateOf(false)
     var suggestedLeft by mutableStateOf<CompareComparisonVideo?>(null)
     var suggestedRight by mutableStateOf<CompareComparisonVideo?>(null)
     var suggestionsLoading by mutableStateOf(false)

@@ -1,5 +1,6 @@
 package org.schabi.newpipe.fragments.list.kiosk
 
+import org.schabi.newpipe.util.TournesolDateRange
 import org.schabi.newpipe.util.TournesolFilterConfig
 import org.schabi.newpipe.util.TournesolFilterCriterion
 
@@ -22,7 +23,7 @@ internal fun quantizeToLevel(value: Int): Int {
 
 internal data class TournesolFilterForm(
     val languages: List<String>,
-    val dateKey: String,
+    val dateRange: TournesolDateRange,
     val includeLowScoreVideos: Boolean,
     val durationMinMinutes: Float,
     val durationMaxMinutes: Float,
@@ -31,7 +32,7 @@ internal data class TournesolFilterForm(
 ) {
     fun toConfig(): TournesolFilterConfig = TournesolFilterConfig(
         languages = languages,
-        dateKey = dateKey,
+        dateRange = dateRange,
         includeLowScoreVideos = includeLowScoreVideos,
         durationMinSeconds = if (durationMinMinutes <= 0f) UNSET else toSeconds(durationMinMinutes),
         durationMaxSeconds = if (durationMaxMinutes >= DURATION_SLIDER_MAX) UNSET else toSeconds(durationMaxMinutes),
@@ -47,7 +48,7 @@ internal data class TournesolFilterForm(
             storedLevel: (TournesolFilterCriterion) -> Int?
         ): TournesolFilterForm = TournesolFilterForm(
             languages = config.languages,
-            dateKey = config.dateKey,
+            dateRange = config.dateRange,
             includeLowScoreVideos = config.includeLowScoreVideos,
             durationMinMinutes = if (config.durationMinSeconds >= 0) toMinutes(config.durationMinSeconds) else 0f,
             durationMaxMinutes = if (config.durationMaxSeconds >= 0) toMinutes(config.durationMaxSeconds) else DURATION_SLIDER_MAX,

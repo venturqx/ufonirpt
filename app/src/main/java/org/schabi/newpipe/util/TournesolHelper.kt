@@ -30,7 +30,6 @@ object TournesolHelper {
 
     fun parseFilterLanguages(languages: String): List<String> = languages.split(",").filter { it.isNotEmpty() }
 
-    const val DEFAULT_TOURNESOL_FILTER_DATE_KEY = "3_months"
     const val DEFAULT_TOURNESOL_FILTER_INCLUDE_LOW_SCORE = false
     const val DEFAULT_TOURNESOL_FILTER_DURATION_MIN = -1
     const val DEFAULT_TOURNESOL_FILTER_DURATION_MAX = -1
@@ -45,7 +44,7 @@ object TournesolHelper {
     ): String = TournesolKioskQuery(
         includeUnsafe = config.includeLowScoreVideos,
         languages = config.languages,
-        dateGte = calculateDateGte(config.dateKey, nowMillis),
+        dateGte = calculateDateGte(config.dateRange, nowMillis),
         durationGte = config.durationMinSeconds,
         durationLte = config.durationMaxSeconds,
         weights = config.weights
@@ -74,20 +73,20 @@ object TournesolHelper {
 
     @JvmOverloads
     fun calculateDateGte(
-        dateKey: String,
+        dateRange: TournesolDateRange,
         nowMillis: Long = System.currentTimeMillis()
     ): String? {
         val utc = TimeZone.getTimeZone("UTC")
         val cal = Calendar.getInstance(utc, Locale.US).apply {
             timeInMillis = nowMillis
         }
-        when (dateKey) {
-            "year" -> cal.add(Calendar.YEAR, -1)
-            "3_months" -> cal.add(Calendar.MONTH, -3)
-            "month" -> cal.add(Calendar.MONTH, -1)
-            "week" -> cal.add(Calendar.WEEK_OF_YEAR, -1)
-            "day" -> cal.add(Calendar.DAY_OF_YEAR, -1)
-            else -> return null
+        when (dateRange) {
+            TournesolDateRange.YEAR -> cal.add(Calendar.YEAR, -1)
+            TournesolDateRange.THREE_MONTHS -> cal.add(Calendar.MONTH, -3)
+            TournesolDateRange.MONTH -> cal.add(Calendar.MONTH, -1)
+            TournesolDateRange.WEEK -> cal.add(Calendar.WEEK_OF_YEAR, -1)
+            TournesolDateRange.DAY -> cal.add(Calendar.DAY_OF_YEAR, -1)
+            TournesolDateRange.FOREVER -> return null
         }
         cal.set(Calendar.MINUTE, 0)
         cal.set(Calendar.SECOND, 0)

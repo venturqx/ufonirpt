@@ -2,6 +2,7 @@ package org.schabi.newpipe.fragments.list.kiosk
 
 import org.junit.Assert.assertEquals
 import org.junit.Test
+import org.schabi.newpipe.util.TournesolDateRange
 import org.schabi.newpipe.util.TournesolFilterConfig
 import org.schabi.newpipe.util.TournesolFilterCriterion
 
@@ -17,7 +18,7 @@ class TournesolFilterFormTest {
         weightsEnabled: Boolean = true
     ) = TournesolFilterForm(
         languages = listOf("en", "fr"),
-        dateKey = "week",
+        dateRange = TournesolDateRange.WEEK,
         includeLowScoreVideos = true,
         durationMinMinutes = durationMinMinutes,
         durationMaxMinutes = durationMaxMinutes,
@@ -36,7 +37,7 @@ class TournesolFilterFormTest {
 
     private fun storeShapedConfig(weights: Map<TournesolFilterCriterion, Int>) = TournesolFilterConfig(
         languages = listOf("en", "fr"),
-        dateKey = "week",
+        dateRange = TournesolDateRange.WEEK,
         includeLowScoreVideos = true,
         durationMinSeconds = -1,
         durationMaxSeconds = -1,
@@ -211,6 +212,21 @@ class TournesolFilterFormTest {
     @Test
     fun `weights enabled pref key is stable`() {
         assertEquals("tournesol_filter_weights_enabled", PREF_TOURNESOL_FILTER_WEIGHTS_ENABLED)
+    }
+
+    @Test
+    fun `date range enum order is the display order of the date chips`() {
+        assertEquals(
+            listOf(
+                TournesolDateRange.FOREVER,
+                TournesolDateRange.YEAR,
+                TournesolDateRange.THREE_MONTHS,
+                TournesolDateRange.MONTH,
+                TournesolDateRange.WEEK,
+                TournesolDateRange.DAY
+            ),
+            TournesolDateRange.entries.toList()
+        )
     }
 
     @Test

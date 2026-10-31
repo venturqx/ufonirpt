@@ -20,7 +20,6 @@ import org.junit.Assert.assertThrows
 import org.junit.Assert.assertTrue
 import org.junit.Test
 import org.schabi.newpipe.DownloaderImpl
-import org.schabi.newpipe.R
 import org.schabi.newpipe.extractor.ServiceList
 
 class CompareRepositoryTest {
@@ -87,10 +86,15 @@ class CompareRepositoryTest {
     }
 
     @Test
-    fun `submitComparison posts json to the collection url without a trailing slash`() {
+    fun `submitOrUpdateComparison posts json to the collection url without a trailing slash`() {
         val api = serve(code = 201)
 
-        val status = CompareRepository.submitComparison("tok", "yt:a", "yt:b", 30).blockingGet()
+        val status = CompareRepository.submitOrUpdateComparison(
+            "tok",
+            "yt:a",
+            "yt:b",
+            listOf(CriteriaScore("largely_recommended", 30))
+        ).blockingGet()
 
         assertEquals(SaveResult.CREATED, status)
         assertEquals("POST", api.request.method)
@@ -112,7 +116,7 @@ class CompareRepositoryTest {
     }
 
     @Test
-    fun `submitComparison patches the existing comparison when the server says already compared`() {
+    fun `submitOrUpdateComparison patches the existing comparison when the server says already compared`() {
         val requests = mutableListOf<Request>()
         DownloaderImpl.init(
             OkHttpClient.Builder().addInterceptor { chain ->
@@ -128,7 +132,12 @@ class CompareRepositoryTest {
             }
         )
 
-        val result = CompareRepository.submitComparison("tok", "yt:a", "yt:b", 30).blockingGet()
+        val result = CompareRepository.submitOrUpdateComparison(
+            "tok",
+            "yt:a",
+            "yt:b",
+            listOf(CriteriaScore("largely_recommended", 30))
+        ).blockingGet()
 
         assertEquals(SaveResult.UPDATED, result)
         assertEquals(listOf("POST", "PATCH"), requests.map { it.method })
@@ -143,7 +152,45 @@ class CompareRepositoryTest {
     }
 
     @Test
-    fun `patchComparison patches the pair url and reports more submitted`() {
+    fun `saveComparison posts when the pair is not submitted yet`() {
+        val api = serve(code = 201)
+
+        val result = CompareRepository.saveComparison(
+            "tok",
+            CompareKey("yt:a", "yt:b"),
+            listOf(CriteriaScore("reliability", 5)),
+            alreadySubmitted = false
+        ).blockingGet()
+
+        assertEquals(SaveResult.CREATED, result)
+        assertEquals("POST", api.request.method)
+        assertEquals(
+            "https://api.tournesol.app/users/me/comparisons/videos",
+            api.request.url.toString()
+        )
+    }
+
+    @Test
+    fun `saveComparison patches the pair url when the pair is already submitted`() {
+        val api = serve()
+
+        val result = CompareRepository.saveComparison(
+            "tok",
+            CompareKey("yt:a", "yt:b"),
+            listOf(CriteriaScore("reliability", 5)),
+            alreadySubmitted = true
+        ).blockingGet()
+
+        assertEquals(SaveResult.UPDATED, result)
+        assertEquals("PATCH", api.request.method)
+        assertEquals(
+            "https://api.tournesol.app/users/me/comparisons/videos/yt:a/yt:b/",
+            api.request.url.toString()
+        )
+    }
+
+    @Test
+    fun `patchComparison patches the pair url and reports an update`() {
         val api = serve()
 
         val status = CompareRepository.patchComparison(
@@ -153,7 +200,7 @@ class CompareRepositoryTest {
             listOf(CriteriaScore("reliability", 5))
         ).blockingGet()
 
-        assertEquals(R.string.compare_more_submitted, status)
+        assertEquals(SaveResult.UPDATED, status)
         assertEquals("PATCH", api.request.method)
         assertEquals(
             "https://api.tournesol.app/users/me/comparisons/videos/yt:a/yt:b/",
@@ -221,42 +268,17 @@ class CompareRepositoryTest {
     }
 
     @Test
-    fun `fetchEntityToCompare encodes the uid and returns the first video`() {
-        val api = serve(body = """[{"uid":"yt:first"},{"uid":"yt:second"}]""")
-
-        val video = CompareRepository.fetchEntityToCompare("tok", "yt:abc").blockingGet()
-
-        assertEquals("yt:first", video?.uid)
-        assertEquals(
-            "https://api.tournesol.app/users/me/entities_to_compare/videos/" +
-                "?first_entity_uid=yt%3Aabc&limit=1",
-            api.request.url.toString()
-        )
-    }
-
-    @Test
-    fun `fetchEntityToCompare is empty when there are no results`() {
-        serve(body = "[]")
-
-        CompareRepository.fetchEntityToCompare("tok", "yt:abc").test()
-            .awaitDone(5, TimeUnit.SECONDS)
-            .assertComplete()
-            .assertNoValues()
-    }
-
-    @Test
     fun `every endpoint maps a failed response to an api exception with status and body`() {
         serve(code = 503, body = "down")
 
         CompareRepository.checkComparison("tok", "yt:a", "yt:b").test().assertHttpError(503, "down")
-        CompareRepository.submitComparison("tok", "yt:a", "yt:b", 1).test()
+        CompareRepository.submitOrUpdateComparison("tok", "yt:a", "yt:b", emptyList()).test()
             .assertHttpError(503, "down")
         CompareRepository.patchComparison("tok", "yt:a", "yt:b", emptyList()).test()
             .assertHttpError(503, "down")
         CompareRepository.fetchUserComparisons("tok").test().assertHttpError(503, "down")
         CompareRepository.fetchWeeklyComparisons().test().assertHttpError(503, "down")
         CompareRepository.fetchSuggestedVideos("tok").test().assertHttpError(503, "down")
-        CompareRepository.fetchEntityToCompare("tok", "yt:a").test().assertHttpError(503, "down")
     }
 
     @Test

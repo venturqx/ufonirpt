@@ -2,7 +2,6 @@ package org.schabi.newpipe.fragments.detail
 
 import com.grack.nanojson.JsonStringWriter
 import com.grack.nanojson.JsonWriter
-import io.reactivex.rxjava3.core.Maybe
 import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.schedulers.Schedulers
 import java.io.IOException
@@ -14,7 +13,6 @@ import okhttp3.Request
 import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
 import org.schabi.newpipe.DownloaderImpl
-import org.schabi.newpipe.R
 import org.schabi.newpipe.extractor.NewPipe
 import org.schabi.newpipe.extractor.exceptions.ExtractionException
 import org.schabi.newpipe.extractor.linkhandler.LinkHandlerFactory
@@ -40,17 +38,16 @@ object CompareRepository {
         }
     }
 
-    fun submitComparison(
+    internal fun saveComparison(
         token: String,
-        entityA: String,
-        entityB: String,
-        score: Int
-    ): Single<SaveResult> = submitOrUpdateComparison(
-        token = token,
-        entityA = entityA,
-        entityB = entityB,
-        criteriaScores = listOf(CriteriaScore(CompareJsonParser.COMPARE_CRITERIA, score))
-    )
+        key: CompareKey,
+        criteriaScores: List<CriteriaScore>,
+        alreadySubmitted: Boolean
+    ): Single<SaveResult> = if (alreadySubmitted) {
+        patchComparison(token, key.entityA, key.entityB, criteriaScores)
+    } else {
+        submitOrUpdateComparison(token, key.entityA, key.entityB, criteriaScores)
+    }
 
     internal fun submitOrUpdateComparison(
         token: String,
@@ -71,7 +68,7 @@ object CompareRepository {
                 entityA,
                 entityB,
                 criteriaScores
-            ).map { SaveResult.UPDATED }
+            )
         }
     }
 
@@ -114,11 +111,11 @@ object CompareRepository {
         entityA: String,
         entityB: String,
         criteriaScores: List<CriteriaScore>
-    ): Single<Int> = Single.fromCallable {
+    ): Single<SaveResult> = Single.fromCallable {
         val payload = buildPatchPayloadJson(criteriaScores)
         val url = comparisonsUrl(entityA, entityB, TRAILING_SLASH)
         send(url, token) { patch(payload.toJsonBody()) }.bodyOrThrow()
-        R.string.compare_more_submitted
+        SaveResult.UPDATED
     }.subscribeOn(Schedulers.io())
 
     fun fetchUserComparisons(
@@ -180,17 +177,6 @@ object CompareRepository {
         val url = apiUrl("users", "me", "suggestions", COMPARE_POLL, "tocompare", TRAILING_SLASH)
             .build()
         CompareJsonParser.parseSuggestedVideos(send(url, token).bodyOrThrow())
-    }.subscribeOn(Schedulers.io())
-
-    fun fetchEntityToCompare(
-        token: String,
-        firstEntityUid: String
-    ): Maybe<CompareComparisonVideo> = Maybe.fromCallable {
-        val url = apiUrl("users", "me", "entities_to_compare", COMPARE_POLL, TRAILING_SLASH)
-            .addQueryParameter("first_entity_uid", firstEntityUid)
-            .addQueryParameter("limit", "1")
-            .build()
-        CompareJsonParser.parseSuggestedVideos(send(url, token).bodyOrThrow()).firstOrNull()
     }.subscribeOn(Schedulers.io())
 
     private class ApiResponse(val code: Int, val body: String) {

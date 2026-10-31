@@ -27,7 +27,10 @@ class TournesolFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         val info = arguments?.serializable<StreamInfo>(KEY_INFO) ?: return
         val scoreCard = view.findViewById<TournesolScoreCard>(R.id.tournesol_score_card)
-        scoreCard.bind(info, parentFragment as? VideoDetailFragment)
+        val detailFragment = parentFragment as? VideoDetailFragment
+        scoreCard.bind(info) { hasInsufficientReason, score ->
+            detailFragment?.updateTournesolDetailIcon(hasInsufficientReason, score)
+        }
         attachCompareIfRequested()
     }
 

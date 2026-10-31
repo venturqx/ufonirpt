@@ -30,7 +30,6 @@ import org.schabi.newpipe.fragments.detail.compare.CompareCompactScreen
 import org.schabi.newpipe.fragments.detail.compare.CompareSuggestionPool
 import org.schabi.newpipe.fragments.detail.compare.SuggestionFetch
 import org.schabi.newpipe.fragments.detail.compare.SuggestionSlot
-import org.schabi.newpipe.fragments.detail.compare.entitiesForLeftRight
 import org.schabi.newpipe.ktx.serializable
 import org.schabi.newpipe.local.history.HistoryRecordManager
 import org.schabi.newpipe.ui.theme.AppTheme
@@ -60,7 +59,6 @@ class CompareFragment : Fragment() {
     private var submitted by uiState::submitted
     private var extraSubmitted by uiState::extraSubmitted
     private var submitInProgress by uiState::submitInProgress
-    private var compactPopupVisible by uiState::compactPopupVisible
     private var recommendations by uiState::recommendations
     private var recommendationsTotalCount by uiState::recommendationsTotalCount
     private var recommendationsLoading by uiState::recommendationsLoading
@@ -154,11 +152,7 @@ class CompareFragment : Fragment() {
                         onScoreChange = { score = it },
                         onExtraScoreChange = onExtraScoreChange,
                         onSubmitCriterion = { criterionId, value, onSuccess ->
-                            if (criterionId == COMPACT_MAIN_CRITERION_ID) {
-                                sendCompactMainComparison(value, onSuccess)
-                            } else {
-                                sendCompactSingleCriterion(criterionId, value, onSuccess)
-                            }
+                            sendCompactCriterion(criterionId, value, onSuccess)
                         },
                         onSubmitExtrasBatch = { criteriaScores, onSuccess ->
                             sendCompactExtrasBatch(criteriaScores, onSuccess)
@@ -217,7 +211,6 @@ class CompareFragment : Fragment() {
 
     private fun onSignedOut() {
         cancelAuthenticatedWork()
-        scoreStore.clear()
         resetSelectionState()
         refreshSubmittedState()
         refreshUserInfo()
@@ -373,7 +366,6 @@ class CompareFragment : Fragment() {
                     }
                 }
             )
-        recommendationsDisposable?.let { disposables.add(it) }
     }
 
     private fun dismissRecommendationsDialog() {
@@ -409,79 +401,26 @@ class CompareFragment : Fragment() {
                     loginError = getString(TournesolLoginFailure.from(error).messageRes)
                 }
             )
-        loginDisposable?.let { disposables.add(it) }
     }
 
     private fun resolveCompactCompareKey(): CompareKey? {
-        val pair = compactPairSelection
-        if (pair == null) {
-            val messageRes = historyMessageRes ?: R.string.compare_history_unavailable
+        val key = compareKeyForSelection()
+        if (key == null) {
+            val messageRes = if (compactPairSelection == null) {
+                historyMessageRes ?: R.string.compare_history_unavailable
+            } else {
+                R.string.compare_service_not_supported
+            }
             Toast.makeText(
                 requireContext(),
                 getString(messageRes),
                 Toast.LENGTH_SHORT
             ).show()
-            return null
         }
-
-        val leftUid = CompareRepository.buildTournesolUid(pair.leftUrl, pair.leftServiceId)
-        val rightUid = CompareRepository.buildTournesolUid(pair.rightUrl, pair.rightServiceId)
-        if (leftUid == null || rightUid == null) {
-            Toast.makeText(
-                requireContext(),
-                getString(R.string.compare_service_not_supported),
-                Toast.LENGTH_SHORT
-            ).show()
-            return null
-        }
-        val entities = entitiesForLeftRight(leftUid, rightUid)
-        return CompareKey(entities.entityA, entities.entityB)
+        return key
     }
 
-    private fun sendCompactMainComparison(score: Int, onSuccess: () -> Unit) {
-        if (submitInProgress) {
-            return
-        }
-        val key = resolveCompactCompareKey() ?: return
-        val alreadySubmitted = scoreStore.isSubmitted(key)
-
-        runAuthenticated(
-            inProgress = ::submitInProgress,
-            request = { token ->
-                if (alreadySubmitted) {
-                    CompareRepository.patchComparison(
-                        token,
-                        key.entityA,
-                        key.entityB,
-                        listOf(CriteriaScore(COMPACT_MAIN_CRITERION_ID, score))
-                    ).map { SaveResult.UPDATED }
-                } else {
-                    CompareRepository.submitComparison(
-                        token,
-                        key.entityA,
-                        key.entityB,
-                        score
-                    )
-                }
-            },
-            onResult = { result ->
-                markSubmitted(key.entityA, key.entityB)
-                storeSubmittedScores(key, mainScore = score)
-                if (result == SaveResult.CREATED) {
-                    TournesolAuthManager.incrementComparisonCount(requireContext())
-                    refreshUserInfo()
-                }
-                Toast.makeText(
-                    requireContext(),
-                    getString(saveResultMessageRes(result)),
-                    Toast.LENGTH_LONG
-                ).show()
-                onSuccess()
-            }
-        )
-    }
-
-    private fun sendCompactSingleCriterion(
+    private fun sendCompactCriterion(
         criterionId: String,
         value: Int,
         onSuccess: () -> Unit
@@ -496,29 +435,12 @@ class CompareFragment : Fragment() {
         runAuthenticated(
             inProgress = ::submitInProgress,
             request = { token ->
-                if (alreadySubmitted) {
-                    CompareRepository.patchComparison(
-                        token,
-                        key.entityA,
-                        key.entityB,
-                        criteriaScores
-                    ).map { SaveResult.UPDATED }
-                } else {
-                    CompareRepository.submitOrUpdateComparison(
-                        token,
-                        key.entityA,
-                        key.entityB,
-                        criteriaScores
-                    )
-                }
+                CompareRepository.saveComparison(token, key, criteriaScores, alreadySubmitted)
             },
             onResult = { result ->
                 markSubmitted(key.entityA, key.entityB)
-                storeSubmittedScores(
-                    key,
-                    extraScores = (scoreStore.scoresFor(key)?.extraScores.orEmpty()) +
-                        (criterionId to value)
-                )
+                val updated = scoresWithCriterion(scoreStore.scoresFor(key), criterionId, value)
+                storeSubmittedScores(key, updated.mainScore, updated.extraScores)
                 if (result == SaveResult.CREATED) {
                     TournesolAuthManager.incrementComparisonCount(requireContext())
                     refreshUserInfo()
@@ -552,13 +474,13 @@ class CompareFragment : Fragment() {
                     criteriaScores
                 )
             },
-            onResult = { messageRes ->
+            onResult = {
                 val merged = (scoreStore.scoresFor(key)?.extraScores.orEmpty()) +
                     criteriaScores.associate { it.criteria to it.score }
                 storeSubmittedScores(key, extraScores = merged)
                 Toast.makeText(
                     requireContext(),
-                    getString(messageRes),
+                    getString(R.string.compare_more_submitted),
                     Toast.LENGTH_LONG
                 ).show()
                 onSuccess()
@@ -666,7 +588,6 @@ class CompareFragment : Fragment() {
                 { /* ignore auto-check errors */ },
                 { /* no token, keep local state */ }
             )
-        checkDisposable?.let { disposables.add(it) }
     }
 
     private fun applyRemoteSubmittedResult(key: CompareKey, exists: Boolean) {
@@ -688,16 +609,7 @@ class CompareFragment : Fragment() {
 
     private fun compareKeyForSelection(): CompareKey? {
         val pair = compactPairSelection ?: return null
-        val leftUid = CompareRepository.buildTournesolUid(
-            pair.leftUrl,
-            pair.leftServiceId
-        ) ?: return null
-        val rightUid = CompareRepository.buildTournesolUid(
-            pair.rightUrl,
-            pair.rightServiceId
-        ) ?: return null
-        val entities = entitiesForLeftRight(leftUid, rightUid)
-        return CompareKey(entities.entityA, entities.entityB)
+        return compareKeyFor(pair, CompareRepository::buildTournesolUid)
     }
 
     private fun saveResultMessageRes(result: SaveResult): Int = when (result) {
@@ -730,46 +642,6 @@ class CompareFragment : Fragment() {
         val entries: List<StreamHistoryEntry>,
         val messageRes: Int?
     )
-
-    fun setCompactPopupVisibleState(visible: Boolean) {
-        compactPopupVisible = visible
-    }
-
-    private data class CompactCriteriaPayload(
-        val criteriaScores: List<CriteriaScore>,
-        val mainScore: Int?,
-        val extraScores: Map<String, Int>
-    )
-
-    private fun buildCompactCriteriaPayload(
-        selectedIds: Set<String>
-    ): CompactCriteriaPayload? {
-        if (selectedIds.isEmpty()) {
-            return null
-        }
-        val criteriaScores = ArrayList<CriteriaScore>(selectedIds.size)
-        val extras = LinkedHashMap<String, Int>()
-        var mainScore: Int? = null
-        selectedIds.forEach { criteria ->
-            val value = if (criteria == "largely_recommended") {
-                mainScore = score
-                score
-            } else {
-                val extraValue = extraScores[criteria] ?: 0
-                extras[criteria] = extraValue
-                extraValue
-            }
-            criteriaScores.add(CriteriaScore(criteria, value))
-        }
-        if (criteriaScores.isEmpty()) {
-            return null
-        }
-        return CompactCriteriaPayload(
-            criteriaScores = criteriaScores,
-            mainScore = mainScore,
-            extraScores = extras
-        )
-    }
 
     private fun prefetchPool() {
         runSuggestionStep(suggestionPool.prefetch())

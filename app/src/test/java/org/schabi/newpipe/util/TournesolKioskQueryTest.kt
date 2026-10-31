@@ -206,7 +206,7 @@ class TournesolKioskQueryTest {
             .associate { (index, criterion) -> criterion to index * 10 }
         val config = TournesolFilterConfig(
             languages = listOf("en", "fr"),
-            dateKey = "month",
+            dateRange = TournesolDateRange.MONTH,
             includeLowScoreVideos = true,
             durationMinSeconds = 120,
             durationMaxSeconds = 1800,
@@ -230,7 +230,7 @@ class TournesolKioskQueryTest {
 
     @Test
     fun `round trips an unfiltered config with no date, no languages, and no weights`() {
-        val config = TournesolFilterConfig(dateKey = "forever")
+        val config = TournesolFilterConfig(dateRange = TournesolDateRange.FOREVER)
 
         val query = parse(TournesolHelper.buildTournesolUrl(config, fixedNowMillis))
 

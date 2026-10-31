@@ -55,7 +55,6 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
-import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.input.pointer.consumeAllChanges
 import androidx.compose.ui.input.pointer.pointerInput
@@ -89,7 +88,6 @@ import androidx.compose.ui.window.DialogProperties
 import androidx.compose.ui.zIndex
 import coil3.imageLoader
 import coil3.request.ImageRequest
-import kotlin.math.abs
 import kotlin.math.roundToInt
 import org.schabi.newpipe.R
 import org.schabi.newpipe.fragments.detail.COMPACT_MAIN_CRITERION_ID
@@ -356,113 +354,33 @@ internal fun CompareCompactScreen(
     }
 
     val gestureModifier = Modifier.pointerInput(Unit) {
-        val horizontalSensitivity = 1.2f
-        val verticalSensitivity = 1.3f
-        var dragAxis: DragAxis? = null
-        var accumulatedX = 0f
-        var accumulatedY = 0f
-        var totalDragX = 0f
-        var totalDragY = 0f
-        var verticalStepTriggered = false
-        var currentIndex = 0
-        var currentValue = 0
-        var markedSelected = false
+        val tracker = CompareDragTracker(
+            pxPerScore = pxPerScore,
+            verticalStepPx = verticalStepPx,
+            horizontalSensitivity = 1.2f,
+            verticalSensitivity = 1.3f,
+            scoreMin = SCORE_MIN,
+            scoreMax = SCORE_MAX,
+            maxIndex = { latestMaxIndex }
+        )
         detectDragGestures(
             onDragStart = {
-                dragAxis = null
-                accumulatedX = 0f
-                accumulatedY = 0f
-                totalDragX = 0f
-                totalDragY = 0f
-                verticalStepTriggered = false
-                currentIndex = latestActiveIndex
-                currentValue = latestActiveScore
-                markedSelected = false
+                tracker.start(latestActiveIndex, latestActiveScore)
             },
             onDragEnd = {
-                if (dragAxis == DragAxis.VERTICAL &&
-                    !verticalStepTriggered &&
-                    abs(totalDragY) > abs(totalDragX) &&
-                    abs(totalDragY) > 0f &&
-                    abs(totalDragY) < verticalStepPx
-                ) {
-                    val step = if (totalDragY > 0f) 1 else -1
-                    val fallbackIndex = (currentIndex + step).coerceIn(0, latestMaxIndex)
-                    if (fallbackIndex != currentIndex) {
-                        latestIndexUpdater(fallbackIndex)
-                    }
-                }
-                dragAxis = null
-                accumulatedX = 0f
-                accumulatedY = 0f
-                totalDragX = 0f
-                totalDragY = 0f
-                verticalStepTriggered = false
+                tracker.onEnd()?.let { latestIndexUpdater(it.index) }
             },
             onDragCancel = {
-                dragAxis = null
-                accumulatedX = 0f
-                accumulatedY = 0f
-                totalDragX = 0f
-                totalDragY = 0f
-                verticalStepTriggered = false
+                tracker.cancel()
             },
             onDrag = { change, dragAmount ->
-                totalDragX += dragAmount.x
-                totalDragY += dragAmount.y
-                if (dragAxis == null) {
-                    dragAxis = if (abs(dragAmount.x) >= abs(dragAmount.y)) {
-                        DragAxis.HORIZONTAL
-                    } else {
-                        DragAxis.VERTICAL
+                tracker.onDrag(dragAmount.x, dragAmount.y).forEach { action ->
+                    when (action) {
+                        DragAction.MarkSelected -> latestSelectionUpdater(latestActiveDimensionId, true)
+                        DragAction.ConsumePointer -> change.consume()
+                        is DragAction.SetScore -> latestScoreUpdater(action.score)
+                        is DragAction.SetIndex -> latestIndexUpdater(action.index)
                     }
-                    if (dragAxis == DragAxis.HORIZONTAL && !markedSelected) {
-                        latestSelectionUpdater(latestActiveDimensionId, true)
-                        markedSelected = true
-                    }
-                }
-                when (dragAxis) {
-                    DragAxis.HORIZONTAL -> {
-                        // Horizontal drags belong to the criteria slider — consume them
-                        // so the parent pager/scroll never steals them.
-                        change.consume()
-                        accumulatedX += dragAmount.x * horizontalSensitivity
-                        val steps = (accumulatedX / pxPerScore).toInt()
-                        if (steps != 0) {
-                            currentValue =
-                                (currentValue + steps).coerceIn(SCORE_MIN, SCORE_MAX)
-                            latestScoreUpdater(currentValue)
-                            if (!markedSelected) {
-                                latestSelectionUpdater(latestActiveDimensionId, true)
-                                markedSelected = true
-                            }
-                            accumulatedX -= steps * pxPerScore
-                        }
-                    }
-
-                    DragAxis.VERTICAL -> {
-                        accumulatedY += dragAmount.y * verticalSensitivity
-                        var consumedStep = false
-                        while (abs(accumulatedY) >= verticalStepPx) {
-                            val step = if (accumulatedY > 0f) 1 else -1
-                            val nextIndex = (currentIndex + step).coerceIn(0, latestMaxIndex)
-                            if (nextIndex != currentIndex) {
-                                currentIndex = nextIndex
-                                latestIndexUpdater(currentIndex)
-                                verticalStepTriggered = true
-                                consumedStep = true
-                            }
-                            accumulatedY -= step * verticalStepPx
-                        }
-                        // Only consume when we actually stepped criteria selection.
-                        // Otherwise leave the change unconsumed so the page's
-                        // verticalScroll / nested scroll can take over.
-                        if (consumedStep) {
-                            change.consume()
-                        }
-                    }
-
-                    else -> { /* dragAxis was assigned above — this branch is unreachable */ }
                 }
             }
         )
@@ -1349,25 +1267,7 @@ internal fun CompareCompactScreen(
                             }
                         }
                     }
-                    if (state.compactPopupVisible) {
-                        val overlayModifier = if (showHistoryOverlay) {
-                            Modifier
-                                .fillMaxSize()
-                                .background(overlayBackground)
-                                .zIndex(4f)
-                        } else {
-                            Modifier
-                                .size(1.dp)
-                                .graphicsLayer { alpha = 0f }
-                                .zIndex(-1f)
-                        }
-                        Box(
-                            modifier = overlayModifier,
-                            contentAlignment = Alignment.TopCenter
-                        ) {
-                            overlayBody()
-                        }
-                    } else if (showHistoryOverlay) {
+                    if (showHistoryOverlay) {
                         Dialog(
                             onDismissRequest = { showHistoryOverlay = false },
                             properties = DialogProperties(
