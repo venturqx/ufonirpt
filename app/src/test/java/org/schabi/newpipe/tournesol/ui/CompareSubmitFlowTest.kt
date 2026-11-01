@@ -10,12 +10,18 @@ import org.schabi.newpipe.R
 import org.schabi.newpipe.tournesol.COMPACT_MAIN_CRITERION_ID
 import org.schabi.newpipe.tournesol.ComparisonScores
 import org.schabi.newpipe.tournesol.CriteriaScore
+import org.schabi.newpipe.tournesol.SessionExpiredException
 
 class CompareSubmitFlowTest {
     private val rig = CompareRig()
     private val state = rig.state
     private var successes = 0
     private val onSuccess: () -> Unit = { successes++ }
+    private val sessionExpiredDialog = LoginView(
+        visible = true,
+        inProgress = false,
+        error = message(R.string.compare_session_expired)
+    )
 
     @After
     fun tearDown() {
@@ -31,6 +37,15 @@ class CompareSubmitFlowTest {
     private fun selectSubmittedPair() {
         rig.server.reply(CHECK_AB, 200)
         selectSettledPair()
+    }
+
+    private fun failNextSave() {
+        rig.server.reply(SAVE, 401)
+        selectSettledPair()
+        rig.submitCriterion(COMPACT_MAIN_CRITERION_ID, 30, onSuccess)
+        rig.deliver()
+        rig.server.reply(SAVE, 201)
+        rig.server.calls.clear()
     }
 
     @Test
@@ -143,19 +158,162 @@ class CompareSubmitFlowTest {
     }
 
     @Test
-    fun `an expired session asks for login`() {
+    fun `an expired session says so in the login dialog`() {
         rig.server.reply(SAVE, 401)
         selectSettledPair()
 
         rig.submitCriterion(COMPACT_MAIN_CRITERION_ID, 30, onSuccess)
         rig.deliver()
 
-        assertEquals(listOf(shortToast(message(R.string.compare_login_required))), rig.toasts)
-        assertTrue(rig.login.visible)
+        assertEquals(emptyList<String>(), rig.toasts)
+        assertEquals(sessionExpiredDialog, rig.login)
     }
 
     @Test
-    fun `a server error shows its message and records nothing`() {
+    fun `a rejected refresh token is an expired session too`() {
+        selectSettledPair()
+        rig.tokenFailure = SessionExpiredException()
+
+        rig.submitCriterion(COMPACT_MAIN_CRITERION_ID, 30, onSuccess)
+        rig.deliver()
+
+        assertEquals(sessionExpiredDialog, rig.login)
+        assertEquals(emptyList<String>(), rig.server.calls)
+    }
+
+    @Test
+    fun `an expired rating is resent after logging back in`() {
+        failNextSave()
+
+        rig.submitLogin("name", "secret")
+        rig.deliver()
+
+        assertEquals(listOf(SAVE), rig.server.calls)
+        assertTrue(state.submitted)
+        assertEquals(30, rig.store.scoresFor(KEY_AB)?.mainScore)
+        assertEquals(
+            listOf(shortToast(message(R.string.tournesol_login_success)), longToast(message(R.string.compare_submitted))),
+            rig.toasts
+        )
+        assertEquals(1, successes)
+    }
+
+    @Test
+    fun `an expired extras batch is resent after logging back in`() {
+        rig.server.reply(PATCH_AB, 401)
+        selectSubmittedPair()
+        rig.submitExtras(listOf(CriteriaScore("pedagogy", 9)), onSuccess)
+        rig.deliver()
+        rig.server.reply(PATCH_AB, 200)
+        rig.server.calls.clear()
+
+        rig.submitLogin("name", "secret")
+        rig.deliver()
+
+        assertEquals(listOf(PATCH_AB), rig.server.calls)
+        assertEquals(mapOf("pedagogy" to 9), rig.store.scoresFor(KEY_AB)?.extraScores)
+        assertEquals(1, successes)
+    }
+
+    @Test
+    fun `the sign-out from a rejected refresh token does not lose the rating`() {
+        selectSettledPair()
+        state.score = 30
+        rig.tokenFailure = SessionExpiredException()
+        rig.submitCriterion(COMPACT_MAIN_CRITERION_ID, 30, onSuccess)
+        rig.deliver()
+
+        rig.signedOut()
+        rig.deliver()
+        assertEquals(0, state.score)
+
+        rig.tokenFailure = null
+        rig.submitLogin("name", "secret")
+        rig.deliver()
+
+        assertEquals(30, state.score)
+        assertEquals(30, rig.store.scoresFor(KEY_AB)?.mainScore)
+        assertEquals(1, successes)
+    }
+
+    @Test
+    fun `a failed login keeps the rating for the next attempt`() {
+        failNextSave()
+        rig.failLogins()
+
+        rig.submitLogin("name", "wrong")
+        rig.deliver()
+        assertEquals(emptyList<String>(), rig.server.calls)
+
+        rig.acceptLogins()
+        rig.submitLogin("name", "secret")
+        rig.deliver()
+
+        assertEquals(listOf(SAVE), rig.server.calls)
+        assertEquals(1, successes)
+    }
+
+    @Test
+    fun `a rating rejected again reopens the dialog once`() {
+        rig.server.reply(SAVE, 401)
+        selectSettledPair()
+        rig.submitCriterion(COMPACT_MAIN_CRITERION_ID, 30, onSuccess)
+        rig.deliver()
+        rig.server.calls.clear()
+
+        rig.submitLogin("name", "secret")
+        rig.deliver()
+
+        assertEquals(listOf(SAVE), rig.server.calls)
+        assertEquals(sessionExpiredDialog, rig.login)
+        assertEquals(0, successes)
+    }
+
+    @Test
+    fun `cancelling the login drops the rating`() {
+        failNextSave()
+
+        rig.dismissLogin()
+        rig.showLogin()
+        rig.submitLogin("name", "secret")
+        rig.deliver()
+
+        assertEquals(emptyList<String>(), rig.server.calls)
+        assertEquals(0, successes)
+    }
+
+    @Test
+    fun `a rating is not resent once another pair is selected`() {
+        failNextSave()
+        rig.selectPair(PAIR_CD)
+        rig.deliver()
+        rig.server.calls.clear()
+
+        rig.submitLogin("name", "secret")
+        rig.deliver()
+
+        assertEquals(emptyList<String>(), rig.server.calls)
+        assertFalse(rig.store.isSubmitted(KEY_AB))
+        assertEquals(0, successes)
+    }
+
+    @Test
+    fun `destroying the view drops the rating`() {
+        failNextSave()
+        rig.destroyView()
+        rig.selectPair(PAIR_AB)
+        rig.deliver()
+        rig.server.calls.clear()
+
+        rig.submitLogin("name", "secret")
+        rig.deliver()
+
+        assertEquals(emptyList<String>(), rig.server.calls)
+        assertEquals(0, successes)
+    }
+
+    @Test
+    fun `a server error shows the generic text and records nothing`() {
         rig.server.reply(SAVE, 500)
         selectSettledPair()
 
@@ -165,20 +323,21 @@ class CompareSubmitFlowTest {
         assertFalse(state.submitInProgress)
         assertFalse(state.submitted)
         assertNull(rig.store.scoresFor(KEY_AB))
-        assertEquals(listOf(longToast(message(R.string.compare_failed_with_message, "HTTP 500"))), rig.toasts)
+        assertEquals(listOf(longToast(message(R.string.compare_failed))), rig.toasts)
         assertFalse(rig.login.visible)
         assertEquals(0, successes)
     }
 
     @Test
-    fun `a failure without a message shows the generic text`() {
-        rig.server.failNetwork(SAVE)
+    fun `a network failure shows a fixed message and logs the detail`() {
+        rig.server.failNetwork(SAVE, "Unable to resolve host")
         selectSettledPair()
 
         rig.submitCriterion(COMPACT_MAIN_CRITERION_ID, 30, onSuccess)
         rig.deliver()
 
-        assertEquals(listOf(longToast(message(R.string.compare_failed))), rig.toasts)
+        assertEquals(listOf(longToast(message(R.string.network_error))), rig.toasts)
+        assertEquals(listOf("Unable to resolve host"), rig.loggedFailures.map { it.message })
     }
 
     @Test
@@ -194,7 +353,19 @@ class CompareSubmitFlowTest {
         assertEquals(30, rig.store.scoresFor(KEY_AB)?.mainScore)
         assertFalse(state.submitted)
         assertFalse(state.extraSubmitted)
-        assertEquals(1, successes)
+        assertEquals(0, successes)
+    }
+
+    @Test
+    fun `an extras result for a pair no longer selected does not report success`() {
+        selectSubmittedPair()
+        rig.submitExtras(listOf(CriteriaScore("pedagogy", 9)), onSuccess)
+
+        rig.selectPair(PAIR_CD)
+        rig.deliver()
+
+        assertEquals(mapOf("pedagogy" to 9), rig.store.scoresFor(KEY_AB)?.extraScores)
+        assertEquals(0, successes)
     }
 
     @Test
@@ -259,8 +430,7 @@ class CompareSubmitFlowTest {
         rig.submitExtras(listOf(CriteriaScore("pedagogy", 9)), onSuccess)
         rig.deliver()
 
-        assertEquals(listOf(shortToast(message(R.string.compare_login_required))), rig.toasts)
-        assertTrue(rig.login.visible)
+        assertEquals(sessionExpiredDialog, rig.login)
         assertEquals(0, successes)
     }
 }

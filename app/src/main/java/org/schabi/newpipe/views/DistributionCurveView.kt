@@ -2,10 +2,11 @@ package org.schabi.newpipe.views
 
 import android.content.Context
 import android.graphics.Canvas
-import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.Path
 import android.view.View
+import androidx.core.content.ContextCompat
+import org.schabi.newpipe.R
 
 private const val FILL_ALPHA = 55
 private const val SEPARATOR_ALPHA = 140
@@ -19,18 +20,20 @@ class DistributionCurveView(
     strokePx: Float
 ) : View(context) {
     private val curvePaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        color = Color.parseColor("#FFCA1D")
+        color = ContextCompat.getColor(context, R.color.tournesol_score)
         style = Paint.Style.STROKE
         strokeWidth = strokePx
         strokeCap = Paint.Cap.ROUND
         strokeJoin = Paint.Join.ROUND
     }
     private val fillPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        color = Color.argb(FILL_ALPHA, 0xFF, 0xCA, 0x1D)
+        color = ContextCompat.getColor(context, R.color.tournesol_score)
+        alpha = FILL_ALPHA
         style = Paint.Style.FILL
     }
     private val separatorPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        color = Color.argb(SEPARATOR_ALPHA, 0xFF, 0xFF, 0xFF)
+        color = ContextCompat.getColor(context, R.color.tournesol_content)
+        alpha = SEPARATOR_ALPHA
         style = Paint.Style.STROKE
         strokeWidth = strokePx * SEPARATOR_STROKE_RATIO
     }

@@ -137,6 +137,27 @@ class CompareControllerTest {
     }
 
     @Test
+    fun `a view recreated over a running controller keeps the session`() {
+        rig.server.reply(SUGGESTIONS, 200, threeVideos)
+        rig.controller.start(signedOut, oneEntry)
+        rig.deliver()
+        val left = state.suggestedLeft
+        val right = state.suggestedRight
+        state.score = 34
+        rig.server.calls.clear()
+        val history = PublishSubject.create<List<StreamHistoryEntry>>()
+
+        rig.controller.start(signedOut, history.toFlowable(BackpressureStrategy.LATEST))
+        rig.deliver()
+
+        assertEquals(emptyList<String>(), rig.server.calls)
+        assertFalse(history.hasObservers())
+        assertEquals(left, state.suggestedLeft)
+        assertEquals(right, state.suggestedRight)
+        assertEquals(34, state.score)
+    }
+
+    @Test
     fun `a successful login closes the dialog, refreshes the profile and says so`() {
         rig.username = "name"
         rig.showLogin()

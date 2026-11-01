@@ -13,12 +13,15 @@ import org.schabi.newpipe.tournesol.suggestionServiceId
 private const val COMPARE_SCALE_REFERENCE_WIDTH = 500f
 private const val COMPARE_SCALE_MIN_WIDTH = 200f
 private const val COMPARE_SCALE_FLOOR = 0.55f
+private const val COMPARE_WIDE_MIN_WIDTH = 600f
 
 internal fun computeCompareScale(maxWidthDp: Float): Float {
     val range = COMPARE_SCALE_REFERENCE_WIDTH - COMPARE_SCALE_MIN_WIDTH
     val raw = (maxWidthDp - COMPARE_SCALE_MIN_WIDTH) / range
     return raw.coerceIn(COMPARE_SCALE_FLOOR, 1f)
 }
+
+internal fun isCompareWideLayout(maxWidthDp: Float, windowHeightDp: Float): Boolean = maxWidthDp >= COMPARE_WIDE_MIN_WIDTH && maxWidthDp > windowHeightDp
 
 internal val LocalCompareScale = staticCompositionLocalOf { 1f }
 

@@ -7,6 +7,7 @@ import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
 import org.schabi.newpipe.R
+import org.schabi.newpipe.tournesol.SessionExpiredException
 
 class CompareRecommendationsFlowTest {
     private val rig = CompareRig()
@@ -78,24 +79,36 @@ class CompareRecommendationsFlowTest {
     }
 
     @Test
+    fun `a rejected refresh token still reports login required`() {
+        rig.tokenFailure = SessionExpiredException()
+
+        rig.openRecommendations()
+        rig.deliver()
+
+        assertEquals(idle.copy(error = message(R.string.compare_login_required)), rig.recommendations)
+        assertTrue(rig.login.visible)
+    }
+
+    @Test
     fun `an expired session is an ordinary failure here, unlike submitting`() {
         rig.server.reply(COMPARISONS, 401)
 
         rig.openRecommendations()
         rig.deliver()
 
-        assertEquals(idle.copy(error = message(R.string.compare_failed_with_message, "HTTP 401")), rig.recommendations)
+        assertEquals(idle.copy(error = message(R.string.compare_failed)), rig.recommendations)
         assertFalse(rig.login.visible)
     }
 
     @Test
-    fun `a failure without a message shows the generic text`() {
-        rig.server.failNetwork(COMPARISONS, " ")
+    fun `a network failure shows a fixed message and logs the detail`() {
+        rig.server.failNetwork(COMPARISONS, "Unable to resolve host")
 
         rig.openRecommendations()
         rig.deliver()
 
-        assertEquals(idle.copy(error = message(R.string.compare_failed)), rig.recommendations)
+        assertEquals(idle.copy(error = message(R.string.network_error)), rig.recommendations)
+        assertEquals(listOf("Unable to resolve host"), rig.loggedFailures.map { it.message })
     }
 
     @Test

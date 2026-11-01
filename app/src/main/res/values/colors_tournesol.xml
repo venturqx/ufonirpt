@@ -1,13 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="tournesol_filter_accent">#FFCA1D</color>
-    <color name="tournesol_chip_bg_unselected">#1E2128</color>
     <color name="tournesol_chip_bg_selected">#FFCA1D</color>
     <color name="tournesol_chip_text_selected">#0F0F0F</color>
-    <color name="tournesol_chip_text_unselected">#D4D8DE</color>
 
-    <color name="tournesol_chip_group_bg">#0F0F0F</color>
-    <color name="tournesol_soft_white">#F3F3F3</color>
-    <color name="tournesol_action_btn">#D4D8DE</color>
-    <color name="tournesol_action_separator">#2A2D35</color>
+    <color name="tournesol_surface">@color/light_background_color</color>
+    <color name="tournesol_surface_section">#F9F1EF</color>
+    <color name="tournesol_surface_band">#F3EBE9</color>
+    <color name="tournesol_chip_bg_unselected">#EBE1DF</color>
+    <color name="tournesol_overlay_surface">@color/light_background_color</color>
+    <color name="tournesol_overlay_card">#F7EFED</color>
+    <color name="tournesol_overlay_outline">#D8CECC</color>
+    <color name="tournesol_outline">#D8CECC</color>
+
+    <color name="tournesol_content">#000000</color>
+    <color name="tournesol_content_muted">#B8000000</color>
+    <color name="tournesol_on_surface">#201B13</color>
+    <color name="tournesol_on_overlay">#201B13</color>
+    <color name="tournesol_chip_text_unselected">#201B13</color>
+    <color name="tournesol_action_btn">#201B13</color>
+    <color name="tournesol_section_header">#7D5700</color>
+    <color name="tournesol_score">#7D5700</color>
+    <color name="tournesol_accent_shade">#80000000</color>
 </resources>

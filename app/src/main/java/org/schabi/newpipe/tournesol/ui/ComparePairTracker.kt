@@ -1,5 +1,6 @@
 package org.schabi.newpipe.tournesol.ui
 
+import org.schabi.newpipe.tournesol.COMPACT_MAIN_CRITERION_ID
 import org.schabi.newpipe.tournesol.CompareKey
 import org.schabi.newpipe.tournesol.ComparePairSelection
 import org.schabi.newpipe.tournesol.CompareScoreStore
@@ -41,6 +42,16 @@ internal class ComparePairTracker(
         state.storedScores = ComparisonScores()
         applyStoredScores()
         state.submitted = key?.let(store::isSubmitted) == true
+    }
+
+    fun restoreScores(criteriaScores: List<CriteriaScore>) {
+        criteriaScores.forEach {
+            if (it.criteria == COMPACT_MAIN_CRITERION_ID) {
+                state.score = it.score
+            } else {
+                state.updateExtraScore(it.criteria, it.score)
+            }
+        }
     }
 
     fun applyRemoteResult(key: CompareKey, exists: Boolean) {

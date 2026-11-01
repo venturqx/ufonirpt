@@ -22,7 +22,9 @@ data class TournesolProfile(
     val dailyComparisons: Int
 )
 
-class MissingTokenException : RuntimeException()
+open class MissingTokenException : RuntimeException()
+
+class SessionExpiredException : MissingTokenException()
 
 fun Maybe<String>.orMissingToken(): Single<String> = switchIfEmpty(Single.error(MissingTokenException()))
 
@@ -201,6 +203,7 @@ object TournesolAuthManager {
             when (val result = session(appContext).validToken(minTtlMs)) {
                 is AccessTokenResult.Token -> result.value
                 AccessTokenResult.LoggedOut -> null
+                AccessTokenResult.Expired -> throw SessionExpiredException()
                 is AccessTokenResult.Failed -> throw result.cause
             }
         }.subscribeOn(Schedulers.io())

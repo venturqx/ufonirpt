@@ -13,6 +13,7 @@ import io.reactivex.rxjava3.disposables.Disposable
 import org.schabi.newpipe.R
 import org.schabi.newpipe.tournesol.CompareRecommendationItem
 import org.schabi.newpipe.tournesol.CompareRepository
+import org.schabi.newpipe.tournesol.CompareSubmitFailure
 import org.schabi.newpipe.tournesol.MissingTokenException
 import org.schabi.newpipe.tournesol.TournesolAuthManager
 import org.schabi.newpipe.tournesol.orMissingToken
@@ -76,12 +77,8 @@ class CompareHistoryActivity : AppCompatActivity() {
                         error = getString(R.string.compare_login_required)
                         return@subscribe
                     }
-                    val message = throwable.message
-                    error = if (message.isNullOrBlank()) {
-                        getString(R.string.compare_failed)
-                    } else {
-                        getString(R.string.compare_failed_with_message, message)
-                    }
+                    logCompareFailure(throwable)
+                    error = compareFailedMessage(CompareSubmitFailure.from(throwable)).resolve(this)
                 }
             )
     }

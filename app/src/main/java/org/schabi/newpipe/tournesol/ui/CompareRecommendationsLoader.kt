@@ -4,6 +4,7 @@ import io.reactivex.rxjava3.disposables.Disposable
 import org.schabi.newpipe.R
 import org.schabi.newpipe.tournesol.CompareComparisonsResult
 import org.schabi.newpipe.tournesol.CompareRepository
+import org.schabi.newpipe.tournesol.CompareSubmitFailure
 import org.schabi.newpipe.tournesol.MissingTokenException
 
 private const val COMPARISONS_USERNAME = "me"
@@ -73,8 +74,9 @@ internal class CompareRecommendationsLoader(
             login.show()
             return
         }
+        host.logFailure(throwable)
         state.recommendations = CompareRecommendations.Failed(
-            compareFailedMessage(throwable.message?.takeUnless { it.isBlank() })
+            compareFailedMessage(CompareSubmitFailure.from(throwable))
         )
     }
 }

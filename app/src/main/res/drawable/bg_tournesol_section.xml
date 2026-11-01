@@ -3,13 +3,13 @@
     <!-- Background fill -->
     <item>
         <shape android:shape="rectangle">
-            <solid android:color="#14161A" />
+            <solid android:color="@color/tournesol_surface_section" />
         </shape>
     </item>
     <!-- Bottom border line -->
     <item android:top="-1dp" android:left="-1dp" android:right="-1dp">
         <shape android:shape="rectangle">
-            <stroke android:width="1dp" android:color="#2A2D35" />
+            <stroke android:width="1dp" android:color="@color/tournesol_outline" />
             <solid android:color="@android:color/transparent" />
         </shape>
     </item>

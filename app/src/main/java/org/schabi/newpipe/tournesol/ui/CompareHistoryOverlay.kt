@@ -18,10 +18,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import org.schabi.newpipe.R
 import org.schabi.newpipe.database.history.model.StreamHistoryEntry
 import org.schabi.newpipe.ui.components.items.Stream
 import org.schabi.newpipe.ui.components.items.stream.StreamThumbnail
@@ -38,11 +40,11 @@ internal fun CompareHistoryOverlayGridCard(
     val stream = remember(entry) { Stream(entry.toStreamInfoItem()) }
     val titleColor = compareMetaTitleColor()
     val uploaderColor = compareMetaUploaderColor()
-    val cardBackground = Color(0xFF131313)
+    val cardBackground = colorResource(R.color.tournesol_overlay_card)
     val borderColor = if (selected) {
         accentColor
     } else {
-        Color(0xFF2A2A2A)
+        colorResource(R.color.tournesol_overlay_outline)
     }
     Surface(
         modifier = Modifier

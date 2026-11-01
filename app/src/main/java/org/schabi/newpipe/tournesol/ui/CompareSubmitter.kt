@@ -54,6 +54,9 @@ internal class CompareSubmitter(
         val alreadySubmitted = tracker.isSubmitted(key)
 
         submit(
+            key = key,
+            criteriaScores = criteriaScores,
+            resend = { submitCriterion(criterionId, value, onSuccess) },
             request = { token ->
                 CompareRepository.saveComparison(token, key, criteriaScores, alreadySubmitted)
             },
@@ -64,7 +67,9 @@ internal class CompareSubmitter(
                     userInfo.refresh()
                 }
                 showLongToast(saveResultMessageRes(result))
-                onSuccess()
+                if (tracker.key == key) {
+                    onSuccess()
+                }
             }
         )
     }
@@ -76,13 +81,18 @@ internal class CompareSubmitter(
         val key = keyOrToast() ?: return
 
         submit(
+            key = key,
+            criteriaScores = criteriaScores,
+            resend = { submitExtras(criteriaScores, onSuccess) },
             request = { token ->
                 CompareRepository.patchComparison(token, key.entityA, key.entityB, criteriaScores)
             },
             onResult = {
                 tracker.recordExtras(key, criteriaScores)
                 showLongToast(R.string.compare_more_submitted)
-                onSuccess()
+                if (tracker.key == key) {
+                    onSuccess()
+                }
             }
         )
     }
@@ -107,7 +117,13 @@ internal class CompareSubmitter(
         return key
     }
 
-    private fun <T : Any> submit(request: (String) -> Single<T>, onResult: (T) -> Unit) {
+    private fun <T : Any> submit(
+        key: CompareKey,
+        criteriaScores: List<CriteriaScore>,
+        resend: () -> Unit,
+        request: (String) -> Single<T>,
+        onResult: (T) -> Unit
+    ) {
         state.submitInProgress = true
         submissions.add(
             host.withToken(request).subscribe(
@@ -117,21 +133,29 @@ internal class CompareSubmitter(
                 },
                 { throwable ->
                     state.submitInProgress = false
-                    showFailure(CompareSubmitFailure.from(throwable))
+                    host.logFailure(throwable)
+                    showFailure(CompareSubmitFailure.from(throwable)) {
+                        if (tracker.key == key) {
+                            tracker.restoreScores(criteriaScores)
+                            resend()
+                        }
+                    }
                 }
             )
         )
     }
 
-    private fun showFailure(failure: CompareSubmitFailure) {
+    private fun showFailure(failure: CompareSubmitFailure, resend: () -> Unit) {
         when (failure) {
             CompareSubmitFailure.LoginRequired -> {
                 host.showToast(CompareToast(CompareMessage(R.string.compare_login_required), Toast.LENGTH_SHORT))
                 login.show()
             }
 
-            is CompareSubmitFailure.Failed -> {
-                host.showToast(CompareToast(compareFailedMessage(failure.message), Toast.LENGTH_LONG))
+            CompareSubmitFailure.SessionExpired -> login.showExpired(resend)
+
+            CompareSubmitFailure.Network, CompareSubmitFailure.Failed -> {
+                host.showToast(CompareToast(compareFailedMessage(failure), Toast.LENGTH_LONG))
             }
         }
     }

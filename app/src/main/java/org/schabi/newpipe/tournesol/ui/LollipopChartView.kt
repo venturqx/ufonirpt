@@ -10,13 +10,16 @@ import android.util.TypedValue
 import android.view.MotionEvent
 import android.view.View
 import android.view.View.MeasureSpec
+import androidx.core.content.ContextCompat
 import java.util.Locale
+import org.schabi.newpipe.R
 import org.schabi.newpipe.tournesol.CriterionScore
 
 private const val MAX_WIDTH_DP = 400f
 private const val BAR_WIDTH_DP = 12f
 private const val SCORE_TEXT_SIZE_DP = 10f
 private const val ZERO_LINE_WIDTH_DP = 1f
+private const val ZERO_LINE_ALPHA = 0x40
 private const val SELECTED_GLOW_GAP_DP = 3f
 private const val SELECTED_GLOW_WIDTH_DP = 4f
 private const val SELECTED_GLOW_ALPHA = 160
@@ -60,7 +63,8 @@ class LollipopChartView(
     }
     private val zeroLinePaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         style = Paint.Style.STROKE
-        color = Color.parseColor("#40FFFFFF")
+        color = ContextCompat.getColor(context, R.color.tournesol_content)
+        alpha = ZERO_LINE_ALPHA
         strokeWidth = dp(ZERO_LINE_WIDTH_DP).toFloat()
     }
     private val selectedGlowPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {

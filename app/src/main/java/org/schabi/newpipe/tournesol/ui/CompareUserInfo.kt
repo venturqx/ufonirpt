@@ -30,8 +30,9 @@ internal class CompareUserInfo(
                     state.username = loaded.username
                     state.comparisonCount = loaded.comparisonCount
                     state.dailyComparisons = loaded.dailyComparisons
+                    state.profileLoaded = true
                 },
-                { /* keep the last known profile on read errors */ }
+                { state.profileLoaded = true }
             )
     }
 

@@ -12,20 +12,23 @@ import androidx.compose.ui.res.stringResource
 import org.schabi.newpipe.R
 import org.schabi.newpipe.database.history.model.StreamHistoryEntry
 import org.schabi.newpipe.tournesol.CompareComparisonVideo
+import org.schabi.newpipe.tournesol.ComparePairSelection
 import org.schabi.newpipe.tournesol.CompareRecommendationItem
+import org.schabi.newpipe.tournesol.CompareSubmitFailure
 import org.schabi.newpipe.tournesol.ComparisonScores
+import org.schabi.newpipe.tournesol.compareKeyFor
 
-internal data class CompareMessage(@StringRes val res: Int, val arg: String? = null) {
-    fun resolve(context: Context): String = if (arg == null) context.getString(res) else context.getString(res, arg)
+internal data class CompareMessage(@StringRes val res: Int) {
+    fun resolve(context: Context): String = context.getString(res)
 
     @Composable
-    fun resolve(): String = if (arg == null) stringResource(res) else stringResource(res, arg)
+    fun resolve(): String = stringResource(res)
 }
 
-internal fun compareFailedMessage(detail: String?): CompareMessage = if (detail == null) {
-    CompareMessage(R.string.compare_failed)
+internal fun compareFailedMessage(failure: CompareSubmitFailure): CompareMessage = if (failure == CompareSubmitFailure.Network) {
+    CompareMessage(R.string.network_error)
 } else {
-    CompareMessage(R.string.compare_failed_with_message, detail)
+    CompareMessage(R.string.compare_failed)
 }
 
 internal sealed interface CompareLoginState {
@@ -53,6 +56,39 @@ internal sealed interface CompareRecommendations {
     ) : CompareRecommendations
 }
 
+internal sealed interface CompareScreenStatus {
+    data object Loading : CompareScreenStatus
+
+    data object NeedsLogin : CompareScreenStatus
+
+    data class NoPair(@StringRes val messageRes: Int) : CompareScreenStatus
+
+    data object Ready : CompareScreenStatus
+}
+
+internal fun compareScreenStatus(
+    state: CompareUiState,
+    selection: ComparePairSelection?,
+    uidOf: (url: String, serviceId: Int) -> String?
+): CompareScreenStatus = when {
+    !state.profileLoaded -> CompareScreenStatus.Loading
+    state.username == null -> CompareScreenStatus.NeedsLogin
+    selection != null && compareKeyFor(selection, uidOf) != null -> CompareScreenStatus.Ready
+    state.suggestionsLoading || state.history == CompareHistoryState.Loading -> CompareScreenStatus.Loading
+    selection != null -> CompareScreenStatus.NoPair(R.string.compare_service_not_supported)
+    else -> CompareScreenStatus.NoPair(R.string.compare_no_pair)
+}
+
+@Stable
+internal class ComparePickerProgress {
+    var pairKey: Any? = null
+    val activeIndex = mutableIntStateOf(EXTRA_CRITERIA.size)
+    val touchedCriteria = mutableStateOf(setOf<String>())
+    val allExtrasDone = mutableStateOf(false)
+    val submittedCriteria = mutableStateOf(setOf<String>())
+    val mainUnsaved = mutableStateOf(false)
+}
+
 @Stable
 class CompareUiState {
     internal var history by mutableStateOf<CompareHistoryState>(CompareHistoryState.Loading)
@@ -75,7 +111,9 @@ class CompareUiState {
     var weeklyComparisons by mutableStateOf<Int?>(null)
     var dailyComparisons by mutableStateOf<Int?>(null)
     var username by mutableStateOf<String?>(null)
+    var profileLoaded by mutableStateOf(false)
     var comparisonCount by mutableStateOf<Int?>(null)
+    internal val picker = ComparePickerProgress()
 
     fun updateExtraScore(criteria: String, value: Int) {
         extraScores = extraScores + (criteria to value)

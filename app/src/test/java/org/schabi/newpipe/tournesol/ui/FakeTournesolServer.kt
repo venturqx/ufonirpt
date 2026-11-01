@@ -39,7 +39,7 @@ internal val UNSUPPORTED_PAIR = ComparePairSelection(UNSUPPORTED_SERVICE, "left"
 internal val KEY_AB = CompareKey(UID_A, UID_B)
 internal val KEY_CD = CompareKey(UID_C, UID_D)
 
-internal fun message(res: Int, arg: String? = null) = if (arg == null) "$res" else "$res:$arg"
+internal fun message(res: Int) = "$res"
 
 internal fun shortToast(text: String) = "$text|short"
 

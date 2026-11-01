@@ -2106,7 +2106,7 @@ class VideoDetailFragment :
         activity.window.clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN)
         activity.window.statusBarColor = androidx.core.content.ContextCompat.getColor(
             requireContext(),
-            R.color.tournesol_chip_group_bg
+            R.color.dark_background_color
         )
     }
 

@@ -6,26 +6,19 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.core.os.bundleOf
 import androidx.core.view.ViewCompat
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
 import androidx.preference.PreferenceManager
-import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
-import io.reactivex.rxjava3.core.Completable
-import io.reactivex.rxjava3.core.Maybe
-import io.reactivex.rxjava3.core.Scheduler
-import io.reactivex.rxjava3.core.Single
 import org.schabi.newpipe.R
 import org.schabi.newpipe.fragments.detail.VideoDetailFragment
 import org.schabi.newpipe.ktx.serializable
 import org.schabi.newpipe.local.history.HistoryRecordManager
-import org.schabi.newpipe.tournesol.CompareScoreStore
 import org.schabi.newpipe.tournesol.REGISTER_URL
 import org.schabi.newpipe.tournesol.TournesolAuthManager
-import org.schabi.newpipe.tournesol.TournesolProfile
 import org.schabi.newpipe.ui.theme.AppTheme
 import org.schabi.newpipe.util.NavigationHelper
 
@@ -33,41 +26,16 @@ class CompareFragment : Fragment() {
     private var currentVideo: TournesolVideoRef? = null
     private var embedInDetail = false
     private var externalScroll = false
-    private val uiState = CompareUiState()
-    private val host = object : CompareHost {
-        override val mainThread: Scheduler
-            get() = AndroidSchedulers.mainThread()
-
-        override fun accessToken(): Maybe<String> = TournesolAuthManager.getValidAccessToken(requireContext())
-
-        override fun login(username: String, password: String): Completable = TournesolAuthManager.login(requireContext(), username, password)
-
-        override fun loadProfile(): Single<TournesolProfile>? = context?.let { TournesolAuthManager.loadProfile(it) }
-
-        override fun incrementComparisonCount() = TournesolAuthManager.incrementComparisonCount(requireContext())
-
-        override fun saveComparisonCount(count: Int) = TournesolAuthManager.saveComparisonCount(requireContext(), count)
-
-        override fun showToast(toast: CompareToast) {
-            val ctx = requireContext()
-            Toast.makeText(ctx, toast.message.resolve(ctx), toast.length).show()
-        }
-    }
-    private val userInfo = CompareUserInfo(uiState, host)
-    private lateinit var controller: CompareController
+    private lateinit var viewModel: CompareViewModel
+    private val uiState get() = viewModel.state
+    private val controller get() = viewModel.controller
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         currentVideo = arguments?.serializable<TournesolVideoRef>(KEY_VIDEO)
         embedInDetail = arguments?.getBoolean(KEY_EMBED_IN_DETAIL) == true
         externalScroll = arguments?.getBoolean(KEY_EXTERNAL_SCROLL) == true
-        controller = CompareController(
-            state = uiState,
-            video = currentVideo,
-            store = CompareScoreStore.shared(requireContext()),
-            userInfo = userInfo,
-            host = host
-        )
+        viewModel = ViewModelProvider(this, CompareViewModel.factory(currentVideo))[CompareViewModel::class.java]
     }
 
     override fun onCreateView(
@@ -115,6 +83,7 @@ class CompareFragment : Fragment() {
                         },
                         onRandomizeLeft = { controller.suggestions.randomize(SuggestionSlot.LEFT) },
                         onRandomizeRight = { controller.suggestions.randomize(SuggestionSlot.RIGHT) },
+                        onRetryPair = { controller.fillPair() },
                         showGreeting = currentVideo == null,
                         reserveMiniPlayerSpace = !embedInDetail,
                         externalScroll = externalScroll,
@@ -133,7 +102,9 @@ class CompareFragment : Fragment() {
     }
 
     override fun onDestroyView() {
-        controller.onViewDestroyed()
+        if (!requireActivity().isChangingConfigurations) {
+            controller.onViewDestroyed()
+        }
         super.onDestroyView()
     }
 
@@ -172,7 +143,9 @@ class CompareFragment : Fragment() {
     }
 
     fun refreshUserInfo() {
-        userInfo.refresh()
+        if (::viewModel.isInitialized) {
+            viewModel.userInfo.refresh()
+        }
     }
 
     companion object {

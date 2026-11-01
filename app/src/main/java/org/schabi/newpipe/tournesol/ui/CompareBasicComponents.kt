@@ -8,6 +8,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -17,6 +18,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
@@ -26,6 +28,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -37,6 +40,7 @@ import org.schabi.newpipe.R
 
 private const val WEEKLY_GOAL = 2500
 private const val DAILY_GOAL = 2
+private const val GOAL_RING_MAX_FONT_GROWTH = 1.4f
 
 @Composable
 private fun GoalRing(
@@ -63,10 +67,11 @@ private fun GoalRing(
         label = "goalRing"
     )
     val trackColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.08f)
+    val fontGrowth = LocalDensity.current.fontScale.coerceIn(1f, GOAL_RING_MAX_FONT_GROWTH)
 
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = modifier.width(104.dp * scale)
+        modifier = modifier.width(104.dp * scale * fontGrowth)
     ) {
         Box(contentAlignment = Alignment.Center) {
             Canvas(modifier = Modifier.size(72.dp * scale)) {
@@ -125,13 +130,16 @@ internal fun UserGreetingBanner(
 ) {
     val scale = LocalCompareScale.current
     if (username != null) {
-        Row(
+        FlowRow(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(vertical = 8.dp * scale),
-            verticalAlignment = Alignment.CenterVertically
+                .padding(vertical = 8.dp * scale)
         ) {
-            Column(modifier = Modifier.weight(1f)) {
+            Column(
+                modifier = Modifier
+                    .weight(1f)
+                    .align(Alignment.CenterVertically)
+            ) {
                 Text(
                     text = stringResource(R.string.compare_greeting, username),
                     style = MaterialTheme.typography.titleSmall,
@@ -146,6 +154,7 @@ internal fun UserGreetingBanner(
                 }
             }
             Row(
+                modifier = Modifier.align(Alignment.CenterVertically),
                 verticalAlignment = Alignment.Top,
                 horizontalArrangement = Arrangement.spacedBy(12.dp * scale)
             ) {
@@ -153,7 +162,7 @@ internal fun UserGreetingBanner(
                     GoalRing(
                         current = dailyComparisons,
                         goal = DAILY_GOAL,
-                        label = "Your daily",
+                        label = stringResource(R.string.compare_goal_daily),
                         ringColor = MaterialTheme.colorScheme.tertiary
                     )
                 }
@@ -161,7 +170,7 @@ internal fun UserGreetingBanner(
                     GoalRing(
                         current = weeklyComparisons,
                         goal = WEEKLY_GOAL,
-                        label = "Weekly collective"
+                        label = stringResource(R.string.compare_goal_weekly)
                     )
                 }
             }
@@ -194,6 +203,45 @@ internal fun UserGreetingBanner(
                     Text(text = stringResource(R.string.tournesol_register_button))
                 }
             }
+        }
+    }
+}
+
+@Composable
+internal fun CompareStatusPanel(
+    status: CompareScreenStatus,
+    onRetry: () -> Unit
+) {
+    if (status == CompareScreenStatus.NeedsLogin || status == CompareScreenStatus.Ready) {
+        return
+    }
+    val scale = LocalCompareScale.current
+    val textColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 24.dp * scale),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(12.dp * scale)
+    ) {
+        if (status is CompareScreenStatus.NoPair) {
+            Text(
+                text = stringResource(status.messageRes),
+                style = MaterialTheme.typography.bodyMedium,
+                color = textColor,
+                textAlign = TextAlign.Center
+            )
+            OutlinedButton(onClick = onRetry) {
+                Text(text = stringResource(R.string.retry))
+            }
+        } else {
+            CircularProgressIndicator()
+            Text(
+                text = stringResource(R.string.compare_loading_pair),
+                style = MaterialTheme.typography.bodyMedium,
+                color = textColor,
+                textAlign = TextAlign.Center
+            )
         }
     }
 }

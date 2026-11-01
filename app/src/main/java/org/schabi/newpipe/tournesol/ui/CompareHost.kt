@@ -1,11 +1,14 @@
 package org.schabi.newpipe.tournesol.ui
 
+import android.util.Log
 import io.reactivex.rxjava3.core.Completable
 import io.reactivex.rxjava3.core.Maybe
 import io.reactivex.rxjava3.core.Scheduler
 import io.reactivex.rxjava3.core.Single
 import org.schabi.newpipe.tournesol.TournesolProfile
 import org.schabi.newpipe.tournesol.orMissingToken
+
+private const val TAG = "Compare"
 
 internal data class CompareToast(val message: CompareMessage, val length: Int)
 
@@ -23,6 +26,12 @@ internal interface CompareHost {
     fun saveComparisonCount(count: Int)
 
     fun showToast(toast: CompareToast)
+
+    fun logFailure(throwable: Throwable)
+}
+
+internal fun logCompareFailure(throwable: Throwable) {
+    Log.w(TAG, "Compare request failed", throwable)
 }
 
 internal fun <T : Any> CompareHost.withToken(request: (String) -> Single<T>): Single<T> = accessToken()

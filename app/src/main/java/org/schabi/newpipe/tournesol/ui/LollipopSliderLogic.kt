@@ -1,26 +1,38 @@
 package org.schabi.newpipe.tournesol.ui
 
+import androidx.annotation.StringRes
 import androidx.compose.runtime.MutableIntState
 import androidx.compose.runtime.MutableState
+import kotlin.math.roundToInt
+import org.schabi.newpipe.R
 import org.schabi.newpipe.tournesol.COMPACT_MAIN_CRITERION_ID
 import org.schabi.newpipe.tournesol.CriteriaScore
+import org.schabi.newpipe.tournesol.SCORE_MAX
+import org.schabi.newpipe.tournesol.SCORE_MIN
 
 internal data class QualifierLine(
     val leftArrow: String,
     val rightArrow: String,
-    val qualifier: String,
-    val tail: String
+    @StringRes val textRes: Int
 )
 
-private enum class ScoreStrength(
-    val leftArrow: String,
-    val rightArrow: String,
-    val comparative: String,
-    val goodness: String
+private enum class ScoreStrength(val leftArrow: String, val rightArrow: String) {
+    NEUTRAL(leftArrow = "", rightArrow = ""),
+    SLIGHT(leftArrow = "<", rightArrow = ">"),
+    STRONG(leftArrow = "<<", rightArrow = ">>")
+}
+
+private class QualifierTexts(
+    @StringRes val neutral: Int,
+    @StringRes val slight: Int,
+    @StringRes val strong: Int
 ) {
-    NEUTRAL(leftArrow = "", rightArrow = "", comparative = "just as", goodness = "as good"),
-    SLIGHT(leftArrow = "<", rightArrow = ">", comparative = "slightly more", goodness = "slightly better"),
-    STRONG(leftArrow = "<<", rightArrow = ">>", comparative = "much more", goodness = "much better")
+    @StringRes
+    fun at(strength: ScoreStrength): Int = when (strength) {
+        ScoreStrength.NEUTRAL -> neutral
+        ScoreStrength.SLIGHT -> slight
+        ScoreStrength.STRONG -> strong
+    }
 }
 
 private fun scoreStrength(score: Int): ScoreStrength = when (score) {
@@ -29,26 +41,64 @@ private fun scoreStrength(score: Int): ScoreStrength = when (score) {
     else -> ScoreStrength.STRONG
 }
 
-private val GOODNESS_CRITERIA = setOf("better_habits", "backfire_risk")
+private val RECOMMENDED_QUALIFIERS = QualifierTexts(
+    neutral = R.string.compare_qualifier_largely_recommended_even,
+    slight = R.string.compare_qualifier_largely_recommended_slight,
+    strong = R.string.compare_qualifier_largely_recommended_strong
+)
 
-private val CRITERION_TAILS = mapOf(
-    "reliability" to " reliable",
-    "pedagogy" to " pedagogical",
-    "importance" to " important",
-    "layman_friendly" to " accessible",
-    "entertaining_relaxing" to " entertaining",
-    "engaging" to " engaging",
-    "diversity_inclusion" to " inclusive"
+private val GOODNESS_QUALIFIERS = QualifierTexts(
+    neutral = R.string.compare_qualifier_goodness_even,
+    slight = R.string.compare_qualifier_goodness_slight,
+    strong = R.string.compare_qualifier_goodness_strong
+)
+
+private val CRITERION_QUALIFIERS = mapOf(
+    "reliability" to QualifierTexts(
+        neutral = R.string.compare_qualifier_reliability_even,
+        slight = R.string.compare_qualifier_reliability_slight,
+        strong = R.string.compare_qualifier_reliability_strong
+    ),
+    "pedagogy" to QualifierTexts(
+        neutral = R.string.compare_qualifier_pedagogy_even,
+        slight = R.string.compare_qualifier_pedagogy_slight,
+        strong = R.string.compare_qualifier_pedagogy_strong
+    ),
+    "importance" to QualifierTexts(
+        neutral = R.string.compare_qualifier_importance_even,
+        slight = R.string.compare_qualifier_importance_slight,
+        strong = R.string.compare_qualifier_importance_strong
+    ),
+    "layman_friendly" to QualifierTexts(
+        neutral = R.string.compare_qualifier_layman_friendly_even,
+        slight = R.string.compare_qualifier_layman_friendly_slight,
+        strong = R.string.compare_qualifier_layman_friendly_strong
+    ),
+    "entertaining_relaxing" to QualifierTexts(
+        neutral = R.string.compare_qualifier_entertaining_relaxing_even,
+        slight = R.string.compare_qualifier_entertaining_relaxing_slight,
+        strong = R.string.compare_qualifier_entertaining_relaxing_strong
+    ),
+    "engaging" to QualifierTexts(
+        neutral = R.string.compare_qualifier_engaging_even,
+        slight = R.string.compare_qualifier_engaging_slight,
+        strong = R.string.compare_qualifier_engaging_strong
+    ),
+    "diversity_inclusion" to QualifierTexts(
+        neutral = R.string.compare_qualifier_diversity_inclusion_even,
+        slight = R.string.compare_qualifier_diversity_inclusion_slight,
+        strong = R.string.compare_qualifier_diversity_inclusion_strong
+    ),
+    "better_habits" to GOODNESS_QUALIFIERS,
+    "backfire_risk" to GOODNESS_QUALIFIERS
 )
 
 internal fun buildQualifierLine(criterionId: String, score: Int): QualifierLine {
     val strength = scoreStrength(score)
-    val isGoodness = criterionId in GOODNESS_CRITERIA
     return QualifierLine(
         leftArrow = if (score < 0) strength.leftArrow else "",
         rightArrow = if (score > 0) strength.rightArrow else "",
-        qualifier = if (isGoodness) strength.goodness else strength.comparative,
-        tail = if (isGoodness) "" else CRITERION_TAILS[criterionId] ?: " recommended"
+        textRes = (CRITERION_QUALIFIERS[criterionId] ?: RECOMMENDED_QUALIFIERS).at(strength)
     )
 }
 
@@ -58,7 +108,9 @@ internal fun criterionIdAt(activeIndex: Int): String = if (activeIndex < 0 || ac
     EXTRA_CRITERIA[activeIndex].id
 }
 
-internal fun activeExtraNumber(activeIndex: Int): Int = if (activeIndex in EXTRA_CRITERIA.indices) activeIndex + 1 else 0
+internal fun criterionLabelRes(criterionId: String): Int = EXTRA_CRITERIA.firstOrNull { it.id == criterionId }?.labelRes ?: R.string.compare_criteria_largely_recommended
+
+internal fun touchedExtraCount(touched: Set<String>): Int = EXTRA_CRITERIA.count { it.id in touched }
 
 internal fun criterionScore(criterionId: String, mainScore: Int, scores: Map<String, Int>): Int = if (criterionId == COMPACT_MAIN_CRITERION_ID) mainScore else scores[criterionId] ?: 0
 
@@ -81,7 +133,9 @@ internal data class SliderDragController(
     val criterionId: String,
     val latestScore: () -> Int,
     val dispatchChange: (Int) -> Unit,
-    val onSubmit1: (String, Int) -> Unit,
+    val onSubmit1: (String, Int, () -> Unit) -> Unit,
+    val isSubmitting: () -> Boolean,
+    val isMainSaved: () -> Boolean,
     val touchedCriteria: MutableState<Set<String>>,
     val activeIndex: MutableIntState,
     val allExtrasDone: MutableState<Boolean>,
@@ -105,6 +159,22 @@ internal data class SliderDragController(
         dispatchChange(score)
     }
 
+    fun adjust(target: Float) {
+        if (isSubmitting()) {
+            return
+        }
+        dispatchChange(target.roundToInt().coerceIn(SCORE_MIN, SCORE_MAX))
+        touchedCriteria.value += criterionId
+    }
+
+    fun confirm() {
+        if (isSubmitting()) {
+            return
+        }
+        val score = latestScore()
+        release(score, score, start(score))
+    }
+
     fun release(scoreBeforeDrag: Int, finalScore: Int, newTouched: Set<String>) {
         isDragging.value = false
         dragScore?.value = null
@@ -116,13 +186,22 @@ internal data class SliderDragController(
             return
         }
         if (criterionId == COMPACT_MAIN_CRITERION_ID) {
-            onSubmit1(criterionId, finalScore)
-        }
-        val nextIndex = firstUntouchedExtraIndex(newTouched)
-        if (nextIndex != null) {
-            activeIndex.intValue = nextIndex
+            onSubmit1(criterionId, finalScore) {
+                if (criterionIdAt(activeIndex.intValue) == criterionId) {
+                    advance(newTouched, mainSaved = true)
+                }
+            }
         } else {
-            allExtrasDone.value = true
+            advance(newTouched, isMainSaved())
+        }
+    }
+
+    private fun advance(touched: Set<String>, mainSaved: Boolean) {
+        val nextIndex = firstUntouchedExtraIndex(touched)
+        when {
+            nextIndex != null -> activeIndex.intValue = nextIndex
+            mainSaved -> allExtrasDone.value = true
+            else -> activeIndex.intValue = EXTRA_CRITERIA.size
         }
     }
 }

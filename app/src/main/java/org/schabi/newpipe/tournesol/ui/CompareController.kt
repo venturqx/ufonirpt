@@ -20,8 +20,9 @@ internal class CompareController(
 ) {
     private val disposables = CompositeDisposable()
     private val tracker = ComparePairTracker(state, store, CompareRepository::buildTournesolUid)
+    private var started = false
 
-    val login = CompareLoginFlow(state, host, userInfo)
+    val login = CompareLoginFlow(state, host, userInfo) { fillPairIfMissing() }
     val recommendations = CompareRecommendationsLoader(state, host, login)
     val submitter = CompareSubmitter(state, tracker, host, login, userInfo)
     val suggestions = CompareSuggestionLoader(
@@ -39,6 +40,10 @@ internal class CompareController(
     }
 
     fun start(signedOut: Observable<Unit>, history: Flowable<List<StreamHistoryEntry>>?) {
+        if (started) {
+            return
+        }
+        started = true
         disposables.add(
             signedOut
                 .observeOn(host.mainThread)
@@ -67,6 +72,14 @@ internal class CompareController(
         userInfo.refresh()
     }
 
+    fun fillPair() {
+        if (video == null) {
+            suggestions.requestPair()
+        } else {
+            suggestions.randomize(SuggestionSlot.RIGHT)
+        }
+    }
+
     fun onHistoryPrepared(prepared: CompareHistoryState) {
         state.history = prepared
         submitter.onHistoryUpdated(prepared.entries)
@@ -80,6 +93,7 @@ internal class CompareController(
     }
 
     fun onViewDestroyed() {
+        started = false
         disposables.clear()
         cancelAuthenticatedWork()
         login.cancel()
@@ -91,6 +105,13 @@ internal class CompareController(
         recommendations.release()
         suggestions.clear()
         tracker.clearSelection()
+    }
+
+    private fun fillPairIfMissing() {
+        val historyVideosNeeded = if (video == null) 2 else 1
+        if (state.suggestedRight == null && state.historyEntries.size < historyVideosNeeded) {
+            fillPair()
+        }
     }
 
     private fun cancelAuthenticatedWork() {

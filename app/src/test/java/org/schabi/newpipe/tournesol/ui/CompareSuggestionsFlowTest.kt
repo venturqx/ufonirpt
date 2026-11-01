@@ -150,6 +150,61 @@ class CompareSuggestionsFlowTest {
     }
 
     @Test
+    fun `filling the pair without a current video fills both slots`() {
+        rig.server.reply(SUGGESTIONS, 200, threeVideos)
+
+        rig.fillPair()
+        rig.deliver()
+
+        assertDistinctPair()
+    }
+
+    @Test
+    fun `filling the pair with a current video only fills the right slot`() {
+        rig.close()
+        rig = CompareRig(videoRef(URL_D))
+        rig.server.reply(SUGGESTIONS, 200, threeVideos)
+
+        rig.fillPair()
+        rig.deliver()
+
+        assertNull(state.suggestedLeft)
+        assertNotNull(state.suggestedRight)
+    }
+
+    @Test
+    fun `logging in without a pair fetches one`() {
+        rig.server.reply(SUGGESTIONS, 200, threeVideos)
+
+        rig.submitLogin("name", "secret")
+        rig.deliver()
+
+        assertDistinctPair()
+    }
+
+    @Test
+    fun `logging in with a history pair keeps it`() {
+        rig.historyChanged(listOf(historyEntry(URL_A, 1), historyEntry(URL_B, 2)))
+
+        rig.submitLogin("name", "secret")
+        rig.deliver()
+
+        assertEquals(emptyList<String>(), rig.server.calls)
+    }
+
+    @Test
+    fun `logging in on a current video with history keeps the pair`() {
+        rig.close()
+        rig = CompareRig(videoRef(URL_C))
+        rig.historyChanged(listOf(historyEntry(URL_A, 1)))
+
+        rig.submitLogin("name", "secret")
+        rig.deliver()
+
+        assertEquals(emptyList<String>(), rig.server.calls)
+    }
+
+    @Test
     fun `signing out abandons the fetch`() {
         rig.server.reply(SUGGESTIONS, 200, threeVideos)
         rig.requestPair()

@@ -15,6 +15,7 @@ sealed interface RefreshResult<out G> {
 sealed interface AccessTokenResult {
     data class Token(val value: String) : AccessTokenResult
     data object LoggedOut : AccessTokenResult
+    data object Expired : AccessTokenResult
     data class Failed(val cause: Throwable) : AccessTokenResult
 }
 
@@ -60,7 +61,7 @@ class TournesolSession<G>(
 
                 RefreshResult.InvalidGrant -> {
                     store.clear()
-                    AccessTokenResult.LoggedOut
+                    AccessTokenResult.Expired
                 }
 
                 is RefreshResult.Failure -> AccessTokenResult.Failed(result.cause)

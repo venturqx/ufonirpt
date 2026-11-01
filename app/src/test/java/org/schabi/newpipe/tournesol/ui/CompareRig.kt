@@ -40,7 +40,9 @@ internal class CompareRig(private val video: TournesolVideoRef? = null, seed: In
     val server = FakeTournesolServer()
     val store = CompareScoreStore(InMemoryScoreBackend())
     val toasts = mutableListOf<String>()
+    val loggedFailures = mutableListOf<Throwable>()
     var token: String? = "token"
+    var tokenFailure: Throwable? = null
     var username: String? = null
     var comparisonCount: Int? = null
     val state = CompareUiState()
@@ -49,7 +51,10 @@ internal class CompareRig(private val video: TournesolVideoRef? = null, seed: In
         override val mainThread: Scheduler
             get() = main
 
-        override fun accessToken(): Maybe<String> = Maybe.fromCallable { token }
+        override fun accessToken(): Maybe<String> = Maybe.fromCallable {
+            tokenFailure?.let { throw it }
+            token
+        }
 
         override fun login(username: String, password: String) = loginResult
 
@@ -70,6 +75,10 @@ internal class CompareRig(private val video: TournesolVideoRef? = null, seed: In
         override fun showToast(toast: CompareToast) {
             val length = if (toast.length == Toast.LENGTH_LONG) "long" else "short"
             toasts += "${text(toast.message)}|$length"
+        }
+
+        override fun logFailure(throwable: Throwable) {
+            loggedFailures += throwable
         }
     }
 
@@ -148,6 +157,10 @@ internal class CompareRig(private val video: TournesolVideoRef? = null, seed: In
         loginResult = Completable.error(IOException())
     }
 
+    fun acceptLogins() {
+        loginResult = Completable.complete()
+    }
+
     fun openRecommendations() = controller.recommendations.open()
 
     fun dismissRecommendations() = controller.recommendations.dismiss()
@@ -156,11 +169,13 @@ internal class CompareRig(private val video: TournesolVideoRef? = null, seed: In
 
     fun prefetch() = controller.suggestions.prefetch()
 
+    fun fillPair() = controller.fillPair()
+
     fun randomize(slot: SuggestionSlot) = controller.suggestions.randomize(slot)
 
     fun loadWeeklyStats() = userInfo.loadWeeklyStats()
 
     fun refreshUserInfo() = userInfo.refresh()
 
-    private fun text(message: CompareMessage) = message(message.res, message.arg)
+    private fun text(message: CompareMessage) = message(message.res)
 }

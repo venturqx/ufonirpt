@@ -137,7 +137,7 @@ class TournesolSessionTest {
         val refresher = CountingRefresher { RefreshResult.InvalidGrant }
         val store = FakeStore(StoredTokens("access", "refresh", NOW - 1))
 
-        assertEquals(AccessTokenResult.LoggedOut, session(store, refresher).validToken(TTL))
+        assertEquals(AccessTokenResult.Expired, session(store, refresher).validToken(TTL))
         assertEquals(1, store.clears)
         assertNull(store.tokens)
     }

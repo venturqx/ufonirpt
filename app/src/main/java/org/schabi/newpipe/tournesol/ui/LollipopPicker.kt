@@ -3,6 +3,7 @@ package org.schabi.newpipe.tournesol.ui
 import android.graphics.Paint as AndroidPaint
 import android.graphics.Typeface
 import android.view.View
+import androidx.annotation.StringRes
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.awaitEachGesture
@@ -20,6 +21,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FilterChipDefaults
@@ -51,17 +53,30 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalView
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.LiveRegionMode
+import androidx.compose.ui.semantics.ProgressBarRangeInfo
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.liveRegion
+import androidx.compose.ui.semantics.onClick
+import androidx.compose.ui.semantics.progressBarRangeInfo
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.setProgress
+import androidx.compose.ui.semantics.stateDescription
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.fromHtml
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import org.schabi.newpipe.R
 import org.schabi.newpipe.tournesol.COMPACT_MAIN_CRITERION_ID
 import org.schabi.newpipe.tournesol.CriteriaScore
+import org.schabi.newpipe.tournesol.SCORE_MAX
+import org.schabi.newpipe.tournesol.SCORE_MIN
 
 @Composable
 internal fun LollipopPicker(
@@ -84,7 +99,8 @@ internal fun LollipopPicker(
         )
     }
     val painters = dimensions.map { painterResource(it.iconRes) }
-    val colors = dimensions.map { LOLLIPOP_COLORS[it.id] ?: Color.White }
+    val colors = dimensions.map { shadedAccent(LOLLIPOP_COLORS[it.id] ?: Color.White) }
+    val contentColor = colorResource(R.color.tournesol_content)
     fun scoreAt(i: Int): Int = if (dimensions[i].id == COMPACT_MAIN_CRITERION_ID) {
         mainScore
     } else {
@@ -103,7 +119,7 @@ internal fun LollipopPicker(
     val barWidth = with(density) { 12.dp.toPx() }
     val iconSize = with(density) { 18.dp.toPx() }
     val strokeWidth = with(density) { 3.5.dp.toPx() }
-    val textSizePx = with(density) { 10.dp.toPx() }
+    val textSizePx = with(density) { 10.sp.toPx() }
     val textGap = with(density) { 6.dp.toPx() }
     val topPaddingPx = with(density) { 22.dp.toPx() }
     val bottomPaddingPx = with(density) { 22.dp.toPx() }
@@ -188,7 +204,7 @@ internal fun LollipopPicker(
 
             // Zero line
             drawLine(
-                color = Color.White.copy(alpha = 0.25f),
+                color = contentColor.copy(alpha = 0.25f),
                 start = Offset(slotWidth * 0.3f, zeroY),
                 end = Offset(w - slotWidth * 0.3f, zeroY),
                 strokeWidth = with(density) { 1.dp.toPx() }
@@ -238,26 +254,32 @@ internal fun LollipopPickerWithIntro(
     onScoreChange: (String, Int) -> Unit,
     mainScore: Int,
     onMainScoreChange: (Int) -> Unit,
+    mainSubmitted: Boolean,
+    submitInProgress: Boolean,
     modifier: Modifier = Modifier,
-    hoistedActiveIndex: MutableIntState? = null,
     hoistedDragScore: MutableState<Int?>? = null,
     hoistedPhase: MutableIntState? = null,
-    hoistedTouchedCriteria: MutableState<Set<String>>? = null,
+    progress: ComparePickerProgress = remember { ComparePickerProgress() },
     showDescription: Boolean = true,
     onSubmit1Request: ((String, Int, () -> Unit) -> Unit)? = null,
     onSubmitExtrasBatch: ((List<CriteriaScore>, () -> Unit) -> Unit)? = null
 ) {
     val phase = hoistedPhase ?: remember { mutableIntStateOf(1) }
-    val phase1ActiveIndex = hoistedActiveIndex ?: remember { mutableIntStateOf(-1) }
-    val touchedCriteria = hoistedTouchedCriteria ?: remember { mutableStateOf(setOf<String>()) }
-    val allExtrasDone = remember { mutableStateOf(false) }
-    val submittedCriteria = remember { mutableStateOf(setOf<String>()) }
+    val phase1ActiveIndex = progress.activeIndex
+    val touchedCriteria = progress.touchedCriteria
+    val allExtrasDone = progress.allExtrasDone
+    val submittedCriteria = progress.submittedCriteria
+    val mainUnsaved = progress.mainUnsaved
     LaunchedEffect(pairKey) {
-        phase.intValue = 1
-        phase1ActiveIndex.intValue = EXTRA_CRITERIA.size
-        touchedCriteria.value = emptySet()
-        allExtrasDone.value = false
-        submittedCriteria.value = emptySet()
+        if (progress.pairKey != pairKey) {
+            progress.pairKey = pairKey
+            phase.intValue = 1
+            phase1ActiveIndex.intValue = EXTRA_CRITERIA.size
+            touchedCriteria.value = emptySet()
+            allExtrasDone.value = false
+            submittedCriteria.value = emptySet()
+            mainUnsaved.value = false
+        }
     }
 
     if (phase.intValue == 1) {
@@ -269,11 +291,17 @@ internal fun LollipopPickerWithIntro(
             activeIndex = phase1ActiveIndex,
             touchedCriteria = touchedCriteria,
             allExtrasDone = allExtrasDone,
-            onSubmit1 = { criterionId, value ->
+            onSubmit1 = { criterionId, value, onSaved ->
+                mainUnsaved.value = true
+                submittedCriteria.value = submittedCriteria.value - criterionId
                 onSubmit1Request?.invoke(criterionId, value) {
+                    mainUnsaved.value = false
                     submittedCriteria.value = submittedCriteria.value + criterionId
+                    onSaved()
                 }
             },
+            submitInProgress = submitInProgress,
+            isMainSaved = mainSubmitted && !mainUnsaved.value,
             onSubmitExtrasBatch = { batch ->
                 onSubmitExtrasBatch?.invoke(batch) {
                     submittedCriteria.value =
@@ -291,7 +319,7 @@ internal fun LollipopPickerWithIntro(
             mainScore = mainScore,
             onMainScoreChange = onMainScoreChange,
             modifier = modifier,
-            hoistedActiveIndex = hoistedActiveIndex,
+            hoistedActiveIndex = phase1ActiveIndex,
             hoistedDragScore = hoistedDragScore,
             showDescription = showDescription
         )
@@ -311,7 +339,9 @@ private fun LargelyRecommendedSlider(
     activeIndex: MutableIntState,
     touchedCriteria: MutableState<Set<String>>,
     allExtrasDone: MutableState<Boolean>,
-    onSubmit1: (String, Int) -> Unit,
+    onSubmit1: (String, Int, () -> Unit) -> Unit,
+    submitInProgress: Boolean,
+    isMainSaved: Boolean,
     onSubmitExtrasBatch: (List<CriteriaScore>) -> Unit,
     submittedCriteria: MutableState<Set<String>>,
     hoistedDragScore: MutableState<Int?>? = null,
@@ -324,6 +354,8 @@ private fun LargelyRecommendedSlider(
     val currentOnMainChange by rememberUpdatedState(onMainScoreChange)
     val currentOnExtraChange by rememberUpdatedState(onScoreChange)
     val currentOnSubmit1 by rememberUpdatedState(onSubmit1)
+    val currentSubmitInProgress by rememberUpdatedState(submitInProgress)
+    val currentIsMainSaved by rememberUpdatedState(isMainSaved)
     val latestScore by rememberUpdatedState(currentScore)
     val dispatchChange: (Int) -> Unit = { v ->
         if (isMain) currentOnMainChange(v) else currentOnExtraChange(selectedCriterionId, v)
@@ -353,17 +385,23 @@ private fun LargelyRecommendedSlider(
                 }
             )
         } else {
+            val qualifierLine = buildQualifierLine(selectedCriterionId, currentScore)
+            val qualifierText = AnnotatedString.fromHtml(stringResource(qualifierLine.textRes))
             CriterionScoreHeader(
-                title = criterionQuestion(selectedCriterionId),
+                title = stringResource(criterionQuestionRes(selectedCriterionId)),
                 score = currentScore
             )
             CriterionTrack(
                 score = currentScore,
+                line = qualifierLine,
+                qualifier = qualifierText.text,
                 dragController = SliderDragController(
                     criterionId = selectedCriterionId,
                     latestScore = { latestScore },
                     dispatchChange = dispatchChange,
-                    onSubmit1 = { criterionId, value -> currentOnSubmit1(criterionId, value) },
+                    onSubmit1 = { criterionId, value, onSaved -> currentOnSubmit1(criterionId, value, onSaved) },
+                    isSubmitting = { currentSubmitInProgress },
+                    isMainSaved = { currentIsMainSaved },
                     touchedCriteria = touchedCriteria,
                     activeIndex = activeIndex,
                     allExtrasDone = allExtrasDone,
@@ -373,7 +411,8 @@ private fun LargelyRecommendedSlider(
                 )
             )
             QualifierRow(
-                line = buildQualifierLine(selectedCriterionId, currentScore),
+                line = qualifierLine,
+                qualifier = qualifierText,
                 showCancel = isDragging.value && isInCancelZone.value,
                 descriptionShown = showCriteriaDesc,
                 onToggleDescription = { showCriteriaDesc = !showCriteriaDesc }
@@ -402,8 +441,8 @@ private fun AllCriteriaScoredMessage() {
         horizontalArrangement = Arrangement.Center
     ) {
         Text(
-            text = "You scored every criteria! Good job. Submit it now?",
-            color = Color.White.copy(alpha = 0.9f),
+            text = stringResource(R.string.compare_all_criteria_scored),
+            color = colorResource(R.color.tournesol_content).copy(alpha = 0.9f),
             fontSize = 13.sp,
             textAlign = TextAlign.Center
         )
@@ -421,7 +460,7 @@ private fun SubmitExtrasChip(onClick: () -> Unit) {
         FilterChip(
             selected = true,
             onClick = onClick,
-            label = { Text(text = "Submit1") },
+            label = { Text(text = stringResource(R.string.compare_submit_extras)) },
             colors = FilterChipDefaults.filterChipColors(),
             shape = RoundedCornerShape(8.dp),
             border = null
@@ -431,10 +470,11 @@ private fun SubmitExtrasChip(onClick: () -> Unit) {
 
 @Composable
 private fun CriterionScoreHeader(title: String, score: Int) {
+    val contentColor = colorResource(R.color.tournesol_content)
     val scoreColor = when {
-        score < 0 -> SLIDER_BLUE
-        score > 0 -> SLIDER_RED
-        else -> Color.White.copy(alpha = 0.55f)
+        score < 0 -> shadedAccent(SLIDER_BLUE)
+        score > 0 -> shadedAccent(SLIDER_RED)
+        else -> contentColor.copy(alpha = 0.55f)
     }
     Row(
         modifier = Modifier
@@ -444,8 +484,9 @@ private fun CriterionScoreHeader(title: String, score: Int) {
     ) {
         Text(
             text = title,
-            color = Color.White.copy(alpha = 0.75f),
-            fontSize = 13.sp
+            color = contentColor.copy(alpha = 0.75f),
+            fontSize = 13.sp,
+            modifier = Modifier.semantics { liveRegion = LiveRegionMode.Polite }
         )
         Box(modifier = Modifier.width(48.dp)) {
             Text(
@@ -463,21 +504,55 @@ private fun CriterionScoreHeader(title: String, score: Int) {
 }
 
 @Composable
-private fun CriterionTrack(score: Int, dragController: SliderDragController) {
+private fun CriterionTrack(
+    score: Int,
+    line: QualifierLine,
+    qualifier: String,
+    dragController: SliderDragController
+) {
     val hostView = LocalView.current
+    val label = stringResource(criterionLabelRes(dragController.criterionId))
+    val state = when {
+        line.leftArrow.isNotEmpty() -> stringResource(R.string.compare_score_state_left, score, qualifier)
+        line.rightArrow.isNotEmpty() -> stringResource(R.string.compare_score_state_right, score, qualifier)
+        else -> stringResource(R.string.compare_score_state_even, score, qualifier)
+    }
+    val confirmLabel = stringResource(R.string.compare_score_confirm)
+    val contentColor = colorResource(R.color.tournesol_content)
+    val leftColor = shadedAccent(SLIDER_BLUE)
+    val rightColor = shadedAccent(SLIDER_RED)
     Canvas(
         modifier = Modifier
             .fillMaxWidth()
             .height(32.dp)
             .sliderDragGesture(hostView, dragController)
+            .semantics {
+                contentDescription = label
+                stateDescription = state
+                progressBarRangeInfo = ProgressBarRangeInfo(
+                    current = score.toFloat(),
+                    range = SCORE_MIN.toFloat()..SCORE_MAX.toFloat()
+                )
+                setProgress { target ->
+                    dragController.adjust(target)
+                    true
+                }
+                onClick(label = confirmLabel) {
+                    dragController.confirm()
+                    true
+                }
+            }
     ) {
-        drawCriterionTrack(score)
+        drawCriterionTrack(score, contentColor, leftColor, rightColor)
     }
 }
 
 private fun Modifier.sliderDragGesture(hostView: View, controller: SliderDragController): Modifier = pointerInput(controller.criterionId) {
     awaitEachGesture {
         val down = awaitFirstDown(requireUnconsumed = false)
+        if (controller.isSubmitting()) {
+            return@awaitEachGesture
+        }
         hostView.parent?.requestDisallowInterceptTouchEvent(true)
         val left = SLIDER_SIDE_PADDING.toPx()
         val right = size.width - left
@@ -494,7 +569,12 @@ private fun Modifier.sliderDragGesture(hostView: View, controller: SliderDragCon
     }
 }
 
-private fun DrawScope.drawCriterionTrack(score: Int) {
+private fun DrawScope.drawCriterionTrack(
+    score: Int,
+    contentColor: Color,
+    leftColor: Color,
+    rightColor: Color
+) {
     val trackHeightPx = 6.dp.toPx()
     val thumbWidthPx = 4.dp.toPx()
     val thumbHeightPx = 22.dp.toPx()
@@ -507,7 +587,7 @@ private fun DrawScope.drawCriterionTrack(score: Int) {
 
     // Background track
     drawRoundRect(
-        color = Color.White.copy(alpha = 0.10f),
+        color = contentColor.copy(alpha = 0.10f),
         topLeft = Offset(left, trackTop),
         size = Size(right - left, trackHeightPx),
         cornerRadius = trackRadius
@@ -523,7 +603,7 @@ private fun DrawScope.drawCriterionTrack(score: Int) {
             bottom = trackTop + trackHeightPx
         ) {
             drawRoundRect(
-                color = if (score < 0) SLIDER_BLUE else SLIDER_RED,
+                color = if (score < 0) leftColor else rightColor,
                 topLeft = Offset(left, trackTop),
                 size = Size(right - left, trackHeightPx),
                 cornerRadius = trackRadius
@@ -531,9 +611,9 @@ private fun DrawScope.drawCriterionTrack(score: Int) {
         }
     }
 
-    // Thumb: tall white pill
+    // Thumb: tall pill
     drawRoundRect(
-        color = Color.White,
+        color = contentColor,
         topLeft = Offset(thumbX - thumbWidthPx / 2f, cy - thumbHeightPx / 2f),
         size = Size(thumbWidthPx, thumbHeightPx),
         cornerRadius = CornerRadius(thumbWidthPx / 2f, thumbWidthPx / 2f)
@@ -543,10 +623,14 @@ private fun DrawScope.drawCriterionTrack(score: Int) {
 @Composable
 private fun QualifierRow(
     line: QualifierLine,
+    qualifier: AnnotatedString,
     showCancel: Boolean,
     descriptionShown: Boolean,
     onToggleDescription: () -> Unit
 ) {
+    val contentColor = colorResource(R.color.tournesol_content)
+    val leftColor = shadedAccent(SLIDER_BLUE)
+    val rightColor = shadedAccent(SLIDER_RED)
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -555,8 +639,8 @@ private fun QualifierRow(
     ) {
         if (showCancel) {
             Text(
-                text = "CANCEL",
-                color = SLIDER_RED,
+                text = stringResource(R.string.compare_cancel),
+                color = rightColor,
                 fontSize = 14.sp,
                 fontWeight = FontWeight.Bold,
                 textAlign = TextAlign.Center
@@ -564,7 +648,7 @@ private fun QualifierRow(
         } else {
             Text(
                 text = line.leftArrow,
-                color = SLIDER_BLUE,
+                color = leftColor,
                 fontSize = 13.sp,
                 modifier = Modifier.align(Alignment.CenterStart)
             )
@@ -573,26 +657,21 @@ private fun QualifierRow(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = buildAnnotatedString {
-                        withStyle(SpanStyle(fontWeight = FontWeight.Bold)) {
-                            append(line.qualifier)
-                        }
-                        append(line.tail)
-                    },
-                    color = Color.White.copy(alpha = 0.9f),
+                    text = qualifier,
+                    color = contentColor.copy(alpha = 0.9f),
                     fontSize = 13.sp,
                     textAlign = TextAlign.Center
                 )
                 Text(
                     text = " ⓘ",
-                    color = Color.White.copy(alpha = if (descriptionShown) 0.5f else 0.2f),
+                    color = contentColor.copy(alpha = if (descriptionShown) 0.5f else 0.2f),
                     fontSize = 11.sp,
                     modifier = Modifier.clickable(onClick = onToggleDescription)
                 )
             }
             Text(
                 text = line.rightArrow,
-                color = SLIDER_RED,
+                color = rightColor,
                 fontSize = 13.sp,
                 modifier = Modifier.align(Alignment.CenterEnd)
             )
@@ -600,18 +679,18 @@ private fun QualifierRow(
     }
 }
 
-private fun criterionQuestion(criterionId: String): String = when (criterionId) {
-    "largely_recommended" -> "Should be recommended..?"
-    "reliability" -> "Is more reliable..?"
-    "pedagogy" -> "Is more pedagological..?"
-    "importance" -> "Is more important..?"
-    "layman_friendly" -> "Is more accessible..?"
-    "entertaining_relaxing" -> "Is more entertaining..?"
-    "engaging" -> "Is more engaging..?"
-    "diversity_inclusion" -> "Is more inclusive..?"
-    "better_habits" -> "Encourages better habits..?"
-    "backfire_risk" -> "Does not backfire..?"
-    else -> "Should be recommended..?"
+@StringRes
+private fun criterionQuestionRes(criterionId: String): Int = when (criterionId) {
+    "reliability" -> R.string.compare_question_reliability
+    "pedagogy" -> R.string.compare_question_pedagogy
+    "importance" -> R.string.compare_question_importance
+    "layman_friendly" -> R.string.compare_question_layman_friendly
+    "entertaining_relaxing" -> R.string.compare_question_entertaining_relaxing
+    "engaging" -> R.string.compare_question_engaging
+    "diversity_inclusion" -> R.string.compare_question_diversity_inclusion
+    "better_habits" -> R.string.compare_question_better_habits
+    "backfire_risk" -> R.string.compare_question_backfire_risk
+    else -> R.string.compare_question_largely_recommended
 }
 
 private fun DrawScope.drawLollipopHead(
@@ -694,6 +773,7 @@ private fun DrawScope.drawLollipopHead(
 
 @Composable
 private fun LollipopHead(
+    label: String,
     painter: Painter,
     color: Color,
     score: Int,
@@ -709,7 +789,8 @@ private fun LollipopHead(
     val circleRadius = with(density) { (14.dp * scale).toPx() }
     val strokeWidth = with(density) { (3.5.dp * scale).toPx() }
     val iconSize = with(density) { (18.dp * scale).toPx() }
-    val textSizePx = with(density) { (10.dp * scale).toPx() }
+    val textSizePx = with(density) { (10.sp * scale).toPx() }
+    val textHeight = with(density) { textSizePx.toDp() }
     val textGap = with(density) { (6.dp * scale).toPx() }
     val labelPaint = remember {
         AndroidPaint(AndroidPaint.ANTI_ALIAS_FLAG).apply {
@@ -721,12 +802,18 @@ private fun LollipopHead(
     val interactionSource = remember { MutableInteractionSource() }
     Canvas(
         modifier = modifier
-            .size(width = 36.dp * scale, height = 54.dp * scale)
-            .clickable(
+            .size(width = 36.dp * scale, height = 34.dp * scale + textHeight * 2)
+            .selectable(
+                selected = selected,
                 interactionSource = interactionSource,
                 indication = null,
+                role = Role.Tab,
                 onClick = onClick
             )
+            .semantics {
+                contentDescription = label
+                stateDescription = score.toString()
+            }
     ) {
         drawLollipopHead(
             center = Offset(size.width / 2f, size.height / 2f),
@@ -790,8 +877,9 @@ private fun LollipopHeadsRow(
                     scores[dim.id] ?: 0
                 }
                 LollipopHead(
+                    label = stringResource(dim.labelRes),
                     painter = painters[rowIdx],
-                    color = LOLLIPOP_COLORS[dim.id] ?: Color.White,
+                    color = shadedAccent(LOLLIPOP_COLORS[dim.id] ?: Color.White),
                     score = score,
                     dimensionId = dim.id,
                     selected = activeIndex.intValue == descIdx,

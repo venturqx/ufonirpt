@@ -20,6 +20,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
+import androidx.core.graphics.ColorUtils;
 
 import org.schabi.newpipe.R;
 import org.schabi.newpipe.tournesol.CriterionDistribution;
@@ -243,12 +244,14 @@ public class TournesolScoreCard extends LinearLayout {
         return icons;
     }
 
-    private static int[] criterionColors(final List<CriterionScore> entries) {
+    private int[] criterionColors(final List<CriterionScore> entries) {
+        final int shade = ContextCompat.getColor(getContext(), R.color.tournesol_accent_shade);
         final int[] colors = new int[entries.size()];
         for (int i = 0; i < entries.size(); i++) {
             final TournesolCriterionStyle style =
                     TournesolCriterionStyle.find(entries.get(i).getCriteria());
-            colors[i] = style != null ? style.getColor() : Color.WHITE;
+            colors[i] = ColorUtils.compositeColors(
+                    shade, style != null ? style.getColor() : Color.WHITE);
         }
         return colors;
     }
@@ -325,7 +328,7 @@ public class TournesolScoreCard extends LinearLayout {
         textParams.setMarginStart(dpToPx(10));
         text.setLayoutParams(textParams);
         text.setTextSize(TypedValue.COMPLEX_UNIT_SP, 12);
-        text.setTextColor(Color.parseColor("#B8FFFFFF"));
+        text.setTextColor(ContextCompat.getColor(getContext(), R.color.tournesol_content_muted));
         text.setMaxLines(4);
         return text;
     }

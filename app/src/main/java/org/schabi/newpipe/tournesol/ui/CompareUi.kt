@@ -65,6 +65,7 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.graphics.compositeOver
 import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
 import androidx.compose.ui.graphics.drawscope.translate
 import androidx.compose.ui.graphics.lerp
@@ -244,7 +245,7 @@ internal fun CompareComparisonRow(item: CompareRecommendationItem, index: Int = 
                             .padding(horizontal = 4.dp, vertical = 1.dp)
                     ) {
                         Text(
-                            text = "VS",
+                            text = stringResource(R.string.compare_vs),
                             style = MaterialTheme.typography.labelSmall.copy(
                                 fontWeight = FontWeight.Bold,
                                 fontSize = 9.sp
@@ -319,6 +320,11 @@ internal fun compareMetaUploaderColor(): Color {
         MaterialTheme.colorScheme.primary,
         0.26f
     ).copy(alpha = 0.82f)
+}
+
+@Composable
+internal fun shadedAccent(accent: Color): Color {
+    return colorResource(R.color.tournesol_accent_shade).compositeOver(accent)
 }
 
 @Composable
