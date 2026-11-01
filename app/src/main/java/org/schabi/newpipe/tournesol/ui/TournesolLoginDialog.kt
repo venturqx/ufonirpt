@@ -41,6 +41,7 @@ import androidx.compose.ui.unit.dp
 import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.ViewModelProvider
 import org.schabi.newpipe.R
+import org.schabi.newpipe.tournesol.REGISTER_URL
 import org.schabi.newpipe.ui.theme.AppTheme
 
 class TournesolLoginDialog : DialogFragment() {
@@ -93,7 +94,6 @@ class TournesolLoginDialog : DialogFragment() {
 
     companion object {
         const val REQUEST_KEY = "tournesol_login_request"
-        private const val REGISTER_URL = "https://tournesol.app/signup"
     }
 }
 

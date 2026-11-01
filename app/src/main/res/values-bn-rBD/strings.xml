@@ -192,7 +192,6 @@
     <string name="select_a_channel">একটি চ্যানেল পছন্দ করুন</string>
     <string name="channel_page_summary">চ্যানেল এর পাতা</string>
     <string name="blank_page_summary">খালি পাতা</string>
-    <string name="read_full_license">লাইসেন্স পড়ুন</string>
     <string name="app_license_title">নিউপাইপ এর লাইসেন্স</string>
     <string name="read_privacy_policy">প্রাইভেসি পলিসি পড়ুন</string>
     <string name="privacy_policy_title">নিউপাইপ এর গোপনীয়তা নীতি</string>
@@ -200,7 +199,6 @@
     <string name="view_on_github">গিটহাব এ দেখুন</string>
     <string name="title_licenses">থার্ড-পার্টি লাইসেন্স সমূহ</string>
     <string name="charset_letters_and_digits">শব্দ ও নম্বর</string>
-    <string name="one_item_deleted">একটি আইটেম ডিলিট হয়েছে।</string>
     <string name="no_comments">কোন মন্তব্য নেই</string>
     <string name="no_videos">কোন ভিডিও নেই</string>
     <string name="no_subscribers">কোন সাবস্ক্রাইবার নেই</string>
@@ -209,7 +207,6 @@
     <string name="restore_defaults_confirmation">আপনি কি ডিফল্ট এ ফিরতে চান\?</string>
     <string name="restore_defaults">ডিফল্ট এ ফিরে যান</string>
     <string name="no_streams_available_download">ডাউন লোড এর জন্য কোন স্ট্রিম নেই</string>
-    <string name="error_occurred_detail">একটা এরর হয়েছেঃ %1$s</string>
     <string name="file_name_empty_error">ফাইল এর নাম খালি থাকতে পারে না</string>
     <string name="invalid_directory">কোন ফোল্ডার নেই</string>
     <string name="missing_file">ফাইল সরে গেছে না হয় মুছে ফেলা হয়েছে</string>
@@ -279,7 +276,6 @@
     <string name="donation_title">দান করো</string>
     <string name="contribution_title">স্বেচ্ছাস্বেবা</string>
     <string name="settings_category_downloads_title">ডাউনলোড</string>
-    <string name="dismiss">সরাও</string>
     <string name="create">তৈরি করো</string>
     <string name="undo">ফিরে যাও</string>
     <string name="autoplay_title">স্বয়ংক্রিয় প্লে</string>
@@ -328,7 +324,6 @@
     <string name="off">বন্ধ</string>
     <string name="on">চালু</string>
     <string name="tablet_mode_title">ট্যাবলেট মোড</string>
-    <string name="open_website_license">সক্রিয় ওয়েবসাইট</string>
     <string name="metadata_privacy_private">গোপন</string>
     <string name="metadata_privacy_unlisted">নথিভুক্ত নয়</string>
     <string name="metadata_support">সহায়তা</string>
@@ -370,7 +365,6 @@
     <string name="never">কখনো না</string>
     <string name="missions_header_pending">অপেক্ষমাণ</string>
     <string name="checking_updates_toast">আপডেট চেক করা হচ্ছে …</string>
-    <string name="enumeration_comma">,</string>
     <string name="night_theme_title">রাত্রিকালীন থিম</string>
     <string name="show_description_title">বর্ণনা দেখাও</string>
     <string name="notification_action_1_title">দ্বিতীয় পদক্ষেপ বোতাম</string>

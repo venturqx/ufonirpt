@@ -85,7 +85,6 @@
     <string name="controls_popup_title">悬浮窗播放</string>
     <string name="title_activity_about">关于 NewPipe</string>
     <string name="title_licenses">第三方许可</string>
-    <string name="copyright" formatted="true">© %1$s 由 %2$s 遵循 %3$s 协议发布</string>
     <string name="tab_about">关于和常见问题</string>
     <string name="tab_licenses">许可证</string>
     <string name="settings_category_downloads_title">下载</string>
@@ -101,9 +100,7 @@
     <string name="no_videos">无视频</string>
     <string name="detail_drag_description">拖动以重新排序</string>
     <string name="create">新建</string>
-    <string name="dismiss">退出</string>
     <string name="rename">重命名</string>
-    <string name="one_item_deleted">已删除一个项目。</string>
     <string name="main_page_content_summary">自定义主页显示的标签页</string>
     <string name="list_view_mode">列表视图模式</string>
     <string name="missions_header_finished">已完成</string>
@@ -171,7 +168,6 @@
     <string name="view_on_github">在 GitHub 上查看</string>
     <string name="app_license_title">NewPipe 的许可证</string>
     <string name="contribution_encouragement">你是否想过要翻译、设计、清理或重构代码——我们始终欢迎你来贡献！</string>
-    <string name="read_full_license">阅读许可证</string>
     <string name="contribution_title">贡献</string>
     <string name="settings_file_replacement_character_title">替换字符</string>
     <string name="channel_unsubscribed">已取消订阅频道</string>
@@ -271,10 +267,7 @@
     <string name="auto_queue_title">自动将“接下来”视频加入播放队列</string>
     <string name="auto_queue_summary">播放完（非循环）队列中的最后一个视频后，自动将一个相关视频添加到当前播放队列</string>
     <string name="invalid_directory">没有该文件夹</string>
-    <string name="invalid_source">无相似文件/内容源</string>
-    <string name="invalid_file">文件不存在，或缺少读写文件权限</string>
     <string name="file_name_empty_error">文件名不能为空</string>
-    <string name="error_occurred_detail">发生错误：%1$s</string>
     <string name="import_title">导入</string>
     <string name="import_from">导入自</string>
     <string name="export_to">导出到</string>
@@ -595,7 +588,6 @@
     <string name="metadata_category">类别</string>
     <string name="description_select_enable">启用简介中的文本选择功能</string>
     <string name="description_select_note">你现在可以选择简介中的文本，注意，在选择模式下，页面可能会闪烁，链接可能无法点击。</string>
-    <string name="open_website_license">打开网站</string>
     <string name="account_terminated">账号被终止</string>
     <string name="feed_load_error_fast_unknown">快速 Feed 模式不提供关于这个的更多信息。</string>
     <string name="feed_load_error_terminated">作者账号已被终止。
@@ -656,7 +648,6 @@
     <string name="streams_notifications_network_title">所需的网络连接</string>
     <string name="notifications_disabled">通知已被禁用</string>
     <string name="you_successfully_subscribed">你刚刚订阅了此频道</string>
-    <string name="enumeration_comma">，</string>
     <string name="toggle_all">全选</string>
     <string name="settings_category_player_notification_title">播放器通知</string>
     <string name="notifications">通知</string>
@@ -847,7 +838,6 @@
     <string name="export_subscriptions_title">导出订阅</string>
     <string name="import_subscriptions_summary">从之前的 .json 导出文件导入订阅</string>
     <string name="export_subscriptions_summary">导出订阅到 .json 文件</string>
-    <string name="import_from_previous_export">从之前的导出文件导入</string>
     <string name="api23_requirement_dialog_title">NewPipe 正放弃对 Android 5 的支持</string>
     <string name="api23_requirement_dialog_message">NewPipe 依赖几个已经不支持 Android 5 和 5.1 的库文件。下个 NewPipe 版本因此会只在 Android 6 或更高版本上工作。阅读博客文章了解更多信息。</string>
     <string name="api23_requirement_dialog_blogpost">博客文章</string>

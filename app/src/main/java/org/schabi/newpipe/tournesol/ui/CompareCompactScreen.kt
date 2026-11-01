@@ -88,8 +88,6 @@ import org.schabi.newpipe.R
 import org.schabi.newpipe.tournesol.COMPACT_MAIN_CRITERION_ID
 import org.schabi.newpipe.tournesol.ComparePairSelection
 import org.schabi.newpipe.tournesol.CriteriaScore
-import org.schabi.newpipe.tournesol.historyPair
-import org.schabi.newpipe.tournesol.suggestedPair
 import org.schabi.newpipe.tournesol.suggestionServiceId
 
 private val COMPACT_DIMENSIONS = listOf(
@@ -178,18 +176,12 @@ internal fun CompareCompactScreen(
     val suggestedLeftUploader = suggestedLeft?.uploader.orEmpty()
     val suggestedRightTitle = suggestedRight?.title.orEmpty()
     val suggestedRightUploader = suggestedRight?.uploader.orEmpty()
-    val currentPairSelection = if (hasSuggestedLeft && hasSuggestedRight) {
-        suggestedPair(suggestedLeft, suggestedRight)
-    } else if (selectedHistoryEntryLeft != null && selectedHistoryEntryRight != null) {
-        historyPair(
-            leftServiceId = selectedHistoryEntryLeft.streamEntity.serviceId,
-            leftUrl = selectedHistoryEntryLeft.streamEntity.url,
-            rightServiceId = selectedHistoryEntryRight.streamEntity.serviceId,
-            rightUrl = selectedHistoryEntryRight.streamEntity.url
-        )
-    } else {
-        null
-    }
+    val currentPairSelection = comparePairSelection(
+        suggestedLeft,
+        suggestedRight,
+        selectedHistoryEntryLeft,
+        selectedHistoryEntryRight
+    )
     val currentEntry = state.currentEntry
     val isLeftCurrent = !hasSuggestedLeft && selectedHistoryEntryLeft != null &&
         currentEntry != null &&
@@ -674,7 +666,7 @@ internal fun CompareCompactScreen(
                                         modifier = Modifier
                                             .fillMaxWidth()
                                             .padding(horizontal = horizontalPadding),
-                                        hoistedActiveIndex = if (embedInDetail) pickerActiveIndex else null,
+                                        hoistedActiveIndex = pickerActiveIndex,
                                         hoistedDragScore = pickerDragScore,
                                         hoistedTouchedCriteria = pickerTouchedCriteria,
                                         showDescription = !embedInDetail,
@@ -693,7 +685,7 @@ internal fun CompareCompactScreen(
                             horizontalArrangement = Arrangement.Center,
                             verticalAlignment = Alignment.CenterVertically
                         ) {
-                            val currentExtra = (pickerActiveIndex.intValue + 1).coerceIn(0, 9)
+                            val currentExtra = activeExtraNumber(pickerActiveIndex.intValue)
                             val statusAlpha = 0.55f
                             if (isDragging) {
                                 val cancelText = buildAnnotatedString {
@@ -1190,19 +1182,21 @@ internal fun CompareCompactScreen(
     }
 
     if (state.showRecommendationsDialog) {
+        val comparisons = state.recommendations
         CompareComparisonsFullScreen(
-            recommendations = state.recommendations,
-            totalCount = state.recommendationsTotalCount,
-            isLoading = state.recommendationsLoading,
-            errorMessage = state.recommendationsError,
+            recommendations = (comparisons as? CompareRecommendations.Loaded)?.items.orEmpty(),
+            totalCount = comparisons.totalCount,
+            isLoading = comparisons == CompareRecommendations.Loading,
+            errorMessage = (comparisons as? CompareRecommendations.Failed)?.message?.resolve(),
             onDismiss = onDismissRecommendations
         )
     }
 
-    if (state.showLoginDialog) {
+    val login = state.login
+    if (login != CompareLoginState.Hidden) {
         TournesolLoginDialog(
-            inProgress = state.loginInProgress,
-            errorMessage = state.loginError,
+            inProgress = login == CompareLoginState.Submitting,
+            errorMessage = (login as? CompareLoginState.Open)?.error?.resolve(),
             onDismiss = onDismissLogin,
             onRegister = onRegister,
             onLogin = onLogin

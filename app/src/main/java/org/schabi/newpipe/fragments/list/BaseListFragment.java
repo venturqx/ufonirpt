@@ -102,16 +102,6 @@ public abstract class BaseListFragment<I, N> extends BaseStateFragment<I>
     // State Saving
     //////////////////////////////////////////////////////////////////////////*/
 
-    /**
-     * If the default implementation of {@link StateSaver.WriteRead} should be used.
-     *
-     * @param useDefaultStateSaving Whether the default implementation should be used
-     * @see StateSaver
-     */
-    public void setUseDefaultStateSaving(final boolean useDefaultStateSaving) {
-        this.useDefaultStateSaving = useDefaultStateSaving;
-    }
-
     @Override
     public String generateSuffix() {
         // Naive solution, but it's good for now (the items don't change)

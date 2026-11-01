@@ -256,24 +256,6 @@ public class MainFragment extends BaseFragment implements TabLayout.OnTabSelecte
         }
     }
 
-    public void selectTabById(final int tabId) {
-        for (int i = 0; i < tabsList.size(); i++) {
-            if (tabsList.get(i).getTabId() == tabId) {
-                if (binding.pager.getCurrentItem() == i) {
-                    // Already on this tab — notify fragment directly
-                    final Fragment f = (Fragment) pagerAdapter.instantiateItem(binding.pager, i);
-                    if (f instanceof CompareFragment) {
-                        ((CompareFragment) f).consumePendingOpenComparisons();
-                    }
-                } else {
-                    binding.pager.setCurrentItem(i, true);
-                }
-                updateTitleForTab(i);
-                return;
-            }
-        }
-    }
-
     public void notifyAuthChanged() {
         if (pagerAdapter == null || tabsList == null) {
             return;

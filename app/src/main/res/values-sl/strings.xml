@@ -103,12 +103,10 @@
     <string name="best_resolution">Najboljša ločljivost</string>
     <string name="title_activity_about">O programu</string>
     <string name="title_licenses">Dovoljenja zunanjih programskih paketov</string>
-    <string name="copyright" formatted="true">© %1$s z %2$s z dovoljenjem %3$s</string>
     <string name="tab_about">O programu</string>
     <string name="tab_licenses">Dovoljenja</string>
     <string name="view_on_github">Pokaži na Github</string>
     <string name="app_license_title">Dovoljenje NewPipe</string>
-    <string name="read_full_license">Preberi določila dovoljenja</string>
     <string name="app_description">Odprtokodni predvajalnik za Android.</string>
     <string name="subscribe_button_title">Naroči</string>
     <string name="subscribed_button_title">Naročeno</string>
@@ -192,7 +190,6 @@
     <string name="video_streams_empty">Ni najdenega video pretoka</string>
     <string name="audio_streams_empty">Ni najdenega zvočnega pretoka</string>
     <string name="create">Ustvari</string>
-    <string name="dismiss">Opusti</string>
     <string name="rename">Preimenuj</string>
     <string name="app_language_title">Jezik aplikacije</string>
     <string name="downloads_storage_use_saf_title">Uporabi SAF</string>
@@ -262,7 +259,6 @@
     <string name="no_comments">Ni komentarjev</string>
     <string name="no_one_listening">Nobeden ne posluša</string>
     <string name="no_one_watching">Nobeden ne gleda</string>
-    <string name="error_occurred_detail">Zgodila se je napaka: %1$s</string>
     <string name="invalid_directory">Ni take mape</string>
     <string name="missing_file">Datoteka premaknjena ali izbrisana</string>
     <string name="download_to_sdcard_error_message">Prenašanje na zunanjo SD kartico ni mogoče. Resetiram lokacijo mape z prenosi\?</string>
@@ -354,7 +350,6 @@
     <string name="give_back">Pomagaj</string>
     <string name="donation_encouragement">NewPipe razvijajo prostovoljci, ki preživljajo svoj prosti čas, da vam prinašajo najboljšo uporabniško izkušnjo. Pomagajte razvijalcem pri izdelavi še boljšega NewPipe-a medtem ko uživajo skodelico kave.</string>
     <string name="subtitle_activity_recaptcha">Pritisni \"končano\" ko je rešena</string>
-    <string name="one_item_deleted">Odstranjen 1 element.</string>
     <string name="msg_calculating_hash">Izračun zgoščevalne funkcije je v teku</string>
     <string name="infinite_videos">∞ videoposnetkov</string>
     <string name="more_than_100_videos">100+ videov</string>
@@ -384,8 +379,6 @@
     <string name="restore_defaults">Povrni privzeto</string>
     <string name="no_streams_available_download">Nobeden pretok ni na voljo za prenos</string>
     <string name="file_name_empty_error">Ime datoteke ne sme biti prazno</string>
-    <string name="invalid_file">Datoteka ne obstaja ali ji manjka dovoljenje za branje ali pisanje</string>
-    <string name="invalid_source">Ni takšne datoteke/vira vsebine</string>
     <string name="external_player_unsupported_link_type">Zunanji predvajalniki ne podpirajo teh vrst povezav</string>
     <string name="player_recoverable_failure">Obnavljanje od napake predvajanika</string>
     <string name="player_unrecoverable_failure">Prišlo je do neobnovljive napake v predvajalniku</string>

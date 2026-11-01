@@ -2,7 +2,13 @@ package org.schabi.newpipe.tournesol.ui
 
 import androidx.compose.runtime.staticCompositionLocalOf
 import org.schabi.newpipe.R
+import org.schabi.newpipe.database.history.model.StreamHistoryEntry
 import org.schabi.newpipe.tournesol.COMPACT_MAIN_CRITERION_ID
+import org.schabi.newpipe.tournesol.CompareComparisonVideo
+import org.schabi.newpipe.tournesol.ComparePairSelection
+import org.schabi.newpipe.tournesol.historyPair
+import org.schabi.newpipe.tournesol.suggestedPair
+import org.schabi.newpipe.tournesol.suggestionServiceId
 
 private const val COMPARE_SCALE_REFERENCE_WIDTH = 500f
 private const val COMPARE_SCALE_MIN_WIDTH = 200f
@@ -19,6 +25,32 @@ internal val LocalCompareScale = staticCompositionLocalOf { 1f }
 internal enum class OverlayTarget {
     LEFT,
     RIGHT
+}
+
+internal fun comparePairSelection(
+    suggestedLeft: CompareComparisonVideo?,
+    suggestedRight: CompareComparisonVideo?,
+    entryLeft: StreamHistoryEntry?,
+    entryRight: StreamHistoryEntry?
+): ComparePairSelection? {
+    if (suggestedLeft != null && suggestedRight != null) {
+        return suggestedPair(suggestedLeft, suggestedRight)
+    }
+    val (leftServiceId, leftUrl) = displayedVideo(suggestedLeft, entryLeft) ?: return null
+    val (rightServiceId, rightUrl) = displayedVideo(suggestedRight, entryRight) ?: return null
+    return historyPair(leftServiceId, leftUrl, rightServiceId, rightUrl)
+}
+
+private fun displayedVideo(
+    suggested: CompareComparisonVideo?,
+    entry: StreamHistoryEntry?
+): Pair<Int, String>? {
+    if (suggested == null) {
+        return entry?.let { it.streamEntity.serviceId to it.streamEntity.url }
+    }
+    val serviceId = suggestionServiceId(suggested) ?: return null
+    val url = suggested.videoUrl ?: return null
+    return serviceId to url
 }
 
 internal fun compactDescriptionRes(criterionId: String): Int {

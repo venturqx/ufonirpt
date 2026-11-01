@@ -254,10 +254,7 @@
     <string name="audio_streams_empty">No audio streams found</string>
     <string name="missing_file">File moved or deleted</string>
     <string name="invalid_directory">No such folder</string>
-    <string name="invalid_source">No such file/content source</string>
-    <string name="invalid_file">The file doesn\'t exist or permission to read or write to it is lacking</string>
     <string name="file_name_empty_error">Filename cannot be empty</string>
-    <string name="error_occurred_detail">An error occurred: %1$s</string>
     <string name="no_streams_available_download">No streams available to download</string>
     <string name="saved_tabs_invalid_json">Could not read saved tabs, so using default ones</string>
     <string name="restore_defaults">Restore defaults</string>
@@ -346,7 +343,6 @@
     <string name="delete_file">Delete file</string>
     <string name="delete_entry">Delete entry</string>
     <string name="checksum">Checksum</string>
-    <string name="dismiss">Dismiss</string>
     <string name="rename">Rename</string>
     <!-- Msg -->
     <string name="msg_name">Filename</string>
@@ -361,7 +357,6 @@
     <string name="no_available_dir">Please define a download folder later in settings</string>
     <string name="no_dir_yet">No download folder set yet, choose the default download folder now</string>
     <string name="msg_popup_permission">This permission is needed to\nopen in popup mode</string>
-    <string name="one_item_deleted">1 item deleted.</string>
     <!-- reCAPTCHA -->
     <string name="title_activity_recaptcha">reCAPTCHA challenge</string>
     <string name="subtitle_activity_recaptcha">Press \"Done\" when solved</string>
@@ -378,7 +373,6 @@
     <!-- About -->
     <string name="title_activity_about">About NewPipe</string>
     <string name="title_licenses">Third-party Licenses</string>
-    <string name="copyright">© %1$s by %2$s under %3$s</string>
     <string name="tab_about">About \u0026 FAQ</string>
     <string name="tab_licenses">Licenses</string>
     <string name="app_description">Libre lightweight streaming on Android.</string>
@@ -395,7 +389,6 @@
     <string name="read_privacy_policy">Read privacy policy</string>
     <string name="app_license_title">NewPipe\'s License</string>
     <string name="app_license">NewPipe is copyleft libre software: You can use, study, share, and improve it at will. Specifically you can redistribute and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</string>
-    <string name="read_full_license">Read license</string>
     <string name="faq_title">Frequently asked questions</string>
     <string name="faq_description">If you are having trouble using the app, be sure to check out these answers to common questions!</string>
     <string name="faq">View on website</string>
@@ -641,7 +634,6 @@
     <string name="export_subscriptions_title">Export subscriptions</string>
     <string name="import_subscriptions_summary">Import subscriptions from a previous .json export"</string>
     <string name="export_subscriptions_summary">Export your subscriptions to a .json file</string>
-    <string name="import_from_previous_export">Import from previous export</string>
     <string name="subscriptions_import_unsuccessful">Could not import subscriptions</string>
     <string name="subscriptions_export_unsuccessful">Could not export subscriptions</string>
     <string name="import_youtube_instructions">Import YouTube subscriptions from Google takeout:
@@ -684,10 +676,6 @@
         <item>360p</item>
         <item>240p</item>
         <item>144p</item>
-    </string-array>
-    <string-array name="high_resolution_limit_data_usage_description_list">
-        <item>2160p</item>
-        <item>1440p</item>
     </string-array>
     <!-- Notifications settings -->
     <string name="enable_streams_notifications_title">New streams notifications</string>
@@ -921,7 +909,6 @@
     <string name="metadata_subscribers">Subscribers</string>
     <string name="detail_pinned_comment_view_description">Pinned comment</string>
     <string name="detail_heart_img_view_description">Hearted by creator</string>
-    <string name="open_website_license">Open website</string>
     <string name="tablet_mode_title">Tablet mode</string>
     <string name="on">On</string>
     <string name="off">Off</string>
@@ -931,7 +918,6 @@
     <string name="notifications_disabled">Notifications are disabled</string>
     <string name="get_notified">Get notified</string>
     <string name="you_successfully_subscribed">You now subscribed to this channel</string>
-    <string name="enumeration_comma">,</string>
     <string name="toggle_all">Toggle all</string>
     <string name="streams_not_yet_supported_removed">Streams which are not yet supported by the downloader are not shown</string>
     <string name="audio_track_present_in_video">An audio track should be already present in this stream</string>

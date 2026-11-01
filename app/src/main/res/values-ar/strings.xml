@@ -160,7 +160,6 @@
     <string name="website_title">موقع الويب</string>
     <string name="website_encouragement">قم بزيارة موقع NewPipe لمزيد من المعلومات والمستجدات.</string>
     <string name="app_license_title">تراخيص NewPipe</string>
-    <string name="read_full_license">قراءة الرخصة</string>
     <string name="delete_item_search_history">هل تريد حذف هذا العنصر من سجل البحث؟</string>
     <string name="main_page_content">محتوى الشاشة الرئيسية</string>
     <string name="blank_page_summary">صفحة فارغة</string>
@@ -193,7 +192,6 @@
         <item quantity="other">%s أشرطة فيديو</item>
     </plurals>
     <string name="recaptcha_request_toast">طلب اختبار الكابتشا مطلوب</string>
-    <string name="copyright" formatted="true">© %1$sبواسطة%2$sتحت%3$s</string>
     <string name="kiosk_page_summary">صفحة الكشك</string>
     <string name="select_a_kiosk">حدد كشك</string>
     <string name="start_here_on_background">بدأ التشغيل في الخلفية</string>
@@ -217,7 +215,6 @@
     <string name="audio_streams_empty">لم يتم العثور على أي بث صوتي</string>
     <string name="detail_drag_description">اسحب لإعادة ترتيب</string>
     <string name="create">إنشاء</string>
-    <string name="dismiss">إلغاء</string>
     <string name="rename">إعادة التسمية</string>
     <string name="export_complete_toast">تمت عملية التصدير</string>
     <string name="import_complete_toast">تمَّت عملية الإستيراد</string>
@@ -243,7 +240,6 @@
     <string name="file">الملف</string>
     <string name="invalid_directory">لا يوجد مثل هذا المجلد</string>
     <string name="file_name_empty_error">لا يمكن أن يكون اسم الملف فارغًا</string>
-    <string name="error_occurred_detail">حدث خطأٌ ما: %1$s</string>
     <string name="no_valid_zip_file">ملف مضغوط ZIP غير صالح</string>
     <string name="unbookmark_playlist">إزالة الإشارة المرجعية</string>
     <string name="resize_fit">تناسب مع الشاشة</string>
@@ -278,10 +274,7 @@
     <string name="delete_search_history_alert">حذف سِجل البحث بالكامل؟</string>
     <string name="search_history_deleted">تم حذف سجل البحث</string>
     <string name="external_player_unsupported_link_type">المشغل الخارجي لا يدعم هذه الأنواع من الروابط</string>
-    <string name="invalid_source">لا يوجد مثل هذا الملف/مصدر المحتوى</string>
-    <string name="invalid_file">الملف غير موجود أو الإذن بالقراءة أو الكتابة إليه غير موجود</string>
     <string name="no_streams_available_download">لا يوجد بث متاح للتنزيل</string>
-    <string name="one_item_deleted">تم حذف عنصر واحد.</string>
     <string name="app_license">NewPipe هو برنامج مفتوح المصدر وبحقوق متروكة: يمكنك استخدام الكود ودراسته وتحسينه كما شئت. وعلى وجه التحديد يمكنك إعادة توزيعه / أو تعديله تحت شروط رخصة GNU العمومية والتي نشرتها مؤسسة البرمجيات الحرة، سواء الإصدار 3 من الرخصة، أو (باختيارك) أي إصدار أحدث.</string>
     <string name="override_current_data">هذا سوف يُزيل إعداداتك الحالية.</string>
     <string name="preferred_open_action_settings_title">طريقة \'التشغيل\' المفضلة</string>
@@ -644,7 +637,6 @@
     <string name="description_select_disable">تعطيل تحديد النص في الوصف</string>
     <string name="description_select_enable">تمكين تحديد نص في الوصف</string>
     <string name="description_select_note">يمكنك الآن تحديد نص داخل الوصف. لاحظ أن الصفحة قد تومض وقد لا تكون الروابط قابلة للنقر أثناء وضع التحديد.</string>
-    <string name="open_website_license">فتح الموقع</string>
     <string name="account_terminated">تم إنهاء الحساب</string>
     <string name="feed_load_error_fast_unknown">لا يوفر وضع التغذية السريعة مزيدًا من المعلومات حول هذا الموضوع.</string>
     <string name="feed_load_error_terminated">حساب منشئ المحتوى قد تم إنهائه.
@@ -725,7 +717,6 @@
     <string name="any_network">أي شبكة</string>
     <string name="delete_downloaded_files_confirm">محو جميع الملفات التي تم تنزيلها من القرص؟</string>
     <string name="get_notified">الحصول على إشعار</string>
-    <string name="enumeration_comma">,</string>
     <string name="toggle_all">تبديل الكل</string>
     <plurals name="new_streams">
         <item quantity="zero">%s دفق جديد</item>
@@ -915,7 +906,6 @@
     <string name="export_subscriptions_title">تصدير الإشتراكات</string>
     <string name="import_subscriptions_summary">إسترد الإشتراكات من ملف JSON تم تصديره مسبقاً</string>
     <string name="export_subscriptions_summary">قم بتصدير إشتراكاتك إلى ملف بصيغة .json</string>
-    <string name="import_from_previous_export">الإستيراد من التصدير السابق</string>
     <string name="api23_requirement_dialog_title">سيوقف NewPipe الدعم لنظام أندرويد 5</string>
     <string name="api23_requirement_dialog_message">لسوء الحظ، يعتمد تطبيق NewPipe على بعض المكتبات التي توقفت عن دعم نظامي Android 5.0 و5.1. لذا، سيعمل الإصدار القادم من NewPipe فقط على الأجهزة التي تعمل بنظام Android 6 أو أحدث. اقرأ المزيد في المقالة.</string>
     <string name="api23_requirement_dialog_blogpost">المدونة</string>

@@ -19,7 +19,7 @@ data class ComparisonScores(
 
 internal data class CompareScoreSnapshot(val submitted: Set<String>, val scores: String?)
 
-internal interface CompareScoreBackend {
+interface CompareScoreBackend {
     fun readSubmitted(): Set<String>
 
     fun writeSubmitted(pairs: Set<String>)
@@ -98,7 +98,7 @@ internal class CompareScoreLegacyPrefs(
     }
 }
 
-class CompareScoreStore internal constructor(private val backend: CompareScoreBackend) {
+class CompareScoreStore(private val backend: CompareScoreBackend) {
     private val submitted = backend.readSubmitted()
         .mapNotNullTo(LinkedHashSet<CompareKey>(), ::parseCompareKey)
     private val scores = parseScores(backend.readScores()).toMutableMap()

@@ -116,7 +116,6 @@
     <string name="view_on_github">GitHub పై చూడండి</string>
     <string name="app_license_title">న్యూపెయిప్ యొక్క లైసెన్స్</string>
     <string name="contribution_encouragement">మీకు ఆలోచనలు ఉన్నాయా; అనువాదం, డిజైన్ మార్పులు, కోడ్ శుభ్రపరచడం లేదా నిజమైన భారీ కోడ్ మార్పులు-సహాయం ఎల్లప్పుడూ స్వాగతం. ఎంత ఎక్కువ చేస్తే అంత మంచిది!</string>
-    <string name="read_full_license">లైసెన్స్‌ను చదువు</string>
     <string name="contribution_title">సహకరించటానికి</string>
     <string name="title_activity_history">చరిత్ర</string>
     <string name="action_history">చరిత్ర</string>
@@ -297,7 +296,6 @@
     <string name="delete_search_history_alert">మొత్తం శోధన చరిత్రను తొలగించాలా\?</string>
     <string name="clear_playback_states_summary">అన్ని ప్లేబ్యాక్ స్థానాలను తొలగిస్తుంది</string>
     <string name="clear_views_history_summary">ప్లే చేసిన స్ట్రీమ్‌ల చరిత్ర మరియు ప్లేబ్యాక్ స్థానాలను తొలగిస్తుంది</string>
-    <string name="invalid_source">అటువంటి ఫైల్/కంటెంట్ సోర్స్ లేదు</string>
     <string name="error_report_open_github_notice">దయచేసి మీ క్రాష్‌ను చర్చిస్తున్న సమస్య ఇప్పటికే ఉందో లేదో తనిఖీ చేయండి. డూప్లికేట్ టిక్కెట్‌లను క్రియేట్ చేస్తున్నప్పుడు, అసలు బగ్‌ని పరిష్కరించడానికి మేము వెచ్చించే సమయాన్ని మీరు మా నుండి తీసుకుంటారు.</string>
     <string name="comments_tab_description">వ్యాఖ్యలు</string>
     <string name="related_items_tab_description">సంబంధిత అంశాలు</string>
@@ -305,8 +303,6 @@
     <string name="player_unrecoverable_failure">ప్లేయర్లో కోలుకోలేని లోపం సంభవించింది</string>
     <string name="video_streams_empty">వీడియో స్ట్రీమ్‌లు ఏవీ కనుగొనబడలేదు</string>
     <string name="missing_file">ఫైల్ తరలించబడింది లేదా తొలగించబడింది</string>
-    <string name="invalid_file">ఫైల్ ఉనికిలో లేదు లేదా దానిని చదవడానికి లేదా వ్రాయడానికి అనుమతి లేదు</string>
-    <string name="error_occurred_detail">లోపం సంభవించింది: %1$s</string>
     <plurals name="watching">
         <item quantity="one">%s చూస్తున్నాడు</item>
         <item quantity="other">%s చూస్తున్నారు</item>
@@ -327,18 +323,15 @@
     <string name="recaptcha_cookies_cleared">reCAPTCHA కుక్కీలను క్లియర్ చేయండి</string>
     <string name="msg_popup_permission">దీనికి ఈ అనుమతి అవసరం
 \nతేలియాడే పద్ధతిలో తెరవండి</string>
-    <string name="copyright">© %3$s కింద %2$s ద్వారా %1$s</string>
     <string name="export_data_summary">చరిత్ర, సభ్యత్వాలు, ప్లేజాబితాలు మరియు అమరికలను ఎగుమతిచేయుము</string>
     <string name="import_data_summary">మీ ప్రస్తుత చరిత్ర, సభ్యత్వాలు, ప్లేజాబితాలు మరియు (ఐచ్ఛికంగా) సెట్టింగ్‌లను భర్తీ చేస్తుంది</string>
     <string name="import_data_title">డాటాబేసుని దిగుమతిచేయుము</string>
     <string name="clear_cookie_title">reCAPTCHA కుక్కీలను క్లియర్ చేయండి</string>
     <string name="error_report_notification_title">NewPipe లోపాన్ని ఎదుర్కొంది, నివేదించడానికి నొక్కండి</string>
     <string name="error_report_notification_toast">లోపం సంభవించింది, నోటిఫికేషన్ చూడండి</string>
-    <string name="dismiss">రద్దుచేయుము</string>
     <string name="rename">పేరు మార్చండి</string>
     <string name="msg_calculating_hash">హాష్‌ని లెక్కిస్తోంది</string>
     <string name="no_dir_yet">ఇంకా డౌన్‌లోడ్ ఫోల్డర్ సెట్ చేయబడలేదు, ఇప్పుడే డిఫాల్ట్ డౌన్‌లోడ్ ఫోల్డర్‌ను ఎంచుకోండి</string>
-    <string name="one_item_deleted">1 అంశం తొలగించబడింది.</string>
     <string name="subtitle_activity_recaptcha">పరిష్కరించబడినప్పుడు \"పూర్తయింది\" నొక్కండి</string>
     <string name="recaptcha_solve">పరిష్కరించండి</string>
     <string name="done">పూర్తి</string>

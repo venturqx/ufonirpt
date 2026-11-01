@@ -103,14 +103,12 @@
     <string name="best_resolution">Melhor resolução</string>
     <string name="title_activity_about">Sobre o NewPipe</string>
     <string name="title_licenses">Licenças de terceiros</string>
-    <string name="copyright" formatted="true">© %1$s de %2$s nos termos da %3$s</string>
     <string name="tab_about">Sobre e perguntas frequentes</string>
     <string name="tab_licenses">Licenças</string>
     <string name="app_description">Aplicação de reprodução para Android.</string>
     <string name="view_on_github">Ver no GitHub</string>
     <string name="app_license_title">Licença do NewPipe</string>
     <string name="contribution_encouragement">Se tem ideias para: tradução, alterações de desenho, limpeza de código, ou alterações significativas no código fonte - todas as ajudas são bem-vindas. Quanto mais se faz, melhor ficará!</string>
-    <string name="read_full_license">Ver licença</string>
     <string name="contribution_title">Participar</string>
     <string name="subscribe_button_title">Subscrever</string>
     <string name="subscribed_button_title">Subscrito</string>
@@ -206,12 +204,8 @@
     <string name="video_streams_empty">Não foram encontrados vídeos</string>
     <string name="audio_streams_empty">Não foram encontrados áudios</string>
     <string name="invalid_directory">Pasta inexistente</string>
-    <string name="invalid_source">Fonte de conteúdo/ficheiro inexistente</string>
-    <string name="invalid_file">O ficheiro não existe ou não tem permissões para ler e/ou escrever</string>
     <string name="file_name_empty_error">O nome do ficheiro não pode estar vazio</string>
-    <string name="error_occurred_detail">Ocorreu um erro: %1$s</string>
     <string name="no_streams_available_download">Não existem vídeos para descarregar</string>
-    <string name="dismiss">Rejeitar</string>
     <string name="website_title">Site oficial</string>
     <string name="website_encouragement">Visite o site NewPipe para obter mais informação e novidades.</string>
     <string name="kiosk_page_summary">Página \'kiosk\'</string>
@@ -288,7 +282,6 @@
     <string name="clear_search_history_summary">Remove o histórico de pesquisas</string>
     <string name="delete_search_history_alert">Remover todo o histórico de pesquisas\?</string>
     <string name="search_history_deleted">Histórico de pesquisa removido</string>
-    <string name="one_item_deleted">1 item eliminado.</string>
     <string name="donation_encouragement">NewPipe é desenvolvido por voluntários que utilizam o seu tempo livre para nos proporcionar a melhor experiência. Retribua para ajudar os programadores a tornarem NewPipe ainda melhor.</string>
     <string name="give_back">Contribuir</string>
     <string name="privacy_policy_title">Política de privacidade do NewPipe</string>
@@ -615,7 +608,6 @@
     <string name="off">Desligado</string>
     <string name="on">Ligado</string>
     <string name="tablet_mode_title">Modo tablet</string>
-    <string name="open_website_license">Abrir site</string>
     <string name="detail_heart_img_view_description">Adorado pelo criador</string>
     <string name="metadata_privacy_internal">Interno</string>
     <string name="metadata_privacy_private">Privado</string>
@@ -695,7 +687,6 @@
     </plurals>
     <string name="get_notified">Obter notificação</string>
     <string name="notifications_disabled">As notificações estão desativadas</string>
-    <string name="enumeration_comma">,</string>
     <string name="percent">Percentual</string>
     <string name="semitone">Semi-tom</string>
     <string name="streams_not_yet_supported_removed">Os vídeos não suportados para descarga não são mostrados</string>
@@ -880,7 +871,6 @@
     <string name="export_subscriptions_title">Exportar subscrições</string>
     <string name="import_subscriptions_summary">Importar subscrições do ficheiro .json anteriormente exportado</string>
     <string name="export_subscriptions_summary">Exportar subscrições para um ficheiro .json</string>
-    <string name="import_from_previous_export">Importar da exportação anterior</string>
     <string name="api23_requirement_dialog_title">O NewPipe deixará de apoiar o Android 5</string>
     <string name="api23_requirement_dialog_message">Infelizmente, o NewPipe depende de algumas bibliotecas que terminaram apoio para o Android 5.0 e 5.1. Por isso, a próxima versão do NewPipe só funcionará em dispositivos com Android 6 ou superior, infelizmente. Saiba mais na publicação do blog.</string>
     <string name="api23_requirement_dialog_blogpost">Postagem no blog</string>

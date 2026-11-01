@@ -126,7 +126,6 @@
     <string name="msg_name">Nomine de file</string>
     <string name="msg_running">NewPipe discargante</string>
     <string name="title_activity_about">A proposito de NewPipe</string>
-    <string name="copyright" formatted="true">© %1$s per %2$s sub %3$s</string>
     <string name="tab_about">FAQ e A proposito de</string>
     <string name="tab_licenses">Licentias</string>
     <string name="contribution_title">Contribuer</string>
@@ -134,7 +133,6 @@
     <string name="website_title">Sito web</string>
     <string name="website_encouragement">Visita le sito web de NewPipe pro plus de informationes e novitates.</string>
     <string name="app_license_title">Licentia de NewPipe</string>
-    <string name="read_full_license">Leger le licentia</string>
     <string name="action_history">Chronologia</string>
     <string name="main_page_content">Contento del pagina principal</string>
     <string name="select_a_channel">Selige un canal</string>
@@ -206,7 +204,6 @@
     <string name="restore_defaults_confirmation">Esque tu vole reinitialisar le valores predefinite\?</string>
     <string name="restore_defaults">Reinitialisar le valores predefinite</string>
     <string name="no_streams_available_download">Nulle fluxos disponibile pro discargar</string>
-    <string name="error_occurred_detail">Ocurreva un error: %1$s</string>
     <string name="missing_file">File displaciate o delite</string>
     <string name="app_ui_crash">Falleva le interfacie del application</string>
     <string name="download_to_sdcard_error_message">Le discarga al carta SD non es possibile. Reinitialisar le location del dossier de discargas\?</string>
@@ -235,7 +232,6 @@
     <string name="metadata_licence">Licentia</string>
     <string name="download_has_started">Comenciava le discarga</string>
     <string name="metadata_privacy_private">Private</string>
-    <string name="open_website_license">Aperir le sito web</string>
     <string name="video_detail_by">Per %s</string>
     <string name="radio">Radio</string>
     <string name="channel_created_by">Create per %s</string>

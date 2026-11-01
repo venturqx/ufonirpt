@@ -29,7 +29,6 @@
     <string name="notification_action_1_title">زر الإجراء الثاني</string>
     <string name="audio_track_type_original">الافتراضي</string>
     <string name="channel_tab_videos">الفيديوهات</string>
-    <string name="dismiss">إلغاء</string>
     <string name="app_description">تطبيق مجاني خفيف البث على أندرويد.</string>
     <string name="title_activity_history">التاريخ</string>
     <string name="pause_downloads">إيقاف التحميل مؤقتًا</string>
@@ -49,7 +48,6 @@
     </plurals>
     <string name="delete_view_history_alert">حذف سجل المشاهدة بالكامل؟</string>
     <string name="play_with_kodi_title">تشغيل بواسطة كودي</string>
-    <string name="one_item_deleted">تم حذف عنصر واحد.</string>
     <string name="import_network_expensive_warning">ضع في اعتبارك أن هذه العملية يمكن أن تكون مكلفة اذا كنت تستخدم بيانات اشتراك انترنت.
 \n
 \nهل تريد الاستمرار؟</string>
@@ -73,7 +71,6 @@
     <string name="tab_about">عن التطبيق والأسئلة الشائعة</string>
     <string name="import_subscriptions_hint">استيراد الاشتراكات أو تصديرها من القائمة المكونة من 3 نقاط</string>
     <string name="downloads_title">الملفات المحملة</string>
-    <string name="invalid_source">لا يوجد مثل هذا الملف/مصدر المحتوى</string>
     <string name="most_liked">الأكثر إعجابًا</string>
     <string name="feed_load_error_account_info">تعذر تحميل موجز \'%s\'.</string>
     <string name="question_mark">؟</string>
@@ -160,9 +157,7 @@
     <string name="error_report_button_text">الإبلاغ عن طريق البريد الإلكتروني</string>
     <string name="sorry_string">عذرًا، لم ينبغِ أن يحدث ذلك.</string>
     <string name="create_playlist">إنشاء قائمة تشغيل جديدة</string>
-    <string name="error_occurred_detail">حدث خطأٌ ما: %1$s</string>
     <string name="search_no_results">لم يتم العثور على نتائج</string>
-    <string name="open_website_license">فتح الموقع</string>
     <plurals name="new_streams">
         <item quantity="zero">لا موجَزات</item>
         <item quantity="one">موجَز واحد</item>
@@ -200,7 +195,6 @@
     <string name="delete_playlist_prompt">هل تريد حذف قائمة التشغيل هذه؟</string>
     <string name="content_language_title">اللغة الإفتراضية للمحتوى</string>
     <string name="processing_may_take_a_moment">جاري المعالجة ... قد يستغرق لحظة</string>
-    <string name="read_full_license">قراءة الرخصة</string>
     <string name="show_channel_tabs">ألسنة القنوات</string>
     <string name="seekbar_preview_thumbnail_title">معاينة مصغرة على شريط التمرير</string>
     <string name="fragment_feed_title">ما الجديد</string>
@@ -301,7 +295,6 @@
     <string name="loading_metadata_title">جلب البيانات الوصفية…</string>
     <string name="app_update_available_notification_text">انقر للتنزيل %s</string>
     <string name="feed_use_dedicated_fetch_method_disable_button">تعطيل الوضع السريع</string>
-    <string name="enumeration_comma">,</string>
     <string name="playlist_page_summary">صفحة قائمة التشغيل</string>
     <string name="toggle_screen_orientation">تبديل تدوير الشاشة</string>
     <string name="app_update_available_notification_title">تحديث NewPipe متاح!</string>
@@ -480,7 +473,6 @@
     <string name="image_quality_none">لا تقم بتحميل الصور</string>
     <string name="enable_streams_notifications_summary">الإخطار بأحداث البث الجديدة من الاشتراكات</string>
     <string name="msg_name">اسم الملف</string>
-    <string name="invalid_file">الملف غير موجود أو الإذن بالقراءة أو الكتابة إليه غير موجود</string>
     <string name="show_next_and_similar_title">عرض مقاطع الفيديو \"التالية\" و \"المشابهة\"</string>
     <string name="feed_update_threshold_summary">الوقت بعد التحديث الأخير قبل اعتبار الاشتراك قديمًا — %s</string>
     <string name="player_recoverable_failure">استرداد المشغل من الخطأ</string>
@@ -795,7 +787,6 @@
     <string name="enqueue_next_stream">وضع التالي على قائمة الانتظار</string>
     <string name="show_meta_info_title">إظهار معلومات التعريف</string>
     <string name="select_a_channel">اختر قناة</string>
-    <string name="copyright">© %1$sبواسطة%2$sتحت%3$s</string>
     <string name="disable_media_tunneling_title">تعطيل نفق الوسائط</string>
     <string name="channel_tab_tracks">المسارات</string>
     <string name="feed_group_dialog_empty_name">اسم المجموعة فارغ</string>

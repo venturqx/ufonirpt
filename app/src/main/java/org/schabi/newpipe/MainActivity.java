@@ -79,6 +79,7 @@ import org.schabi.newpipe.player.helper.PlayerHolder;
 import org.schabi.newpipe.player.playqueue.PlayQueue;
 import org.schabi.newpipe.settings.UpdateSettingsFragment;
 import org.schabi.newpipe.settings.migration.MigrationManager;
+import org.schabi.newpipe.tournesol.CompareConstantsKt;
 import org.schabi.newpipe.tournesol.TournesolAuthManager;
 import org.schabi.newpipe.tournesol.TournesolProfile;
 import org.schabi.newpipe.tournesol.ui.CompareHistoryActivity;
@@ -415,7 +416,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
         drawerHeaderBinding.drawerHeaderRegisterButton.setOnClickListener(view -> {
-            ShareUtils.openUrlInBrowser(this, "https://tournesol.app/signup");
+            ShareUtils.openUrlInBrowser(this, CompareConstantsKt.REGISTER_URL);
         });
 
         drawerHeaderBinding.drawerHeaderSeeHistoryButton.setOnClickListener(view -> {

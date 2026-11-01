@@ -175,8 +175,6 @@
     <string name="view_on_github">গিটহাব এ দেখুন</string>
     <string name="tab_licenses">লাইসেন্স</string>
     <string name="settings_category_downloads_title">ডাউনলোড</string>
-    <string name="one_item_deleted">একটি আইটেম ডিলিট হয়েছে।</string>
-    <string name="dismiss">ডিসমিস</string>
     <string name="no_videos">কোন ভিডিও নেই</string>
     <string name="search_no_results">কোন রেজাল্ট নেই</string>
     <string name="invalid_directory">কোন ফোল্ডার নেই</string>
@@ -185,7 +183,6 @@
     <string name="name">নাম</string>
     <string name="rename_playlist">নাম পরিবর্তন</string>
     <string name="action_history">ইতিহাস</string>
-    <string name="read_full_license">লাইসেন্স পড়ুন</string>
     <string name="donation_title">দান করুন</string>
     <string name="create">তৈরি করুন</string>
     <string name="retry">পুনরায় চেষ্টা করুন</string>
@@ -209,7 +206,6 @@
     <string name="enable_playback_resume_title">পুনরায় প্লে ব্যাক চালু করুন</string>
     <string name="tab_choose">ট্যাব পছন্দ করুন</string>
     <string name="restore_defaults_confirmation">আপনি কি ডিফল্ট এ ফিরতে চান\?</string>
-    <string name="error_occurred_detail">একটা এরর হয়েছেঃ %1$s</string>
     <string name="missing_file">ফাইল সরে গেছে না হয় মুছে ফেলা হয়েছে</string>
     <string name="audio_streams_empty">কোন অডিও স্ট্রিম পাওয়া যায় নি</string>
     <string name="player_recoverable_failure">প্লেয়ার এর এরর থেকে বেরিয়ে আসুন</string>

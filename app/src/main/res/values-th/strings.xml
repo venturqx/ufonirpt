@@ -142,10 +142,7 @@
     <string name="video_streams_empty">ไม่พบสตรีมวิดีโอ</string>
     <string name="audio_streams_empty">ไม่พบสตรีมเสียง</string>
     <string name="invalid_directory">ไม่มีโฟลเดอร์ตามที่ระบุ</string>
-    <string name="invalid_source">ไม่มีแหล่งแฟ้ม/เนื้อหาดังกล่าว</string>
-    <string name="invalid_file">ไฟล์นี้ไม่มีอยู่หรือไม่ได้รับอนุญาตให้อ่านหรือเขียนไฟล์</string>
     <string name="file_name_empty_error">ชื่อไฟล์ต้องไม่ว่างเปล่า</string>
-    <string name="error_occurred_detail">เกิดข้อผิดพลาด: %1$s</string>
     <string name="no_streams_available_download">ไม่มีสตรีมให้ดาวน์โหลด</string>
     <string name="saved_tabs_invalid_json">เรียกคืนการวางตำแหน่งแท็บเป็นค่าเดิม เนื่องจากพบข้อผิดพลาดในการอ่านการวางตำแหน่งแท็บที่บันทึกไว้</string>
     <string name="restore_defaults">คืนค่าเริ่มต้น</string>
@@ -180,7 +177,6 @@
     <string name="pause">หยุดพัก</string>
     <string name="create">สร้าง</string>
     <string name="delete">ลบ</string>
-    <string name="dismiss">ไม่สนใจ</string>
     <string name="rename">เปลี่ยนชื่อ</string>
     <string name="msg_name">ชื่อไฟล์</string>
     <string name="msg_running">NewPipe กำลังดาวน์โหลด</string>
@@ -190,7 +186,6 @@
     <string name="no_available_dir">โปรดเลือกโฟลเดอร์ดาวน์โหลดที่พร้อมใช้งาน</string>
     <string name="msg_popup_permission">การอนุญาตนี้เป็นสิ่งจำเป็นเพื่อ
 \nเปิดในโหมดป๊อปอัป</string>
-    <string name="one_item_deleted">ลบ 1 รายการแล้ว</string>
     <string name="settings_category_downloads_title">ดาวน์โหลด</string>
     <string name="settings_file_charset_title">อักขระที่อนุญาตในชื่อไฟล์</string>
     <string name="settings_file_replacement_character_summary">อักขระที่ไม่ถูกต้องจะถูกแทนที่ด้วยค่านี้</string>
@@ -199,7 +194,6 @@
     <string name="charset_most_special_characters">อักขระพิเศษส่วนใหญ่</string>
     <string name="title_activity_about">เกี่ยวกับ NewPipe</string>
     <string name="title_licenses">สัญญาอนุญาตของบุคคลที่สาม</string>
-    <string name="copyright" formatted="true">© %1$s โดย %2$s ภายใต้ %3$s</string>
     <string name="tab_about">เกี่ยวกับ</string>
     <string name="tab_licenses">สัญญาอนุญาต</string>
     <string name="app_description">แอปสตรีมมิ่งที่เล็กและเสรีบน Android</string>
@@ -215,7 +209,6 @@
 \nนโยบายความเป็นส่วนตัวของ NewPipe มีการอธิบายในรายละเอียดเกี่ยวกับข้อมูลที่จะถูกส่งออกไปและเก็บไว้เมื่อคุณรายงานความผิดพลาดของแอป</string>
     <string name="read_privacy_policy">อ่านนโยบายความเป็นส่วนตัว</string>
     <string name="app_license_title">สัญญาอนุญาตของ NewPipe</string>
-    <string name="read_full_license">อ่านสัญญาอนุญาต</string>
     <string name="title_activity_history">ประวัติ</string>
     <string name="action_history">ประวัติ</string>
     <string name="delete_item_search_history">คุณต้องการลบรายการนี้ออกจากประวัติการค้นหาหรือไม่\?</string>

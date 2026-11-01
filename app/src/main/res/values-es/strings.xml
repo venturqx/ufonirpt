@@ -103,14 +103,12 @@
     <string name="best_resolution">Mejor resolución</string>
     <string name="title_activity_about">Acerca de NewPipe</string>
     <string name="title_licenses">Licencias de terceros</string>
-    <string name="copyright" formatted="true">© %1$s por %2$s, bajo %3$s</string>
     <string name="tab_about">FAQ y Acerca de</string>
     <string name="tab_licenses">Licencias</string>
     <string name="app_description">Reproducción de transmisiones ligera y libre para Android.</string>
     <string name="view_on_github">Ver en GitHub</string>
     <string name="app_license_title">Licencia de NewPipe</string>
     <string name="contribution_encouragement">Si puedes traducir, quieres cambiar el diseño, tienes ideas para mejorar el código o proponer mejoras grandes, siempre agradeceremos tu ayuda. ¡Mientras más manos participen, mejor!</string>
-    <string name="read_full_license">Leer licencia</string>
     <string name="contribution_title">Contribuir</string>
     <string name="subscribe_button_title">Suscribirse</string>
     <string name="subscribed_button_title">Suscrito</string>
@@ -220,7 +218,6 @@
     <string name="controls_add_to_playlist_title">Añadir a</string>
     <string name="detail_drag_description">Arrastrar para reordenar</string>
     <string name="create">Crear</string>
-    <string name="dismiss">Descartar</string>
     <string name="rename">Cambiar nombre</string>
     <string name="always_ask_open_action">Preguntar siempre</string>
     <string name="create_playlist">Lista de reproducción nueva</string>
@@ -250,10 +247,7 @@
     <string name="file">Archivo</string>
     <string name="missing_file">Archivo movido o borrado</string>
     <string name="invalid_directory">La carpeta no existe</string>
-    <string name="invalid_source">No el archivo/en el origen del contenido</string>
-    <string name="invalid_file">El archivo no existe o falta permiso para poder leer o escribir en él</string>
     <string name="file_name_empty_error">El nombre del archivo no puede estar vacío</string>
-    <string name="error_occurred_detail">Ocurrió un error: %1$s</string>
     <string name="import_title">Importar</string>
     <string name="import_from">Importar desde</string>
     <string name="export_to">Exportar a</string>
@@ -298,7 +292,6 @@
     <string name="clear_search_history_summary">Borra el historial de búsqueda de palabras clave</string>
     <string name="delete_search_history_alert">¿Borrar todo el historial de búsqueda\?</string>
     <string name="search_history_deleted">Historial de búsquedas borrado</string>
-    <string name="one_item_deleted">Se ha borrado 1 elemento.</string>
     <string name="app_license">NewPipe es un software copyleft libre: puedes usarlo, estudiarlo, compartirlo y mejorarlo a voluntad. Específicamente, puedes redistribuirlo y/o modificarlo bajo los términos de la Licencia Pública General GNU publicada por la Free Software Foundation, ya sea la versión 3 de la licencia, o (a tu elección) cualquier versión posterior.</string>
     <string name="import_settings">¿Quieres importar también los ajustes\?</string>
     <string name="privacy_policy_title">Política de privacidad de NewPipe</string>
@@ -593,7 +586,6 @@
     <string name="auto_device_theme_title">Automático (tema del dispositivo)</string>
     <string name="show_channel_details">Mostrar detalles del canal</string>
     <string name="featured">Destacado</string>
-    <string name="open_website_license">Abrir sitio web</string>
     <string name="metadata_privacy_internal">Interno</string>
     <string name="metadata_privacy_private">Privado</string>
     <string name="metadata_privacy_unlisted">No listado</string>
@@ -672,7 +664,6 @@
     <string name="settings_category_player_notification_summary">Configurar notificación de la reproducción en curso</string>
     <string name="you_successfully_subscribed">Ahora te has suscrito a este canal</string>
     <string name="any_network">Cualquier red</string>
-    <string name="enumeration_comma">,</string>
     <string name="check_new_streams">Comprobar la existencia de nuevos directos</string>
     <string name="enable_streams_notifications_title">Notificaciones de nuevos directos</string>
     <string name="enable_streams_notifications_summary">Notificar de nuevos directos desde las suscripciones</string>
@@ -871,7 +862,6 @@
     <string name="export_subscriptions_title">Exportar las suscripciones</string>
     <string name="import_subscriptions_summary">Importar las suscripciones desde un archivo .json</string>
     <string name="export_subscriptions_summary">Exportar tus suscripciones a un archivo . json</string>
-    <string name="import_from_previous_export">Importar desde la exportación anterior</string>
     <string name="api23_requirement_dialog_title">NewPipe dejará de soportar Android 5</string>
     <string name="api23_requirement_dialog_message">Desafortunadamente, NewPipe depende de algunas bibliotecas que dejaron de soportar Android 5.0 y 5.1. La próxima versión de NewPipe sólo funcionará en dispositivos con Android 6 o superior, tristemente. Lea más en el artículo de nuestro blog.</string>
     <string name="api23_requirement_dialog_blogpost">Artículo</string>

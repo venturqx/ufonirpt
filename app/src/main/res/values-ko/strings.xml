@@ -145,7 +145,6 @@
     <string name="charset_most_special_characters">가장 특수한 문자</string>
     <string name="title_activity_about">NewPipe에 대해서</string>
     <string name="title_licenses">제3자 라이센스</string>
-    <string name="copyright" formatted="true">© %3$s 하에서 %2$s 에 의한 %1$s</string>
     <string name="tab_about">정보 및 자주 묻는 질문</string>
     <string name="tab_licenses">라이센스</string>
     <string name="app_description">가볍고 빠른 자유 안드로이드 스트리밍 앱입니다.</string>
@@ -158,7 +157,6 @@
     <string name="website_title">웹사이트</string>
     <string name="website_encouragement">NewPipe에 관한 더 많은 정보를 얻으려면 웹사이트를 방문하세요.</string>
     <string name="app_license_title">NewPipe가 채택한 라이센스</string>
-    <string name="read_full_license">라이센스 읽기</string>
     <string name="title_activity_history">기록</string>
     <string name="action_history">기록</string>
     <string name="delete_item_search_history">이 항목을 검색 기록에서 삭제할까요?</string>
@@ -203,7 +201,6 @@
     <string name="audio_streams_empty">발견된 오디오 스트림 없음</string>
     <string name="detail_drag_description">드래그하여 재배열</string>
     <string name="create">만들기</string>
-    <string name="dismiss">취소</string>
     <string name="rename">이름 바꾸기</string>
     <string name="title_activity_recaptcha">reCAPTCHA 확인</string>
     <string name="export_complete_toast">내보내기 완료</string>
@@ -240,10 +237,7 @@
     <string name="enable_disposed_exceptions_summary">프래그먼트 또는 버려진 액티비티 주기 밖에서 일어나는 전달할 수 없는 Rx 예외를 강제적으로 보고하기</string>
     <string name="file">파일</string>
     <string name="invalid_directory">폴더가 존재하지 않습니다</string>
-    <string name="invalid_source">잘못된 파일/콘텐츠 소스</string>
-    <string name="invalid_file">파일이 존재하지 않거나 읽기/쓰기 권한이 없습니다</string>
     <string name="file_name_empty_error">파일명이 비어 있으면 안됩니다</string>
-    <string name="error_occurred_detail">오류 발생: %1$s</string>
     <string name="import_title">가져오기</string>
     <string name="import_from">이곳으로부터 가져오기</string>
     <string name="export_to">이곳으로 내보내기</string>
@@ -319,7 +313,6 @@
     <string name="app_update_notification_channel_description">새 NewPipe 버전 알림</string>
     <string name="download_to_sdcard_error_title">외부 저장소 없음</string>
     <string name="download_to_sdcard_error_message">SD 카드로 다운로드 할 수 없습니다. 다운로드 폴더 경로를 초기화 하시겠습니까\?</string>
-    <string name="one_item_deleted">1개의 항목이 삭제되었습니다.</string>
     <string name="minimize_on_exit_title">앱 전환시 최소화</string>
     <string name="minimize_on_exit_summary">비디오 플레이어에서 다른 앱으로 전환 시 다음과 같은 동작 실행 — %s</string>
     <string name="minimize_on_exit_none_description">없음</string>
@@ -620,12 +613,10 @@
     <string name="you_successfully_subscribed">이제 이 채널을 구독했습니다</string>
     <string name="get_notified">알림 받기</string>
     <string name="notifications_disabled">알림이 비활성화되었습니다</string>
-    <string name="open_website_license">웹사이트 열기</string>
     <string name="no_audio_streams_available_for_external_players">외부 플레이어에서 사용할 수 있는 오디오 스트림이 없음</string>
     <string name="selected_stream_external_player_not_supported">선택한 스트림은 외부 플레이어가 지원하지 않습니다</string>
     <string name="streams_not_yet_supported_removed">다운로더에서 아직 지원하지 않는 스트림은 표시되지 않습니다</string>
     <string name="toggle_all">모두 토글</string>
-    <string name="enumeration_comma">,</string>
     <string name="unknown_quality">알 수 없는 품질</string>
     <string name="show_original_time_ago_title">항목에 원래 시간 전 표시</string>
     <string name="feed_load_error">피드를 불러오는 중 오류</string>
@@ -847,7 +838,6 @@
     <string name="export_subscriptions_title">구독 내보내기</string>
     <string name="import_subscriptions_summary">이전에 내보낸 .json에서 구독을 가져옵니다</string>
     <string name="export_subscriptions_summary">구독 현황을 .json 파일로 내보냅니다</string>
-    <string name="import_from_previous_export">이전 내보내기에서 가져오기</string>
     <string name="api23_requirement_dialog_title">NewPipe가 Android 5 지원을 중단합니다</string>
     <string name="api23_requirement_dialog_message">NewPipe는 Android 5.0 및 5.1 지원을 중단한 몇 라이브러리에 의존합니다. 따라서 유감스럽게도 다음NewPipe 버전은 Android 6 이상 기기에서만 작동할 예정입니다. 자세한 내용은 블로그 게시글을 참조하세요.</string>
     <string name="api23_requirement_dialog_blogpost">블로그 게시글</string>

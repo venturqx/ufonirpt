@@ -149,10 +149,7 @@
     <string name="video_streams_empty">कुनै भिडियो प्रवाह फेला परेन</string>
     <string name="audio_streams_empty">कुनै अडियो स्ट्रिम फेला परेन</string>
     <string name="invalid_directory">यस्तो कुनै फोल्डर भेटिएन</string>
-    <string name="invalid_source">यस्तो कुनै फाइल / सामग्री स्रोत भेटिएन</string>
-    <string name="invalid_file">फाइल अवस्थित छैन वा पढ्न वा यो लेख्न अनुमति अभाव छ</string>
     <string name="file_name_empty_error">फाइलको नाम खाली हुन सक्दैन</string>
-    <string name="error_occurred_detail">एउटा त्रुटि देखापर्यो: %1$s</string>
     <string name="no_streams_available_download">कुनै धाराहरु डाउनलोड गर्न उपलब्ध छैनन्</string>
     <string name="saved_tabs_invalid_json">बचत गरिएका ट्याबहरू पढ्न सकिएन, पूर्वनिर्धारित प्रयोग गरिदै</string>
     <string name="restore_defaults">फेरी पहिलाकै अवस्थामा लैजाऊ</string>
@@ -194,7 +191,6 @@
     <string name="create">सिर्जना</string>
     <string name="delete">मेटाउन</string>
     <string name="checksum">चेकसम</string>
-    <string name="dismiss">खारेज</string>
     <string name="rename">पुनः नामकरण</string>
     <string name="ok">ठिक छ</string>
     <string name="msg_name">msg</string>
@@ -207,7 +203,6 @@
     <string name="no_available_dir">कृपया पछि डाउनलोड फोल्डर सेटिङहरू मा परिभाषित गर्नुहोस</string>
     <string name="msg_popup_permission">पपअप मोडमा खोल्न
 \nयो अनुमति आवश्यक छ</string>
-    <string name="one_item_deleted">1 वस्तु हटाइयो।</string>
     <string name="recaptcha_request_toast">reCAPTCHA चुनौती अनुरोध</string>
     <string name="settings_category_downloads_title">डाउनलोड</string>
     <string name="settings_file_charset_title">फाइलहरुका नाममा वर्ण प्रयोग अनुमति</string>
@@ -217,7 +212,6 @@
     <string name="charset_most_special_characters">सबै विशेष वर्णहरु</string>
     <string name="title_activity_about">न्यू पाइपको बारेमा</string>
     <string name="title_licenses">तेस्रो-पक्ष इजाजत पत्र</string>
-    <string name="copyright" formatted="true">©%1$s को %2$s द्वारा %3$s अन्तर्गत</string>
     <string name="tab_about">बारेमा</string>
     <string name="tab_licenses">लाइसेन्सहरु</string>
     <string name="app_description">(Android) एन्ड्रोइडमा निःशुल्क लाइटवेट स्ट्रिमिंग।</string>
@@ -235,7 +229,6 @@
     <string name="read_privacy_policy">गोपनीयता नीति पढ्नुहोस्</string>
     <string name="app_license_title">NewPipe इजाजत पत्र</string>
     <string name="app_license">NewPipe copyleft छ मुफ्त सफ्टवेयर: तपाईं प्रयोग गर्न सक्नुहुन्छ, अध्ययन शेयर र इच्छामा सुधार। विशेष तपाईं redistribute गर्न सक्नुहुन्छ र / वा रूपमा फ्री सफ्टवेयर फाउंडेशन द्वारा प्रकाशित GNU जनरल सार्वजनिक लाइसेन्स सर्तहरू अन्तर्गत यो परिमार्जन, कि त लाइसेन्स को संस्करण 3, वा (तपाईँको विकल्प मा) कुनै पनि पछि संस्करण।</string>
-    <string name="read_full_license">लाइसेन्स पढ्नुहोस्</string>
     <string name="title_activity_history">इतिहास</string>
     <string name="action_history">इतिहास</string>
     <string name="delete_item_search_history">तपाईं खोज इतिहासबाट यो वस्तु मेटाउन चाहनुहुन्छ\?</string>

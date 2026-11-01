@@ -122,7 +122,6 @@
     <string name="charset_most_special_characters">De fleste spesialtegn</string>
     <string name="title_activity_about">Om NewPipe</string>
     <string name="title_licenses">Tredjepartslisenser</string>
-    <string name="copyright" formatted="true">© %1$s av %2$s lisensiert %3$s</string>
     <string name="tab_about">Om og Ofte stilte spørsmål</string>
     <string name="tab_licenses">Lisenser</string>
     <string name="app_description">Fri lett strømming på Android.</string>
@@ -152,7 +151,6 @@
     <string name="view_on_github">Vis på GitHub</string>
     <string name="app_license_title">NewPipe sin lisens</string>
     <string name="contribution_encouragement">Hvorvidt du har idéer vedrørende oversettelser, designendringer, koderenskning, eller tunge kodeendringer—hjelp er alltids kjærkommen. Desto mer som gjøres, desto bedre blir det!</string>
-    <string name="read_full_license">Les lisensen</string>
     <string name="contribution_title">Bidra</string>
     <string name="title_activity_history">Historikk</string>
     <string name="action_history">Historikk</string>
@@ -217,7 +215,6 @@
     <string name="controls_add_to_playlist_title">Legg til i</string>
     <string name="detail_drag_description">Dra for å omorganisere</string>
     <string name="create">Opprett</string>
-    <string name="dismiss">Forkast</string>
     <string name="rename">Gi nytt navn</string>
     <string name="always_ask_open_action">Alltid spør</string>
     <string name="create_playlist">Ny spilleliste</string>
@@ -239,10 +236,7 @@
     <string name="settings_category_debug_title">Feilsøking</string>
     <string name="file">Fil</string>
     <string name="invalid_directory">Ingen slik mappe</string>
-    <string name="invalid_source">Ingen slik fil/innholdskilde</string>
-    <string name="invalid_file">Filen finnes ikke eller så har du ikke tilgang til å lese eller skrive til den</string>
     <string name="file_name_empty_error">Filnavn kan ikke være tomt</string>
-    <string name="error_occurred_detail">En feil inntraff: %1$s</string>
     <string name="caption_auto_generated">Autogenerert</string>
     <string name="import_title">Importer</string>
     <string name="import_from">Importer fra</string>
@@ -274,7 +268,6 @@
     <string name="clear_search_history_summary">Sletter historikken for søkte nøkkelord</string>
     <string name="delete_search_history_alert">Slett hele søkehistorikken\?</string>
     <string name="search_history_deleted">Søkehistorikken er slettet</string>
-    <string name="one_item_deleted">Ett element slettet.</string>
     <string name="caption_setting_title">Undertekster</string>
     <string name="caption_setting_description">Endre spillerens undertekststørrelse og bakgrunnsstiler. Krever omstart av appen for å tre i kraft</string>
     <string name="app_license">NewPipe er copyleft fri programvare: Du kan bruke, studere og forbedre den etter egen vilje. Spesifikt kan du redistribuere og/eller modifisere den i henhold til vilkårene gitt i GNU General Public-lisensen, som er publisert av Free Software Foundation, enten versjon 3 av lisensen, eller (etter eget ønske) enhver senere versjon.</string>
@@ -607,7 +600,6 @@
     <string name="off">Av</string>
     <string name="on">På</string>
     <string name="tablet_mode_title">Nettbrett-modus</string>
-    <string name="open_website_license">Åpne nettside</string>
     <string name="metadata_privacy_internal">Intern</string>
     <string name="metadata_privacy_private">Privat</string>
     <string name="metadata_privacy_unlisted">Ulistet</string>
@@ -672,7 +664,6 @@
         <item quantity="one">%s ny strøm</item>
         <item quantity="other">%s nye strømmer</item>
     </plurals>
-    <string name="enumeration_comma">,</string>
     <string name="settings_category_player_notification_summary">Konfigurer varsling for gjeldende avspillingsstrøm</string>
     <string name="percent">Prosent</string>
     <string name="semitone">Halvtone</string>

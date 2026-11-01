@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="title_activity_recaptcha">reCAPTCHA dijwarî</string>
-    <string name="one_item_deleted">1 babet hate jêbirin.</string>
     <string name="no_available_dir">Ji kerema xwe peldanka dakêşanê paşê di mîhengan de diyar bikin</string>
     <string name="msg_copied">Li clipboard-ê hate kopî kirin</string>
     <string name="msg_wait">Ji kerema xwe bisekinin…</string>
@@ -13,7 +12,6 @@
     <string name="msg_name">Navê pelê</string>
     <string name="ok">Baş e</string>
     <string name="rename">Navlêkirin</string>
-    <string name="dismiss">Berdan</string>
     <string name="checksum">Peyda kirin</string>
     <string name="delete">Jêbirin</string>
     <string name="create">Xûliqandin</string>
@@ -79,10 +77,7 @@
     <string name="restore_defaults">Veguhêrin Pêngavên</string>
     <string name="saved_tabs_invalid_json">Nekarin tabên tomarkirî bixwînin, ji ber vê yekê yên default bikar bînin</string>
     <string name="no_streams_available_download">Ji bo dakêşanê çem tune</string>
-    <string name="error_occurred_detail">Çewtiyek rû da: %1$s</string>
     <string name="file_name_empty_error">Navê pelê vala nabe</string>
-    <string name="invalid_file">Pel tune an destûra xwendin an nivîsandinê jê tune</string>
-    <string name="invalid_source">Çavkaniyek pelê/naverokê wusa tune</string>
     <string name="invalid_directory">Peldankek wusa tune</string>
     <string name="missing_file">Pel veguhezt an jêbir</string>
     <string name="audio_streams_empty">Çemên bihîstbar nehatin dîtin</string>
@@ -157,7 +152,6 @@
     <string name="delete_item_search_history">Ma hûn dixwazin vî tiştî ji dîroka lêgerînê paqij bikin\?</string>
     <string name="action_history">Dîrok</string>
     <string name="title_activity_history">Dîrok</string>
-    <string name="read_full_license">Destûrê bixwînin</string>
     <string name="app_license">NewPipe nermalava kopîleft libre ye: Hûn dikarin li gorî kêfa xwe bikar bînin, parve bikin û baştir bikin. Bi taybetî hûn dikarin wê di bin mercên Lîsansa Giştî ya GNU ya Giştî ya ku ji hêla Weqfa Nermalava Azad ve hatî weşandin de, an guhertoya 3 ya Lîsansê, an jî (li gorî vebijarka we) guhertoyek paşîn ji nû ve belav bikin û / an biguherînin.</string>
     <string name="clear">Zelal</string>
     <string name="disabled">Bêmecel</string>
@@ -568,7 +562,6 @@
     <string name="feed_use_dedicated_fetch_method_enable_button">Modeya lezgîn çalak bikin</string>
     <string name="tab_licenses">Destûrên</string>
     <string name="tab_about">Derbar</string>
-    <string name="copyright">© %1$s bi %2$s di bin %3$s de</string>
     <string name="title_licenses">Lîsansên partiya sêyemîn</string>
     <string name="crash_the_app">Serlêdanê kilît bikin</string>
 </resources>

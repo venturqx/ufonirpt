@@ -49,13 +49,11 @@
     <string name="on">På</string>
     <string name="off">Av</string>
     <string name="notifications_disabled">Merknader er slått av</string>
-    <string name="enumeration_comma">,</string>
     <string name="toggle_all">Slå av/på alle</string>
     <string name="no_audio_streams_available_for_external_players">Ingen ljodstraumar er tilgjengelege for ytre avspelarar</string>
     <string name="no_video_streams_available_for_external_players">Ingen videostraumar er tilgjengelege for ytre avspelarar</string>
     <string name="select_quality_external_players">Vel kvalitet for ytre avspelarar</string>
     <string name="sort">Skil ut</string>
-    <string name="open_website_license">Opn nettstaden</string>
     <string name="you_successfully_subscribed">Du fylgjer no denne kanalen</string>
     <string name="selected_stream_external_player_not_supported">Vald straum er ikkje stødd av ytre avspelarar</string>
     <string name="streams_not_yet_supported_removed">Straumar som ikkje enno er stødde av hentaren, er ikkje synlege</string>

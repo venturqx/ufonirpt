@@ -1288,36 +1288,6 @@
         <item>zh-hk</item>
         <item>zh-tw</item>
     </string-array>
-    <string-array name="recommendation_algorithm_entries">
-        <item>@string/recommendation_algorithm_youtube</item>
-        <item>@string/recommendation_algorithm_tournesol</item>
-        <item>@string/trending</item>
-        <item>@string/top_50</item>
-        <item>@string/new_and_hot</item>
-        <item>@string/recently_added</item>
-        <item>@string/most_liked</item>
-        <item>@string/duration_live</item>
-        <item>@string/trending_gaming</item>
-        <item>@string/trending_music</item>
-        <item>@string/trending_movies</item>
-        <item>@string/trending_podcasts</item>
-    </string-array>
-
-    <string-array name="recommendation_algorithm_values">
-        <item>youtube</item>
-        <item>tournesol</item>
-        <item>Trending</item>
-        <item>Top 50</item>
-        <item>New &amp; hot</item>
-        <item>Recently added</item>
-        <item>Most liked</item>
-        <item>live</item>
-        <item>trending_gaming</item>
-        <item>trending_music</item>
-        <item>trending_movies_and_shows</item>
-        <item>trending_podcasts_episodes</item>
-    </string-array>
-
     <string-array name="default_tab_entries">
         <item>@string/trending</item>
         <item>@string/tab_subscriptions</item>

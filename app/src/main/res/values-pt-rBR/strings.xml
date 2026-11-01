@@ -108,9 +108,7 @@
     <string name="view_on_github">Ver no GitHub</string>
     <string name="app_license_title">Licença do NewPipe</string>
     <string name="contribution_encouragement">Se você tem ideias de: tradução, mudança no design, limpeza de código ou grandes mudanças de código — ajuda é sempre bem-vinda. Quanto mais se faz, melhor fica!</string>
-    <string name="read_full_license">Ver licença</string>
     <string name="contribution_title">Colaborar</string>
-    <string name="copyright" formatted="true">© %1$s %2$s protegido pela licença %3$s</string>
     <string name="title_activity_about">Sobre o NewPipe</string>
     <string name="settings_category_downloads_title">Download</string>
     <string name="settings_file_charset_title">Caracteres permitidos em nome de arquivos</string>
@@ -218,7 +216,6 @@
     <string name="controls_add_to_playlist_title">Adicionar a</string>
     <string name="detail_drag_description">Arraste para ordenar</string>
     <string name="create">Criar</string>
-    <string name="dismiss">Descartar</string>
     <string name="rename">Renomear</string>
     <string name="always_ask_open_action">Sempre perguntar</string>
     <string name="create_playlist">Nova playlist</string>
@@ -246,10 +243,7 @@
     <string name="auto_queue_summary">Continua a reprodução da fila (sem repetição) adicionando mais transmissões similares</string>
     <string name="file">Arquivo</string>
     <string name="invalid_directory">Essa pasta não existe</string>
-    <string name="invalid_source">Arquivo/fonte do conteúdo não existe</string>
-    <string name="invalid_file">O arquivo não existe ou não há permissão para leitura ou escrita</string>
     <string name="file_name_empty_error">O nome do arquivo não pode ficar vazio</string>
-    <string name="error_occurred_detail">Ocorreu um erro: %1$s</string>
     <string name="import_title">Importar</string>
     <string name="import_from">Importar de</string>
     <string name="export_to">Exportar para</string>
@@ -301,7 +295,6 @@
     <string name="clear_search_history_summary">Remove o histórico de buscas</string>
     <string name="delete_search_history_alert">Remover todo o histórico de buscas?</string>
     <string name="search_history_deleted">Histórico de busca removido</string>
-    <string name="one_item_deleted">1 item excluído.</string>
     <string name="app_license">NewPipe é um copyleft de software livre: Você pode usar, estudar, compartilhar e melhorar a seu gosto. Especificamente você pode redistribuir e/ou modificá-lo sob os termos da GNU General Public License como publicado pela Fundação de Software Livre, na versão 3 da Licença, ou (a seu critério) qualquer versão posterior.</string>
     <string name="import_settings">Você também quer importar as configurações?</string>
     <string name="privacy_policy_title">Política de privacidade do NewPipe</string>
@@ -615,7 +608,6 @@
     <string name="description_select_disable">Desativar seleção de texto na descrição</string>
     <string name="description_select_enable">Ativar seleção de texto na descrição</string>
     <string name="description_select_note">Agora você pode selecionar o texto dentro da descrição. Note que a página pode piscar e os URL podem não ser clicáveis no modo de seleção.</string>
-    <string name="open_website_license">Abrir site</string>
     <string name="account_terminated">Conta encerrada</string>
     <string name="feed_load_error_fast_unknown">O modo feed rápido não fornece mais informações sobre isso.</string>
     <string name="feed_load_error_terminated">A conta do autor foi encerrada.
@@ -686,7 +678,6 @@
     <string name="delete_downloaded_files_confirm">Excluir todos os arquivos baixados?</string>
     <string name="you_successfully_subscribed">Agora você se inscreveu neste canal</string>
     <string name="toggle_all">Alternar tudo</string>
-    <string name="enumeration_comma">,</string>
     <string name="loading_stream_details">Carregando detalhes da transmissão…</string>
     <plurals name="new_streams">
         <item quantity="one">%s novo vídeo</item>
@@ -881,7 +872,6 @@
     <string name="export_subscriptions_title">Exportar inscrições</string>
     <string name="import_subscriptions_summary">Importar inscrições do arquivo .json exportado anterior</string>
     <string name="export_subscriptions_summary">Exportar inscrições para arquivo .json</string>
-    <string name="import_from_previous_export">Importar da exportação anterior</string>
     <string name="api23_requirement_dialog_title">O NewPipe deixará de oferecer suporte ao Android 5</string>
     <string name="api23_requirement_dialog_message">Infelizmente, o NewPipe depende de algumas bibliotecas que deixaram de oferecer suporte para o Android 5.0 e 5.1. Por isso, a próxima versão do NewPipe só funcionará em dispositivos com Android 6 ou superior, infelizmente. Saiba mais na publicação do blog.</string>
     <string name="api23_requirement_dialog_blogpost">Postagem no blog</string>

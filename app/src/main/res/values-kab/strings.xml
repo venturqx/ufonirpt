@@ -81,7 +81,6 @@
     <string name="light_theme_title">Afaw</string>
     <string name="download_dialog_title">Sader</string>
     <string name="controls_popup_title">Asfaylu udhim</string>
-    <string name="dismiss">Ttu</string>
     <string name="import_title">Kter</string>
     <string name="ok">Ih</string>
     <string name="action_history">Amazray</string>
@@ -199,14 +198,11 @@
     <string name="metadata_privacy_internal">Tadigant</string>
     <string name="on">Irmed</string>
     <string name="off">Yensa</string>
-    <string name="enumeration_comma">,</string>
-    <string name="open_website_license">Ldi asmel Web</string>
     <string name="unknown_audio_track">Arussin</string>
     <string name="audio_track_type_original">aneṣli</string>
     <string name="unbookmark_playlist">Kkes ticreḍt</string>
     <string name="import_from">Kter seg</string>
     <string name="app_license_title">Turagt n NewPipe</string>
-    <string name="read_full_license">Ɣeṛ turagt</string>
     <string name="error_http_not_found">Ur yettwaf ara</string>
     <string name="more_options">Ugar n tnefrunin</string>
     <string name="share_dialog_title">Bḍu d</string>

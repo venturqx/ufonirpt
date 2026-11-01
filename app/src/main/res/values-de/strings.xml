@@ -105,8 +105,6 @@
     <string name="best_resolution">Beste Auflösung</string>
     <string name="title_activity_about">Über NewPipe</string>
     <string name="tab_licenses">Lizenzen</string>
-    <string name="read_full_license">Lizenz lesen</string>
-    <string name="copyright" formatted="true">© %1$s von %2$s unter %3$s</string>
     <string name="tab_about">Über &amp; FAQ</string>
     <string name="app_description">Freies und schlankes Streaming für Android.</string>
     <string name="app_license_title">NewPipes Lizenz</string>
@@ -228,15 +226,12 @@
     <string name="playlist_add_stream_success">Zur Wiedergabeliste hinzugefügt</string>
     <string name="playlist_thumbnail_change_success">Vorschaubild der Wiedergabeliste geändert.</string>
     <string name="caption_none">Keine Untertitel</string>
-    <string name="dismiss">Abbrechen</string>
     <string name="controls_download_desc">Stream-Datei herunterladen</string>
     <string name="use_inexact_seek_title">Schnelle, ungenaue Suche verwenden</string>
     <string name="use_inexact_seek_summary">Mit ungenauem Suchen kann die ungefähre Abspielposition schneller erreicht werden. Das Spulen um 5, 15 oder 25 Sekunden funktioniert damit nicht</string>
     <string name="file">Datei</string>
     <string name="invalid_directory">Ordner existiert nicht</string>
-    <string name="invalid_file">Die Datei existiert nicht oder die Rechte zum Lesen oder Schreiben fehlen</string>
     <string name="file_name_empty_error">Dateiname darf nicht leer sein</string>
-    <string name="error_occurred_detail">Ein Fehler ist aufgetreten: %1$s</string>
     <string name="caption_auto_generated">Automatisch erzeugt</string>
     <string name="import_from">Import von</string>
     <string name="export_to">Export nach</string>
@@ -252,7 +247,6 @@
     <string name="metadata_cache_wipe_summary">Alle zwischengespeicherten Website-Daten entfernen</string>
     <string name="metadata_cache_wipe_complete_notice">Metadatencache gelöscht</string>
     <string name="settings_category_debug_title">Fehlersuche</string>
-    <string name="invalid_source">Datei-/Inhaltsquelle existiert nicht</string>
     <string name="export_complete_toast">Exportiert</string>
     <string name="import_complete_toast">Importiert</string>
     <string name="name">Name</string>
@@ -301,7 +295,6 @@
     <string name="clear_search_history_summary">Den Verlauf der Suchbegriffe löschen</string>
     <string name="delete_search_history_alert">Den gesamten Suchverlauf löschen\?</string>
     <string name="search_history_deleted">Suchverlauf gelöscht</string>
-    <string name="one_item_deleted">1 Element gelöscht.</string>
     <string name="app_license">NewPipe ist freie Copyleft-Software: Du kannst sie nach Belieben benutzen, untersuchen, mit anderen teilen und verbessern. Insbesondere kannst du sie unter den von der Free Software Foundation veröffentlichten Bedingungen der GNU General Public License, in der Version 3 der Lizenz oder (nach deiner Wahl) jeder späteren Version, weitergeben und/oder verändern.</string>
     <string name="import_settings">Möchtest du auch Einstellungen importieren\?</string>
     <string name="privacy_policy_title">NewPipes Datenschutzbestimmung</string>
@@ -618,7 +611,6 @@
     <string name="account_terminated">Konto geschlossen</string>
     <string name="feed_load_error_fast_unknown">Der Schnellmodus liefert hierzu keine weiteren Informationen.</string>
     <string name="no_dir_yet">Noch kein Downloadordner festgelegt, wähle jetzt den Standard-Downloadordner</string>
-    <string name="open_website_license">Website öffnen</string>
     <string name="downloads_storage_use_saf_summary_api_29">Ab Android 10 wird nur noch „Storage Access Framework“ unterstützt</string>
     <string name="downloads_storage_ask_summary_no_saf_notice">Du wirst jedes Mal gefragt werden, wohin der Download gespeichert werden soll</string>
     <string name="feed_load_error">Fehler beim Laden des Feeds</string>
@@ -673,7 +665,6 @@
     </plurals>
     <string name="loading_stream_details">Lade Stream-Details …</string>
     <string name="enable_streams_notifications_summary">Über neue Streams aus Abonnements benachrichtigen</string>
-    <string name="enumeration_comma">,</string>
     <string name="any_network">Jedes Netzwerk</string>
     <string name="enable_streams_notifications_title">Benachrichtigungen über neue Streams</string>
     <string name="check_new_streams">Suche nach neuen Streams ausführen</string>
@@ -863,7 +854,6 @@
     <string name="export_subscriptions_title">Abonnements exportieren</string>
     <string name="import_subscriptions_summary">Importieren von Abonnements aus einem früheren .json-Export</string>
     <string name="export_subscriptions_summary">Exportiere deine Abonnements in eine .json-Datei</string>
-    <string name="import_from_previous_export">Aus vorherigem Export importieren</string>
     <string name="api23_requirement_dialog_blogpost">Blogbeitrag</string>
     <string name="api23_requirement_dialog_title">NewPipe stellt die Unterstützung für Android 5 ein</string>
     <string name="api23_requirement_dialog_message">Leider ist NewPipe auf einige Bibliotheken angewiesen, welche die Unterstützung für Android 5.0 und 5.1 eingestellt haben. Die nächste Version von NewPipe wird daher leider nur auf Geräten mit Android 6 oder höher funktionieren. Mehr dazu im Blogbeitrag.</string>

@@ -103,14 +103,12 @@
     <string name="best_resolution">最佳解像度</string>
     <string name="title_activity_about">關於 NewPipe</string>
     <string name="title_licenses">第三方版權協議</string>
-    <string name="copyright" formatted="true">© %1$s %2$s 版權所有，根據 %3$s 嘅條款授權</string>
     <string name="tab_about">跋記</string>
     <string name="tab_licenses">版權協議</string>
     <string name="app_description">喺 Android 上盡享自由輕快嘅串流。</string>
     <string name="view_on_github">去 GitHub 睇下</string>
     <string name="app_license_title">NewPipe 嘅版權協議</string>
     <string name="contribution_encouragement">無論你對翻譯、設計改動、打掃程式碼，抑或開山劈石編寫程式碼有咩偈仔，都勁歡迎你嚟幫手。聚沙成塔，眾志成城！</string>
-    <string name="read_full_license">閱讀版權協議</string>
     <string name="contribution_title">貢獻</string>
     <string name="clear_views_history_title">抹走播放紀錄</string>
     <string name="no_player_found_toast">搵唔到串流播放器 (你可以裝 VLC 嚟播)。</string>
@@ -220,18 +218,14 @@
     <string name="video_streams_empty">搵唔到影像串流</string>
     <string name="audio_streams_empty">搵唔到聲音串流</string>
     <string name="missing_file">檔案搬走咗或剷走咗</string>
-    <string name="invalid_file">個檔案唔喺度，又或者欠缺讀寫權限</string>
     <string name="file_name_empty_error">檔名冇得留空</string>
     <string name="player_recoverable_failure">復原緊播放器錯誤</string>
     <string name="invalid_directory">冇呢個資料夾</string>
-    <string name="invalid_source">冇呢個檔案/內容來源</string>
     <string name="saved_tabs_invalid_json">讀取唔到儲存咗嘅分頁，所以用返預設分頁</string>
     <string name="restore_defaults">還原返預設噉樣</string>
-    <string name="error_occurred_detail">發生錯誤：%1$s</string>
     <string name="restore_defaults_confirmation">你係咪要還原返做預設嗰個樣？</string>
     <string name="copy_for_github">複製執咗格式嘅報告</string>
     <string name="search_no_results">乜都搵唔到</string>
-    <string name="enumeration_comma">、</string>
     <string name="name">名稱</string>
     <string name="accept">接受</string>
     <string name="close">閂埋佢</string>
@@ -254,7 +248,6 @@
     <plurals name="listening">
         <item quantity="other">%s 個人聽緊</item>
     </plurals>
-    <string name="dismiss">明白</string>
     <string name="queued">排緊隊</string>
     <string name="post_processing">後期處理緊</string>
     <string name="paused">暫停咗</string>
@@ -312,7 +305,6 @@
     <string name="comments_are_disabled">未開放留言</string>
     <string name="create">加新</string>
     <string name="no_dir_yet">未設定下載資料夾，請立即揀選預設嘅下載資料夾</string>
-    <string name="one_item_deleted">刪除咗 1 個項目。</string>
     <string name="recaptcha_solve">執執佢</string>
     <string name="done">搞掂</string>
     <string name="privacy_policy_encouragement">NewPipe 專案非常著重你嘅私隱。因此，呢個 app 未得你同意係唔會收集任何資料。
@@ -504,7 +496,6 @@
     <string name="metadata_privacy_unlisted">憑網址瀏覽</string>
     <string name="detail_pinned_comment_view_description">置頂留言</string>
     <string name="detail_heart_img_view_description">創作者畀咗心心</string>
-    <string name="open_website_license">開啟網站</string>
     <string name="off">閂</string>
     <string name="metadata_host">主機</string>
     <string name="show_hold_to_append_summary">喺影片詳情撳一下「幕後播」或「浮面播」個掣嘅時候顯示提示</string>

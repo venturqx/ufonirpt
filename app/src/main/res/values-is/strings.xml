@@ -102,7 +102,6 @@
     <string name="description_tab_description">Lýsing</string>
     <string name="audio">Hljóð</string>
     <string name="start">Byrja</string>
-    <string name="dismiss">Hunsa</string>
     <string name="download_path_dialog_title">Veldu möppu fyrir sótt myndskeið</string>
     <string name="download_path_audio_dialog_title">Veldu möppu fyrir sóttar hljóðskrár</string>
     <string name="download_path_audio_summary">Sóttar hljóðskrár fara hingað</string>
@@ -114,7 +113,6 @@
     <string name="rename">Endurnefna</string>
     <string name="msg_name">Skráarnafn</string>
     <string name="private_content">Þetta efni er ekki opinbert — það er ekki hægt að streyma því eða sækja með NewPipe.</string>
-    <string name="open_website_license">Opna vefsíðu</string>
     <string name="settings_category_downloads_title">Niðurhal</string>
     <string name="settings_category_player_behavior_title">Hegðun</string>
     <string name="settings_category_updates_title">Uppfærslur</string>
@@ -198,7 +196,6 @@
     <string name="unknown_content">[Óþekkt]</string>
     <string name="clear_views_history_title">Hreinsa áhorfsferil</string>
     <string name="missing_file">Skrá færð eða eytt</string>
-    <string name="invalid_file">Skráin er ekki til eða aðgangi var hafnað</string>
     <string name="file_name_empty_error">Skráarnafn má ekki vera autt</string>
     <string name="copy_for_github">Afrita sniðna skýrslu</string>
     <string name="error_report_open_issue_button_text">Tilkynna á GitHub</string>
@@ -246,13 +243,11 @@
     <string name="msg_running_detail">Ýttu til að fá nánari upplýsingar</string>
     <string name="msg_wait">Bíddu aðeins…</string>
     <string name="msg_copied">Afritað á klemmuspjald</string>
-    <string name="one_item_deleted">1 atriði eytt.</string>
     <string name="recaptcha_solve">Leysa</string>
     <string name="done">Lokið</string>
     <string name="recaptcha_request_toast">Beðið eftir þraut reCAPTCHA</string>
     <string name="title_licenses">Leyfi þriðja aðila</string>
     <string name="tab_licenses">Hugbúnaðarleyfi</string>
-    <string name="copyright">© %1$s • %2$s • %3$s</string>
     <string name="contribution_title">Taka þátt</string>
     <string name="contribution_encouragement">Allt er velkomið — hugmyndir, þýðingar, endurhönnun, kóðahreinsun eða miklar kóðabreytingar. Því fleiri, því betra!</string>
     <string name="view_on_github">Skoða á GitHub</string>
@@ -262,7 +257,6 @@
     <string name="read_privacy_policy">Lesa persónuverndarstefnu</string>
     <string name="title_activity_history">Áhorf</string>
     <string name="action_history">Áhorf</string>
-    <string name="read_full_license">Lesa leyfi</string>
     <string name="main_page_content">Aðalsíða</string>
     <string name="export_complete_toast">Flutt út</string>
     <string name="import_complete_toast">Flutt inn</string>
@@ -348,7 +342,6 @@
     <string name="metadata_tags">Merki</string>
     <string name="donation_encouragement">NewPipe er þróað af sjálfboðaliðum sem eyða frítíma sínum í að færa þér bestu notendaupplifunina. Gefðu til baka til að hjálpa forriturum að gera NewPipe enn betri á meðan þeir njóta kaffibolla.</string>
     <string name="show_description_summary">Slökktu á til að fela lýsingu og viðbótarupplýsingar myndskeiðs</string>
-    <string name="error_occurred_detail">Villa kom upp: %1$s</string>
     <string name="title_activity_recaptcha">Þraut reCAPTCHA</string>
     <string name="subscribers_count_not_available">Fjöldi áskrifenda ekki tiltækur</string>
     <string name="playlist_page_summary">Spilunarlistasíða</string>
@@ -483,7 +476,6 @@
     <string name="on">Virkt</string>
     <string name="off">Óvirkt</string>
     <string name="progressive_load_interval_exoplayer_default">Sjálfgefinn ExoPlayer</string>
-    <string name="enumeration_comma">,</string>
     <string name="get_notified">Fá tilkynningu</string>
     <string name="toggle_all">Víxla öllu</string>
     <string name="unknown_format">Óþekkt snið</string>
@@ -520,7 +512,6 @@
     <string name="external_player_unsupported_link_type">Utanaðkomandi spilarar styðja ekki þessar tegundir tengla</string>
     <string name="video_streams_empty">Engin myndstreymi fundust</string>
     <string name="audio_streams_empty">Engin hljóðstreymi fundust</string>
-    <string name="invalid_source">Ekkert slíkt efni fanst</string>
     <string name="no_streams_available_download">Engin streymi til að sækja</string>
     <string name="saved_tabs_invalid_json">Gat ekki lesið vistaða flipa þannig að mun nota sjálfgefna</string>
     <string name="detail_thumbnail_view_description">Spila myndskeið, lengd:</string>

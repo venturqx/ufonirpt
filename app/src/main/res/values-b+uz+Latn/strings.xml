@@ -185,7 +185,6 @@
     <string name="delete_item_search_history">Ushbu narsani qidiruv tarixidan o\'chirmoqchimisiz\?</string>
     <string name="action_history">Tarix</string>
     <string name="title_activity_history">Tarix</string>
-    <string name="read_full_license">Litsenziyani o\'qish</string>
     <string name="app_license">NewPipe - bu nusxa ko\'chirish dasturiy ta\'minotidir: Siz foydalanishingiz, baham ko\'rishingiz va o\'zingizning xohishingiz bilan yaxshilashingiz mumkin. Xususan, siz uni bepul dasturiy ta\'minot fondi tomonidan e\'lon qilingan GNU umumiy jamoat litsenziyasi shartlari asosida qayta tarqatishingiz va / yoki o\'zgartirishingiz mumkin, Litsenziyaning 3-versiyasi yoki (sizning xohishingizga ko\'ra) har qanday keyingi versiyada.</string>
     <string name="app_license_title">NewPipe litsenziyasi</string>
     <string name="read_privacy_policy">Maxfiylik siyosatini o\'qish</string>
@@ -203,7 +202,6 @@
     <string name="app_description">Androidda Libre yengil streaming.</string>
     <string name="tab_licenses">Litsenziyalar</string>
     <string name="tab_about">Haqida</string>
-    <string name="copyright">© %1$s tomonidan %2$s gacha %3$s</string>
     <string name="title_licenses">Uchinchi tomon litsenziyalari</string>
     <string name="title_activity_about">NewPipe haqida</string>
     <string name="charset_most_special_characters">Ko\'pchilik maxsus belgilar</string>
@@ -216,7 +214,6 @@
     <string name="recaptcha_request_toast">reCAPTCHA muammosi so\'raldi</string>
     <string name="subtitle_activity_recaptcha">Hal etilganda \"Bajarildi\" tugmasini bosing</string>
     <string name="title_activity_recaptcha">reCAPTCHA muammosi</string>
-    <string name="one_item_deleted">1 ta element o\'chirildi.</string>
     <string name="msg_popup_permission">Ushbu ruxsat zarur
 \npopup rejimida oching</string>
     <string name="no_available_dir">Yuklab olish papkasini keyinroq sozlamalarda belgilang</string>
@@ -229,7 +226,6 @@
     <string name="msg_name">Faylnomi</string>
     <string name="ok">Ok</string>
     <string name="rename">Nomni o\'zgartirish</string>
-    <string name="dismiss">Tarqatish</string>
     <string name="checksum">Sumnazorat</string>
     <string name="delete">O\'chirish</string>
     <string name="create">Yaratish</string>
@@ -292,10 +288,7 @@
     <string name="restore_defaults">Birlamchi parametrlarni tiklash</string>
     <string name="saved_tabs_invalid_json">Saqlangan yorliqlarni o\'qib bo\'lmadi, shuning uchun standartlardan foydalaning</string>
     <string name="no_streams_available_download">Yuklash uchun stream mavjud emas</string>
-    <string name="error_occurred_detail">Xato yuz berdi: %1$s</string>
     <string name="file_name_empty_error">Fayl nomi bo\'sh bo\'lishi mumkin emas</string>
-    <string name="invalid_file">Fayl mavjud emas yoki uni o\'qish yoki yozish uchun ruxsat yo\'q</string>
-    <string name="invalid_source">Bunday fayl / tarkib manbai yo\'q</string>
     <string name="invalid_directory">Bunday papka yo\'q</string>
     <string name="missing_file">Fayl ko\'chirildi yoki o\'chirildi</string>
     <string name="audio_streams_empty">Hech qanday audio stream topilmadi</string>

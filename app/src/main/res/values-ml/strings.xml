@@ -100,7 +100,6 @@
     <string name="delete_item_search_history">സെർച്ച് ചരിത്രത്തിൽനിന്ന് ഈ item നീക്കം ചെയ്യട്ടെയോ\?</string>
     <string name="action_history">ചരിത്രം</string>
     <string name="title_activity_history">ചരിത്രം</string>
-    <string name="read_full_license">ലൈസൻസ് വായിക്കൂ</string>
     <string name="app_license">കോപ്പി‌ലെഫ്റ്റ് ലിബ്രെ സോഫ്റ്റ്വെയറാണ് ന്യൂ‌പൈപ്പ്: നിങ്ങൾക്ക് അത് ഉപയോഗിക്കാനും പഠിക്കാനും പങ്കിടാനും ഇഷ്ടാനുസരണം മെച്ചപ്പെടുത്താനും കഴിയും. സ്വതന്ത്ര സോഫ്റ്റ്‌വെയർ ഫൗണ്ടേഷൻ പ്രസിദ്ധീകരിച്ച ഗ്നു ജനറൽ പബ്ലിക് ലൈസൻസിന്റെ നിബന്ധനകൾ പ്രകാരം, ലൈസൻസിന്റെ മൂന്നാം പതിപ്പ് അല്ലെങ്കിൽ (നിങ്ങളുടെ ഓപ്ഷനിൽ) പിന്നീടുള്ള ഏതെങ്കിലും പതിപ്പ് പ്രകാരം നിങ്ങൾക്ക് ഇത് പുനർവിതരണം ചെയ്യാനും / അല്ലെങ്കിൽ പരിഷ്ക്കരിക്കാനും കഴിയും.</string>
     <string name="app_license_title">ന്യൂപൈപ്പിന്റെ ലൈസൻസ്</string>
     <string name="read_privacy_policy">സ്വകാര്യതാനയം വായിക്കൂ</string>
@@ -119,7 +118,6 @@
     <string name="app_description">സൗജന്യമായ, ലഘുവായ സ്ട്രീമിംഗ്, ആൻഡ്രോയിഡിൽ.</string>
     <string name="tab_licenses">ലൈസൻസുകൾ</string>
     <string name="tab_about">കുറിച്ച്</string>
-    <string name="copyright" formatted="true">%3$s ന്റെ കീഴിൽ %2$s ന്റെ ©%1$s</string>
     <string name="title_licenses">തേർഡ്-പാർട്ടി ലൈസൻസുകൾ</string>
     <string name="title_activity_about">ന്യൂപൈപ്പിനെക്കുറിച്ച്</string>
     <string name="charset_most_special_characters">പ്രത്യേക അടയാളങ്ങൾ</string>
@@ -132,7 +130,6 @@
     <string name="recaptcha_request_toast">reCAPTCHA ചാലഞ്ചിനായി അഭ്യർത്ഥിച്ചു</string>
     <string name="subtitle_activity_recaptcha">തീർന്നാൽ \"Done\" അമർത്തുക</string>
     <string name="title_activity_recaptcha">reCAPTCHA ചാലഞ്ച്</string>
-    <string name="one_item_deleted">ഒരെണ്ണം നീക്കംചെയ്തു.</string>
     <string name="msg_popup_permission">പോപപ് മോഡിന്ഈ
 \nഅനുമതി ആവിശ്യമാണ്</string>
     <string name="no_available_dir">പിന്നീട് ക്രമീകരണങ്ങളിൽ ഒരു ഡൗൺലോഡ് ഫോൾഡർ തിരഞ്ഞെടുക്കണം</string>
@@ -145,7 +142,6 @@
     <string name="msg_name">ഫയൽനാമം</string>
     <string name="ok">ഓകെ</string>
     <string name="rename">പേരുമാറ്റുക</string>
-    <string name="dismiss">പുറത്തള്ളുക</string>
     <string name="checksum">ചെക്ക്സം</string>
     <string name="delete">ഡിലീറ്റ്</string>
     <string name="create">നിർമിക്കുക</string>
@@ -204,10 +200,7 @@
     <string name="restore_defaults">പഴയപടി എല്ലാം പുനസ്ഥാപിക്കുക</string>
     <string name="saved_tabs_invalid_json">സേവ് ആയ ടാബുകൾ വായിക്കാൻ സാധിക്കുന്നില്ല, സ്ഥിര ടാബുകൾ ഉപയോഗെടുത്തുക</string>
     <string name="no_streams_available_download">ഡൗൺലോഡ് ചെയ്യാൻ സ്‌ട്രീമുകൾ ലഭ്യമല്ല</string>
-    <string name="error_occurred_detail">ഒരു പിശക് സംഭവിച്ചു: %1$s</string>
     <string name="file_name_empty_error">ഫയലിന്റെ പേര് ശൂന്യമാകാൻ പാടില്ല</string>
-    <string name="invalid_file">ഒന്നിൽ അങ്ങനൊരു ഫയൽ ഇല്ല, അല്ലെങ്കിൽ അത് തുറക്കാനുള്ള അനുമതിയില്ല</string>
-    <string name="invalid_source">അങ്ങനെയൊരു ഫയൽ/കന്റെന്റ് ഉറവിടം ഇല്ല</string>
     <string name="invalid_directory">അങ്ങനെയൊരു ഫോൾഡർ ഇല്ല</string>
     <string name="missing_file">ഫയൽ മാറ്റപ്പെടുകയോ ഡിലീറ്റ് ആവുകയോ ചെയ്തിട്ടുണ്ട്</string>
     <string name="audio_streams_empty">ഓഡിയോ സ്ട്രീമുകൾ കണ്ടെത്താനായില്ല</string>
@@ -594,7 +587,6 @@
     <string name="description_select_enable">ഡിസ്ക്രിപ്ഷനിലെ ടെക്സ്റ്റ്‌ സെലക്ട്‌ ചെയ്യാൻ അനുവദിക്കുക</string>
     <string name="off">ഓഫ്‌</string>
     <string name="on">ഓൺ</string>
-    <string name="open_website_license">വെബ്സൈറ്റ് തുറക്കുക</string>
     <string name="tablet_mode_title">ടാബ്ലറ്റ് മോഡ്</string>
     <string name="metadata_privacy_internal">ഇന്റെർണൽ</string>
     <string name="metadata_privacy_private">സ്വകാര്യം</string>

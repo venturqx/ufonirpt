@@ -108,14 +108,12 @@
     <string name="charset_most_special_characters">Karakter spesial umum</string>
     <string name="title_activity_about">Tentang NewPipe</string>
     <string name="title_licenses">Lisensi pihak ketiga</string>
-    <string name="copyright" formatted="true">© %1$s oleh %2$s di bawah %3$s</string>
     <string name="tab_about">Tentang &amp; SSD</string>
     <string name="tab_licenses">Lisensi</string>
     <string name="app_description">Aplikasi video penjaliran daring yang bebas dan ringan untuk Android.</string>
     <string name="view_on_github">Lihat di GitHub</string>
     <string name="app_license_title">Lisensi NewPipe</string>
     <string name="contribution_encouragement">Terlepas apakah kamu memiliki ide: terjemahan, perubahan desain, pembersihan kode, atau perubahan kode yang signifikan, segala bantuan akan selalu kami terima. Semakin banyak ide akan semakin baik jadinya!</string>
-    <string name="read_full_license">Baca lisensi</string>
     <string name="contribution_title">Kontribusi</string>
     <string name="subscribe_button_title">Berlanggan</string>
     <string name="subscribed_button_title">Dilanggani</string>
@@ -162,10 +160,7 @@
     <string name="video_streams_empty">Video tidak ditemukan</string>
     <string name="audio_streams_empty">Audio tidak ditemukan</string>
     <string name="invalid_directory">Folder tidak ada</string>
-    <string name="invalid_source">Tidak ada sumber berkas/konten</string>
-    <string name="invalid_file">Berkas tidak tersedia atau tidak memiliki izin baca atau tulis</string>
     <string name="file_name_empty_error">Nama berkas tidak boleh kosong</string>
-    <string name="error_occurred_detail">Telah terjadi galat: %1$s</string>
     <string name="search_no_results">Tak ada hasil</string>
     <string name="empty_list_subtitle">Tidak ada apa pun di sini selain jangkrik</string>
     <string name="detail_drag_description">Geser untuk ubah urutan</string>
@@ -179,7 +174,6 @@
     </plurals>
     <string name="no_videos">Tidak ada video</string>
     <string name="create">Buat</string>
-    <string name="dismiss">Abaikan</string>
     <string name="rename">Ubah nama</string>
     <string name="donation_title">Donasi</string>
     <string name="donation_encouragement">NewPipe dikembangkan oleh relawan yang menyisihkan waktu luang untuk memberi kamu sebuah pengalaman terbaik. Segala dukungan yang diberikan kepada para pengembang akan membuat NewPipe menjadi lebih baik sembari mereka menikmati secangkir kopi.</string>
@@ -246,7 +240,6 @@
     <string name="delete_search_history_alert">Hapus seluruh riwayat pencarian\?</string>
     <string name="search_history_deleted">Riwayat pencarian dihapus</string>
     <string name="no_streams_available_download">Tidak ada video yang tersedia untuk diunduh</string>
-    <string name="one_item_deleted">1 item dihapus.</string>
     <string name="tab_bookmarks">Daftar Markah</string>
     <string name="auto_queue_title">Putar otomatis video berikutnya</string>
     <string name="channel_unsubscribed">Batal berlanggan saluran</string>
@@ -595,7 +588,6 @@
     <string name="description_select_disable">Nonaktifkan dapat memilih teks pada deskripsi</string>
     <string name="description_select_enable">Aktifkan dapat memilih teks pada deskripsi</string>
     <string name="description_select_note">Anda sekarang dapat memilih teks di dalam deskripsi. Perhatikan bahwa halaman mungkin berkedip dan tautan tidak dapat diklik saat dalam mode pemilihan.</string>
-    <string name="open_website_license">Buka situs web</string>
     <string name="account_terminated">Akun dinonaktifkan</string>
     <string name="feed_load_error_fast_unknown">Mode langganan cepat tidak menyediakan lebih banyak info tentang ini.</string>
     <string name="feed_load_error_terminated">Akun kreator telah dinonaktifkan.
@@ -655,7 +647,6 @@
     <string name="streams_notifications_network_title">Dibutuhkan koneksi jaringan</string>
     <string name="any_network">Jaringan apa saja</string>
     <string name="get_notified">Beri tahu saya</string>
-    <string name="enumeration_comma">,</string>
     <string name="toggle_all">Alih semua</string>
     <plurals name="new_streams">
         <item quantity="other">%s stream baru</item>
@@ -847,7 +838,6 @@
     <string name="export_subscriptions_title">Ekspor langganan</string>
     <string name="import_subscriptions_summary">Impor langganan dari ekspor .json sebelumnya</string>
     <string name="export_subscriptions_summary">Ekspor langganan Anda ke berkas .json</string>
-    <string name="import_from_previous_export">Impor dari ekspor sebelumnya</string>
     <string name="api23_requirement_dialog_title">NewPipe akan sudahi dukungan Android 5</string>
     <string name="api23_requirement_dialog_message">Sayangnya, NewPipe dibuat dengan pustaka yang akan menyudahi dukungan Android 5.0 dan 5.1. Maka, rilis NewPipe berikutnya hanya akan berfungsi pada perangkat Android 6 ke atas. Rincian ada di postingan blog.</string>
     <string name="api23_requirement_dialog_blogpost">Postingan</string>

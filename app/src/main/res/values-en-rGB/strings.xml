@@ -67,7 +67,6 @@
 \nSo the choice boils down to what you prefer: speed or complete information.</string>
     <string name="feed_use_dedicated_fetch_method_summary">Available in some services, it is usually much faster but may return a limited number of items and often incomplete information (e.g. no duration, item type, no live status).</string>
     <string name="max_retry_desc">Maximum number of attempts before cancelling the download</string>
-    <string name="read_full_license">Read licence</string>
     <string name="app_license">NewPipe is copyleft libre software: You can use, study share and improve it at will. Specifically you can redistribute and/or modify it under the terms of the GNU General Public Licence as published by the Free Software Foundation, either version 3 of the Licence, or (at your option) any later version.</string>
     <string name="app_license_title">NewPipe’s licence</string>
     <string name="tab_licenses">Licences</string>
@@ -293,10 +292,7 @@
     <string name="audio_streams_empty">No audio streams found</string>
     <string name="missing_file">File moved or deleted</string>
     <string name="invalid_directory">No such folder</string>
-    <string name="invalid_source">No such file/content source</string>
-    <string name="invalid_file">The file does not exist, or permission to read or write to it is lacking</string>
     <string name="file_name_empty_error">File name cannot be empty</string>
-    <string name="error_occurred_detail">An error occurred: %1$s</string>
     <string name="no_streams_available_download">No streams available to download</string>
     <string name="saved_tabs_invalid_json">Could not read the saved tabs, so using the default ones</string>
     <string name="restore_defaults">Restore defaults</string>
@@ -378,7 +374,6 @@
     <string name="delete_file">Delete file</string>
     <string name="delete_entry">Delete entry</string>
     <string name="checksum">Checksum</string>
-    <string name="dismiss">Dismiss</string>
     <string name="rename">Rename</string>
     <string name="msg_name">File name</string>
     <string name="msg_threads">Threads</string>
@@ -392,7 +387,6 @@
     <string name="no_available_dir">Please define a download folder later in settings</string>
     <string name="no_dir_yet">No download folder set yet, choose the default download folder now</string>
     <string name="msg_popup_permission">This permission is needed to\nopen in pop-up mode</string>
-    <string name="one_item_deleted">1 item deleted.</string>
     <string name="title_activity_recaptcha">re-CAPTCHA challenge</string>
     <string name="recaptcha_request_toast">re-CAPTCHA challenge requested</string>
     <string name="recaptcha_solve">Solve</string>
@@ -404,7 +398,6 @@
     <string name="charset_letters_and_digits">Letters and digits</string>
     <string name="charset_most_special_characters">Most special characters</string>
     <string name="title_activity_about">About NewPipe</string>
-    <string name="copyright">© %1$s by %2$s under %3$s</string>
     <string name="tab_about">About &amp; FAQ</string>
     <string name="app_description">Libre lightweight streaming on Android.</string>
     <string name="contribution_title">Contribute</string>
@@ -539,7 +532,6 @@
     <string name="export_subscriptions_title">Export subscriptions</string>
     <string name="import_subscriptions_summary">Import subscriptions from a previous .json export</string>
     <string name="export_subscriptions_summary">Export your subscriptions to a .json file</string>
-    <string name="import_from_previous_export">Import from previous export</string>
     <string name="subscriptions_import_unsuccessful">Could not import subscriptions</string>
     <string name="subscriptions_export_unsuccessful">Could not export subscriptions</string>
     <string name="import_soundcloud_instructions_hint">yourID, soundcloud.com/yourid</string>
@@ -754,7 +746,6 @@
     <string name="metadata_subscribers">Subscribers</string>
     <string name="detail_pinned_comment_view_description">Pinned comment</string>
     <string name="detail_heart_img_view_description">Hearted by creator</string>
-    <string name="open_website_license">Open website</string>
     <string name="tablet_mode_title">Tablet mode</string>
     <string name="on">On</string>
     <string name="off">Off</string>
@@ -762,7 +753,6 @@
     <string name="notifications_disabled">Notifications are disabled</string>
     <string name="get_notified">Get notified</string>
     <string name="you_successfully_subscribed">You now subscribed to this channel</string>
-    <string name="enumeration_comma">,</string>
     <string name="toggle_all">Toggle all</string>
     <string name="streams_not_yet_supported_removed">Streams which are not yet supported by the downloader are not shown</string>
     <string name="audio_track_present_in_video">An audio track should be already present in this stream</string>

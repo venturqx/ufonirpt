@@ -2,6 +2,7 @@ package org.schabi.newpipe.tournesol.ui
 
 import android.graphics.Paint as AndroidPaint
 import android.graphics.Typeface
+import android.view.View
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.awaitEachGesture
@@ -297,6 +298,10 @@ internal fun LollipopPickerWithIntro(
     }
 }
 
+private val SLIDER_BLUE = Color(0xFF4F9EFF)
+private val SLIDER_RED = Color(0xFFFF5A5F)
+private val SLIDER_SIDE_PADDING = 28.dp
+
 @Composable
 private fun LargelyRecommendedSlider(
     mainScore: Int,
@@ -312,29 +317,9 @@ private fun LargelyRecommendedSlider(
     hoistedDragScore: MutableState<Int?>? = null,
     modifier: Modifier = Modifier
 ) {
-    val density = LocalDensity.current
-    val hostView = LocalView.current
-    val blue = Color(0xFF4F9EFF)
-    val red = Color(0xFFFF5A5F)
-    val trackBg = Color.White.copy(alpha = 0.10f)
-    val thumbColor = Color.White
-    val neutralLabel = Color.White.copy(alpha = 0.55f)
-    val trackHeightPx = with(density) { 6.dp.toPx() }
-    val thumbWidthPx = with(density) { 4.dp.toPx() }
-    val thumbHeightPx = with(density) { 22.dp.toPx() }
-    val fillThumbGapPx = with(density) { 5.dp.toPx() }
-    val sidePaddingPx = with(density) { 28.dp.toPx() }
-    val canvasHeight = 32.dp
-
-    val mainDescIndex = EXTRA_CRITERIA.size
-    val activeIdx = activeIndex.intValue
-    val selectedCriterionId = if (activeIdx < 0 || activeIdx == mainDescIndex) {
-        COMPACT_MAIN_CRITERION_ID
-    } else {
-        EXTRA_CRITERIA[activeIdx].id
-    }
+    val selectedCriterionId = criterionIdAt(activeIndex.intValue)
     val isMain = selectedCriterionId == COMPACT_MAIN_CRITERION_ID
-    val currentScore = if (isMain) mainScore else (scores[selectedCriterionId] ?: 0)
+    val currentScore = criterionScore(selectedCriterionId, mainScore, scores)
 
     val currentOnMainChange by rememberUpdatedState(onMainScoreChange)
     val currentOnExtraChange by rememberUpdatedState(onScoreChange)
@@ -344,57 +329,17 @@ private fun LargelyRecommendedSlider(
         if (isMain) currentOnMainChange(v) else currentOnExtraChange(selectedCriterionId, v)
     }
 
-    val title = criterionQuestion(selectedCriterionId)
-    val qLine = buildQualifierLine(selectedCriterionId, currentScore)
-    val scoreColor = when {
-        currentScore < 0 -> blue
-        currentScore > 0 -> red
-        else -> neutralLabel
-    }
     var showCriteriaDesc by remember { mutableStateOf(false) }
-    var isDragging by remember { mutableStateOf(false) }
-    var isInCancelZone by remember { mutableStateOf(false) }
+    val isDragging = remember { mutableStateOf(false) }
+    val isInCancelZone = remember { mutableStateOf(false) }
     LaunchedEffect(activeIndex.intValue) { showCriteriaDesc = false }
 
     Column(modifier = modifier.fillMaxWidth()) {
         if (allExtrasDone.value) {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 16.dp, start = 16.dp, end = 16.dp),
-                horizontalArrangement = Arrangement.Center
-            ) {
-                Text(
-                    text = "You scored every criteria! Good job. Submit it now?",
-                    color = Color.White.copy(alpha = 0.9f),
-                    fontSize = 13.sp,
-                    textAlign = TextAlign.Center
-                )
-            }
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 8.dp, bottom = 8.dp),
-                horizontalArrangement = Arrangement.Center
-            ) {
-                FilterChip(
-                    selected = true,
-                    onClick = {
-                        val batch = EXTRA_CRITERIA.mapNotNull { c ->
-                            if (c.id in touchedCriteria.value) {
-                                CriteriaScore(c.id, scores[c.id] ?: 0)
-                            } else {
-                                null
-                            }
-                        }
-                        onSubmitExtrasBatch(batch)
-                    },
-                    label = { Text(text = "Submit1") },
-                    colors = FilterChipDefaults.filterChipColors(),
-                    shape = RoundedCornerShape(8.dp),
-                    border = null
-                )
-            }
+            AllCriteriaScoredMessage()
+            SubmitExtrasChip(
+                onClick = { onSubmitExtrasBatch(touchedExtraScores(touchedCriteria.value, scores)) }
+            )
             LollipopHeadsRow(
                 scores = scores,
                 mainScore = mainScore,
@@ -407,209 +352,250 @@ private fun LargelyRecommendedSlider(
                     activeIndex.intValue = idx
                 }
             )
-            if (showCriteriaDesc) {
-                LollipopDescriptionRow(activeIndex = activeIndex.intValue)
-            }
-            return@Column
-        }
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 8.dp, start = 16.dp, end = 16.dp),
-            horizontalArrangement = Arrangement.Center
-        ) {
-            Text(
-                text = title,
-                color = Color.White.copy(alpha = 0.75f),
-                fontSize = 13.sp
+        } else {
+            CriterionScoreHeader(
+                title = criterionQuestion(selectedCriterionId),
+                score = currentScore
             )
-            Box(modifier = Modifier.width(48.dp)) {
-                Text(
-                    text = currentScore.toString(),
-                    color = scoreColor,
-                    fontSize = 13.sp,
-                    maxLines = 1,
-                    softWrap = false,
-                    modifier = Modifier
-                        .align(Alignment.CenterStart)
-                        .padding(start = 6.dp)
+            CriterionTrack(
+                score = currentScore,
+                dragController = SliderDragController(
+                    criterionId = selectedCriterionId,
+                    latestScore = { latestScore },
+                    dispatchChange = dispatchChange,
+                    onSubmit1 = { criterionId, value -> currentOnSubmit1(criterionId, value) },
+                    touchedCriteria = touchedCriteria,
+                    activeIndex = activeIndex,
+                    allExtrasDone = allExtrasDone,
+                    isDragging = isDragging,
+                    isInCancelZone = isInCancelZone,
+                    dragScore = hoistedDragScore
                 )
-            }
+            )
+            QualifierRow(
+                line = buildQualifierLine(selectedCriterionId, currentScore),
+                showCancel = isDragging.value && isInCancelZone.value,
+                descriptionShown = showCriteriaDesc,
+                onToggleDescription = { showCriteriaDesc = !showCriteriaDesc }
+            )
+            LollipopHeadsRow(
+                scores = scores,
+                mainScore = mainScore,
+                activeIndex = activeIndex,
+                submittedCriteria = submittedCriteria.value,
+                touchedCriteria = touchedCriteria.value,
+                modifier = Modifier.padding(top = 12.dp)
+            )
         }
-        Canvas(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(canvasHeight)
-                .pointerInput(selectedCriterionId) {
-                    awaitEachGesture {
-                        val down = awaitFirstDown(requireUnconsumed = false)
-                        hostView.parent?.requestDisallowInterceptTouchEvent(true)
-                        val left = sidePaddingPx
-                        val right = size.width - sidePaddingPx
-                        fun xToScore(x: Float): Int = positionToScore(x, left, right)
-                        val scoreBeforeDrag = latestScore
-                        var finalScore = xToScore(down.position.x)
-                        isDragging = true
-                        isInCancelZone = false
-                        hoistedDragScore?.value = finalScore
-                        dispatchChange(finalScore)
-                        val newTouched = touchedCriteria.value + selectedCriterionId
-                        touchedCriteria.value = newTouched
-                        drag(down.id) { change ->
-                            finalScore = xToScore(change.position.x)
-                            isInCancelZone = change.position.y < 0f
-                            hoistedDragScore?.value = finalScore
-                            dispatchChange(finalScore)
-                            change.consume()
-                        }
-                        isDragging = false
-                        hoistedDragScore?.value = null
-                        if (isInCancelZone) {
-                            // Cancel: restore original score, don't advance
-                            isInCancelZone = false
-                            dispatchChange(scoreBeforeDrag)
-                            touchedCriteria.value = touchedCriteria.value - selectedCriterionId
-                        } else {
-                            if (isMain) {
-                                currentOnSubmit1(selectedCriterionId, finalScore)
-                                val firstUntouched = EXTRA_CRITERIA.indexOfFirst {
-                                    it.id !in newTouched
-                                }
-                                if (firstUntouched >= 0) {
-                                    activeIndex.intValue = firstUntouched
-                                } else {
-                                    allExtrasDone.value = true
-                                }
-                            } else {
-                                val nextIdx = EXTRA_CRITERIA.indexOfFirst {
-                                    it.id !in newTouched
-                                }
-                                if (nextIdx >= 0) {
-                                    activeIndex.intValue = nextIdx
-                                } else {
-                                    allExtrasDone.value = true
-                                }
-                            }
-                        }
-                    }
-                }
-        ) {
-            val w = size.width
-            val h = size.height
-            val left = sidePaddingPx
-            val right = w - sidePaddingPx
-            val centerX = (left + right) / 2f
-            val cy = h / 2f
-            val trackTop = cy - trackHeightPx / 2f
-            val trackRadius = CornerRadius(trackHeightPx / 2f, trackHeightPx / 2f)
+        if (showCriteriaDesc) {
+            LollipopDescriptionRow(activeIndex = activeIndex.intValue)
+        }
+    }
+}
 
-            // Background track
+@Composable
+private fun AllCriteriaScoredMessage() {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(top = 16.dp, start = 16.dp, end = 16.dp),
+        horizontalArrangement = Arrangement.Center
+    ) {
+        Text(
+            text = "You scored every criteria! Good job. Submit it now?",
+            color = Color.White.copy(alpha = 0.9f),
+            fontSize = 13.sp,
+            textAlign = TextAlign.Center
+        )
+    }
+}
+
+@Composable
+private fun SubmitExtrasChip(onClick: () -> Unit) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(top = 8.dp, bottom = 8.dp),
+        horizontalArrangement = Arrangement.Center
+    ) {
+        FilterChip(
+            selected = true,
+            onClick = onClick,
+            label = { Text(text = "Submit1") },
+            colors = FilterChipDefaults.filterChipColors(),
+            shape = RoundedCornerShape(8.dp),
+            border = null
+        )
+    }
+}
+
+@Composable
+private fun CriterionScoreHeader(title: String, score: Int) {
+    val scoreColor = when {
+        score < 0 -> SLIDER_BLUE
+        score > 0 -> SLIDER_RED
+        else -> Color.White.copy(alpha = 0.55f)
+    }
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(top = 8.dp, start = 16.dp, end = 16.dp),
+        horizontalArrangement = Arrangement.Center
+    ) {
+        Text(
+            text = title,
+            color = Color.White.copy(alpha = 0.75f),
+            fontSize = 13.sp
+        )
+        Box(modifier = Modifier.width(48.dp)) {
+            Text(
+                text = score.toString(),
+                color = scoreColor,
+                fontSize = 13.sp,
+                maxLines = 1,
+                softWrap = false,
+                modifier = Modifier
+                    .align(Alignment.CenterStart)
+                    .padding(start = 6.dp)
+            )
+        }
+    }
+}
+
+@Composable
+private fun CriterionTrack(score: Int, dragController: SliderDragController) {
+    val hostView = LocalView.current
+    Canvas(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(32.dp)
+            .sliderDragGesture(hostView, dragController)
+    ) {
+        drawCriterionTrack(score)
+    }
+}
+
+private fun Modifier.sliderDragGesture(hostView: View, controller: SliderDragController): Modifier = pointerInput(controller.criterionId) {
+    awaitEachGesture {
+        val down = awaitFirstDown(requireUnconsumed = false)
+        hostView.parent?.requestDisallowInterceptTouchEvent(true)
+        val left = SLIDER_SIDE_PADDING.toPx()
+        val right = size.width - left
+        fun xToScore(x: Float): Int = positionToScore(x, left, right)
+        val scoreBeforeDrag = controller.latestScore()
+        var finalScore = xToScore(down.position.x)
+        val newTouched = controller.start(finalScore)
+        drag(down.id) { change ->
+            finalScore = xToScore(change.position.x)
+            controller.move(finalScore, inCancelZone = change.position.y < 0f)
+            change.consume()
+        }
+        controller.release(scoreBeforeDrag, finalScore, newTouched)
+    }
+}
+
+private fun DrawScope.drawCriterionTrack(score: Int) {
+    val trackHeightPx = 6.dp.toPx()
+    val thumbWidthPx = 4.dp.toPx()
+    val thumbHeightPx = 22.dp.toPx()
+    val left = SLIDER_SIDE_PADDING.toPx()
+    val right = size.width - left
+    val centerX = (left + right) / 2f
+    val cy = size.height / 2f
+    val trackTop = cy - trackHeightPx / 2f
+    val trackRadius = CornerRadius(trackHeightPx / 2f, trackHeightPx / 2f)
+
+    // Background track
+    drawRoundRect(
+        color = Color.White.copy(alpha = 0.10f),
+        topLeft = Offset(left, trackTop),
+        size = Size(right - left, trackHeightPx),
+        cornerRadius = trackRadius
+    )
+
+    // Fill from center toward thumb, stopping short to leave a gap
+    val thumbX = scoreToPosition(score, minScoreAt = left, maxScoreAt = right)
+    trackFill(score, thumbX, centerX, thumbGap = 5.dp.toPx())?.let { fill ->
+        clipRect(
+            left = fill.left,
+            top = trackTop,
+            right = fill.right,
+            bottom = trackTop + trackHeightPx
+        ) {
             drawRoundRect(
-                color = trackBg,
+                color = if (score < 0) SLIDER_BLUE else SLIDER_RED,
                 topLeft = Offset(left, trackTop),
                 size = Size(right - left, trackHeightPx),
                 cornerRadius = trackRadius
             )
-
-            // Fill from center toward thumb, stopping short to leave a gap
-            val thumbX = scoreToPosition(currentScore, minScoreAt = left, maxScoreAt = right)
-            if (currentScore != 0) {
-                val fillColor = if (currentScore < 0) blue else red
-                val rawFillLeft: Float
-                val rawFillRight: Float
-                if (currentScore < 0) {
-                    rawFillLeft = thumbX + fillThumbGapPx
-                    rawFillRight = centerX
-                } else {
-                    rawFillLeft = centerX
-                    rawFillRight = thumbX - fillThumbGapPx
-                }
-                if (rawFillRight > rawFillLeft) {
-                    clipRect(
-                        left = rawFillLeft,
-                        top = trackTop,
-                        right = rawFillRight,
-                        bottom = trackTop + trackHeightPx
-                    ) {
-                        drawRoundRect(
-                            color = fillColor,
-                            topLeft = Offset(left, trackTop),
-                            size = Size(right - left, trackHeightPx),
-                            cornerRadius = trackRadius
-                        )
-                    }
-                }
-            }
-
-            // Thumb: tall white pill
-            drawRoundRect(
-                color = thumbColor,
-                topLeft = Offset(thumbX - thumbWidthPx / 2f, cy - thumbHeightPx / 2f),
-                size = Size(thumbWidthPx, thumbHeightPx),
-                cornerRadius = CornerRadius(thumbWidthPx / 2f, thumbWidthPx / 2f)
-            )
         }
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 32.dp),
-            contentAlignment = Alignment.Center
-        ) {
-            if (isDragging && isInCancelZone) {
+    }
+
+    // Thumb: tall white pill
+    drawRoundRect(
+        color = Color.White,
+        topLeft = Offset(thumbX - thumbWidthPx / 2f, cy - thumbHeightPx / 2f),
+        size = Size(thumbWidthPx, thumbHeightPx),
+        cornerRadius = CornerRadius(thumbWidthPx / 2f, thumbWidthPx / 2f)
+    )
+}
+
+@Composable
+private fun QualifierRow(
+    line: QualifierLine,
+    showCancel: Boolean,
+    descriptionShown: Boolean,
+    onToggleDescription: () -> Unit
+) {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 32.dp),
+        contentAlignment = Alignment.Center
+    ) {
+        if (showCancel) {
+            Text(
+                text = "CANCEL",
+                color = SLIDER_RED,
+                fontSize = 14.sp,
+                fontWeight = FontWeight.Bold,
+                textAlign = TextAlign.Center
+            )
+        } else {
+            Text(
+                text = line.leftArrow,
+                color = SLIDER_BLUE,
+                fontSize = 13.sp,
+                modifier = Modifier.align(Alignment.CenterStart)
+            )
+            Row(
+                modifier = Modifier.align(Alignment.Center),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
                 Text(
-                    text = "CANCEL",
-                    color = red,
-                    fontSize = 14.sp,
-                    fontWeight = FontWeight.Bold,
+                    text = buildAnnotatedString {
+                        withStyle(SpanStyle(fontWeight = FontWeight.Bold)) {
+                            append(line.qualifier)
+                        }
+                        append(line.tail)
+                    },
+                    color = Color.White.copy(alpha = 0.9f),
+                    fontSize = 13.sp,
                     textAlign = TextAlign.Center
                 )
-            } else {
                 Text(
-                    text = qLine.leftArrow,
-                    color = blue,
-                    fontSize = 13.sp,
-                    modifier = Modifier.align(Alignment.CenterStart)
-                )
-                Row(
-                    modifier = Modifier.align(Alignment.Center),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(
-                        text = buildAnnotatedString {
-                            withStyle(SpanStyle(fontWeight = FontWeight.Bold)) {
-                                append(qLine.qualifier)
-                            }
-                            append(qLine.tail)
-                        },
-                        color = Color.White.copy(alpha = 0.9f),
-                        fontSize = 13.sp,
-                        textAlign = TextAlign.Center
-                    )
-                    Text(
-                        text = " ⓘ",
-                        color = Color.White.copy(alpha = if (showCriteriaDesc) 0.5f else 0.2f),
-                        fontSize = 11.sp,
-                        modifier = Modifier.clickable { showCriteriaDesc = !showCriteriaDesc }
-                    )
-                }
-                Text(
-                    text = qLine.rightArrow,
-                    color = red,
-                    fontSize = 13.sp,
-                    modifier = Modifier.align(Alignment.CenterEnd)
+                    text = " ⓘ",
+                    color = Color.White.copy(alpha = if (descriptionShown) 0.5f else 0.2f),
+                    fontSize = 11.sp,
+                    modifier = Modifier.clickable(onClick = onToggleDescription)
                 )
             }
-        }
-        LollipopHeadsRow(
-            scores = scores,
-            mainScore = mainScore,
-            activeIndex = activeIndex,
-            submittedCriteria = submittedCriteria.value,
-            touchedCriteria = touchedCriteria.value,
-            modifier = Modifier.padding(top = 12.dp)
-        )
-        if (showCriteriaDesc) {
-            LollipopDescriptionRow(activeIndex = activeIndex.intValue)
+            Text(
+                text = line.rightArrow,
+                color = SLIDER_RED,
+                fontSize = 13.sp,
+                modifier = Modifier.align(Alignment.CenterEnd)
+            )
         }
     }
 }
@@ -626,56 +612,6 @@ private fun criterionQuestion(criterionId: String): String = when (criterionId) 
     "better_habits" -> "Encourages better habits..?"
     "backfire_risk" -> "Does not backfire..?"
     else -> "Should be recommended..?"
-}
-
-private data class QualifierLine(
-    val leftArrow: String,
-    val rightArrow: String,
-    val qualifier: String,
-    val tail: String
-)
-
-private fun buildQualifierLine(criterionId: String, score: Int): QualifierLine {
-    val leftArrow = when {
-        score <= -70 -> "<<"
-        score <= -16 -> "<"
-        else -> ""
-    }
-    val rightArrow = when {
-        score >= 70 -> ">>"
-        score >= 16 -> ">"
-        else -> ""
-    }
-    val goodnessLike = criterionId == "better_habits" || criterionId == "backfire_risk"
-    if (goodnessLike) {
-        val qualifier = when {
-            score >= 70 -> "much better"
-            score >= 16 -> "slightly better"
-            score >= -15 -> "as good"
-            score >= -69 -> "slightly better"
-            else -> "much better"
-        }
-        return QualifierLine(leftArrow, rightArrow, qualifier, "")
-    }
-    val qualifier = when {
-        score >= 70 -> "much more"
-        score >= 16 -> "slightly more"
-        score >= -15 -> "just as"
-        score >= -69 -> "slightly more"
-        else -> "much more"
-    }
-    val tail = when (criterionId) {
-        "largely_recommended" -> " recommended"
-        "reliability" -> " reliable"
-        "pedagogy" -> " pedagogical"
-        "importance" -> " important"
-        "layman_friendly" -> " accessible"
-        "entertaining_relaxing" -> " entertaining"
-        "engaging" -> " engaging"
-        "diversity_inclusion" -> " inclusive"
-        else -> " recommended"
-    }
-    return QualifierLine(leftArrow, rightArrow, qualifier, tail)
 }
 
 private fun DrawScope.drawLollipopHead(

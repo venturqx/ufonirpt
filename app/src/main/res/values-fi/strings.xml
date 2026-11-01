@@ -148,7 +148,6 @@
     <string name="view_on_github">Näytä GitHub:ssa</string>
     <string name="app_license_title">NewPipe:n Lisenssi</string>
     <string name="contribution_encouragement">Olkoon sinulla ideoita; käännöksistä, designmuutoksista, koodin siivoamisesta tai raskaista koodimuutoksista—apu on aina tervetullutta. Mitä enemmän saadaan tehtyä, sen paremmaksi sovellus tulee!</string>
-    <string name="read_full_license">Lue lisenssi</string>
     <string name="contribution_title">Osallistu</string>
     <string name="title_activity_history">Historia</string>
     <string name="action_history">Historia</string>
@@ -156,7 +155,6 @@
     <string name="resume_on_audio_focus_gain_title">Jatka toistoa</string>
     <string name="what_device_headline">Info:</string>
     <string name="info_labels">Mikä:\nPyyntö:\nSisällön kieli:\nSisällön maa:\n:Sovelluksen kieli:\nPalvelu:\nGMT Aika:\nPaketti:\nVersio:\nOS versio:</string>
-    <string name="copyright" formatted="true">© %1$s %2$s %3$s alla</string>
     <string name="main_page_content">Pääsivun sisältö</string>
     <string name="blank_page_summary">Tyhjä sivu</string>
     <string name="kiosk_page_summary">Kioski</string>
@@ -225,15 +223,10 @@
     <string name="video_streams_empty">Suoratoistovideoita ei löytynyt</string>
     <string name="audio_streams_empty">Suoratoistoääntä ei löytynyt</string>
     <string name="invalid_directory">Kansiota ei ole olemassa</string>
-    <string name="invalid_source">Tiedoston/sisällön lähdettä ei ole</string>
-    <string name="invalid_file">Tiedoa ei ole tai lupa sen kirjoittamiseen tai lukemiseen puuttuu</string>
     <string name="file_name_empty_error">Tiedostonimi ei voi olla tyhjä</string>
-    <string name="error_occurred_detail">Hups! Tapahtui virhe: %1$s</string>
     <string name="detail_drag_description">Vedä järjestelläksesi</string>
     <string name="create">Luo</string>
-    <string name="dismiss">Hylkää</string>
     <string name="rename">Nimeä uudelleen</string>
-    <string name="one_item_deleted">1 poistettu.</string>
     <string name="privacy_policy_title">NewPipen tietosuojakäytäntö</string>
     <string name="privacy_policy_encouragement">NewPipe ottaa yksityisyytesi tosissaan. Siksi se ei kerää sinulta mitään tietoja ilman lupaasi.
 \nNewPipen tietosuojakäytännössä selitetään tarkasti mitä tietoja lähetetään tai tallennetaan virheraportin yhteydessä.</string>
@@ -597,7 +590,6 @@
     <string name="off">Pois päältä</string>
     <string name="on">Päällä</string>
     <string name="tablet_mode_title">Tablettitila</string>
-    <string name="open_website_license">Avaa verkkosivu</string>
     <string name="detail_heart_img_view_description">Tekijän tykkäämä</string>
     <string name="metadata_privacy_internal">Sisäinen</string>
     <string name="metadata_privacy_private">Yksityinen</string>
@@ -712,7 +704,6 @@
     <string name="feed_show_upcoming">Tuleva</string>
     <string name="loading_metadata_title">Ladataan Metadata…</string>
     <string name="app_update_available_notification_text">Lataa %s napauttamalla</string>
-    <string name="enumeration_comma">,</string>
     <string name="toggle_screen_orientation">Vaihda näytön suuntaa</string>
     <string name="settings_category_exoplayer_summary">Hallitse joitain ExoPlayer-asetuksia. Nämä muutokset edellyttävät soittimen uudelleenkäynnistystä tullakseen voimaan</string>
     <string name="playlist_add_stream_success_duplicate">Kopio lisätty %d kertaa</string>

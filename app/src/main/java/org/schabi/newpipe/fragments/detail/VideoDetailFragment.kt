@@ -167,7 +167,7 @@ class VideoDetailFragment :
     private var nullableBinding: FragmentVideoDetailBinding? = null
     private val binding: FragmentVideoDetailBinding get() = nullableBinding!!
     private lateinit var pageAdapter: StateSavingTabAdapter
-    private var settingsContentObserver: ContentObserver? = null
+    private lateinit var settingsContentObserver: ContentObserver
 
     // tabs
     private var showComments = false
@@ -199,7 +199,10 @@ class VideoDetailFragment :
                 showDescription = sharedPreferences.getBoolean(key, true)
                 tabSettingsChanged = true
             } else if (getString(R.string.default_tab_key) == key) {
-                val defaultTabValue = sharedPreferences.getString(key, "LIVE")
+                val defaultTabValue = sharedPreferences.getString(
+                    key,
+                    TabsJsonHelper.DEFAULT_TAB_VALUE
+                )
                 isTournesolTab = "TOURNESOL" == defaultTabValue
                 tabSettingsChanged = true
             }
@@ -262,11 +265,12 @@ class VideoDetailFragment :
     }
 
     private fun syncMainPlayerFullscreenWithOrientation() {
-        val mainUi = player?.UIs()?.get(MainPlayerUi::class) ?: return
+        val connectedPlayer = player ?: return
+        val mainUi = connectedPlayer.UIs().get(MainPlayerUi::class) ?: return
         if (DeviceUtils.isLandscape(requireContext())) {
             // If the video is playing but orientation changed
             // let's make the video in fullscreen again
-            checkLandscape()
+            checkLandscape(connectedPlayer)
         } else if (mainUi.isFullscreen && !mainUi.isVerticalVideo &&
             // Tablet UI has orientation-independent fullscreen
             !DeviceUtils.isTablet(activity)
@@ -324,10 +328,8 @@ class VideoDetailFragment :
             TabsJsonHelper.DEFAULT_TAB_VALUE
         )
         isTournesolTab = "TOURNESOL" == defaultTabValue
-        selectedTabTag = prefs.getString(
-            getString(R.string.stream_info_selected_tab_key),
-            COMMENTS_TAB_TAG
-        )!!
+        selectedTabTag = prefs.getString(getString(R.string.stream_info_selected_tab_key), null)
+            ?: COMMENTS_TAB_TAG
         prefs.registerOnSharedPreferenceChangeListener(preferenceChangeListener)
 
         setupBroadcastReceiver()
@@ -342,7 +344,7 @@ class VideoDetailFragment :
         activity.contentResolver.registerContentObserver(
             Settings.System.getUriFor(Settings.System.ACCELEROMETER_ROTATION),
             false,
-            settingsContentObserver!!
+            settingsContentObserver
         )
     }
 
@@ -414,7 +416,7 @@ class VideoDetailFragment :
         PreferenceManager.getDefaultSharedPreferences(activity)
             .unregisterOnSharedPreferenceChangeListener(preferenceChangeListener)
         activity.unregisterReceiver(broadcastReceiver)
-        activity.contentResolver.unregisterContentObserver(settingsContentObserver!!)
+        activity.contentResolver.unregisterContentObserver(settingsContentObserver)
 
         positionSubscriber?.dispose()
         currentWorker?.dispose()
@@ -548,9 +550,10 @@ class VideoDetailFragment :
             NavigationHelper.openPlayQueue(requireContext())
         }
         binding.overlayPlayPauseButton.setOnClickListener {
-            if (!playerIsStopped) {
-                player!!.playPause()
-                player!!.UIs().get(VideoPlayerUi::class)?.hideControls(0, 0)
+            val runningPlayer = player?.takeUnless { it.isStopped }
+            if (runningPlayer != null) {
+                runningPlayer.playPause()
+                runningPlayer.UIs().get(VideoPlayerUi::class)?.hideControls(0, 0)
                 showSystemUi()
             } else {
                 autoPlayEnabled = true // forcefully start playing
@@ -715,8 +718,7 @@ class VideoDetailFragment :
             }
 
             override fun onPageScrollStateChanged(state: Int) = Unit
-        }
-        binding.viewPager.addOnPageChangeListener(pageChangeListener!!)
+        }.also { binding.viewPager.addOnPageChangeListener(it) }
 
         setupBottomPlayer()
         if (!PlayerHolder.isBound) {
@@ -736,9 +738,10 @@ class VideoDetailFragment :
         }
 
         // If we are in fullscreen mode just exit from it via first back press
-        if (this.isFullscreen) {
+        val fullscreenPlayer = player?.takeIf { this.isFullscreen }
+        if (fullscreenPlayer != null) {
             if (!DeviceUtils.isTablet(activity)) {
-                player!!.pause()
+                fullscreenPlayer.pause()
             }
             restoreDefaultOrientation()
             setAutoPlay(false)
@@ -759,7 +762,7 @@ class VideoDetailFragment :
         // Remove top
         stack.pop()
         // Get stack item from the new top
-        setupFromHistoryItem(stack.peek()!!)
+        setupFromHistoryItem(stack.first())
 
         return true
     }
@@ -1612,7 +1615,7 @@ class VideoDetailFragment :
         super.showLoading()
 
         // if data is already cached, transition from VISIBLE -> INVISIBLE -> VISIBLE is not required
-        if (!ExtractorHelper.isCached(serviceId, url!!, InfoCache.Type.STREAM)) {
+        if (url?.let { ExtractorHelper.isCached(serviceId, it, InfoCache.Type.STREAM) } != true) {
             binding.detailContentRootHiding.visibility = View.INVISIBLE
         }
 
@@ -2228,17 +2231,17 @@ class VideoDetailFragment :
         }
     }
 
-    private fun checkLandscape() {
-        if ((!player!!.isPlaying && player!!.playQueue !== playQueue) ||
-            player!!.playQueue == null
+    private fun checkLandscape(connectedPlayer: Player) {
+        if ((!connectedPlayer.isPlaying && connectedPlayer.playQueue !== playQueue) ||
+            connectedPlayer.playQueue == null
         ) {
             setAutoPlay(true)
         }
 
-        player!!.UIs().get(MainPlayerUi::class)?.checkLandscape()
+        connectedPlayer.UIs().get(MainPlayerUi::class)?.checkLandscape()
         // Let's give a user time to look at video information page if video is not playing
-        if (PlayerHelper.globalScreenOrientationLocked(activity) && !player!!.isPlaying) {
-            player!!.play()
+        if (PlayerHelper.globalScreenOrientationLocked(activity) && !connectedPlayer.isPlaying) {
+            connectedPlayer.play()
         }
     }
 

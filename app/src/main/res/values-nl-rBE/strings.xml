@@ -123,10 +123,7 @@
     <string name="video_streams_empty">Geen videostreams gevonden</string>
     <string name="audio_streams_empty">Geen audiostreams gevonden</string>
     <string name="invalid_directory">Deze map bestaat niet</string>
-    <string name="invalid_source">Bestand/inhoudsbron bestaat niet</string>
-    <string name="invalid_file">Het bestand bestaat niet of u bent onvoldoende gemachtigd om het te lezen of ernaar te schrijven</string>
     <string name="file_name_empty_error">De bestandsnaam mag niet blanco zijn</string>
-    <string name="error_occurred_detail">Er is een fout opgetreden: %1$s</string>
     <string name="no_streams_available_download">Geen streams beschikbaar voor downloaden</string>
     <string name="sorry_string">Sorry, dit zou niet mogen gebeuren.</string>
     <string name="error_report_button_text">Meld deze fout via e-mail</string>
@@ -167,7 +164,6 @@
     <string name="create">Aanmaken</string>
     <string name="delete">Verwijderen</string>
     <string name="checksum">Controlesom</string>
-    <string name="dismiss">Sluiten</string>
     <string name="rename">Hernoemen</string>
     <string name="ok">Oké</string>
     <string name="msg_name">Bestandsnaam</string>
@@ -190,7 +186,6 @@
     <string name="charset_most_special_characters">Meeste speciale tekens</string>
     <string name="title_activity_about">Over NewPipe</string>
     <string name="title_licenses">Derdepartijlicenties</string>
-    <string name="copyright" formatted="true">© %1$s door %2$s, uitgebracht onder de %3$s</string>
     <string name="tab_about">Over</string>
     <string name="tab_licenses">Licenties</string>
     <string name="app_description">Vrij en licht streamen voor Android.</string>
@@ -203,7 +198,6 @@
     <string name="website_title">Website</string>
     <string name="website_encouragement">Bezoek de website van NewPipe voor meer informatie en het laatste nieuws.</string>
     <string name="app_license_title">Licentie van NewPipe</string>
-    <string name="read_full_license">Licentie lezen</string>
     <string name="title_activity_history">Geschiedenis</string>
     <string name="action_history">Geschiedenis</string>
     <string name="delete_item_search_history">Wilt u dit item verwijderen uit uw zoekgeschiedenis\?</string>
@@ -299,7 +293,6 @@
     <string name="clear_search_history_summary">Verwijdert de gebruikte zoektermen</string>
     <string name="delete_search_history_alert">De hele zoekgeschiedenis verwijderen\?</string>
     <string name="search_history_deleted">Zoekgeschiedenis verwijderd</string>
-    <string name="one_item_deleted">1 item verwijderd.</string>
     <string name="app_license">NewPipe is vrije software: u kan het gebruiken, bestuderen, delen en verbeteren zoveel u maar wil. U kan het opnieuw uitgeven en/of aanpassen volgens de voorwaarden van de GNU General Public License, gepubliceerd door de Free Software Foundation, versie 3 van de licentie, of (indien gewenst) om het even welke latere versie.</string>
     <string name="import_settings">Wilt u ook de instellingen importeren\?</string>
     <string name="privacy_policy_title">Privacybeleid van NewPipe</string>

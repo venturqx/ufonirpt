@@ -155,10 +155,7 @@
     <string name="app_ui_crash">ߟߥߊ߬ߟߌ߬ߟߊ߲ ߓߘߊ߫ ߜߊߘߊ߲߫</string>
     <string name="missing_file">ߞߐߕߐ߮ ߓߘߊ߫ ߡߊߘߏ߬ߣߌ߲߬ ߥߟߴߊ߬ ߓߘߊ߫ ߖߐ߬ߛߌ߫</string>
     <string name="invalid_directory">ߞߎ߲ߓߍ߲ ߛߎߝߊ߫ ߏ߬ ߕߍ߫ ߦߋ߲߬</string>
-    <string name="invalid_source">ߞߎ߲ߓߍ߲ ߥߟߊ߫ ߞߣߐߘߐ߫ ߛߎߝߊ ߏ߬ ߕߍ߫ ߦߋ߲߬</string>
-    <string name="invalid_file">ߞߐߕߐ߮ ߕߍ߲߬ ߦߋ߲߬ ߥߟߴߊ߬ ߕߍ߫ ߟߊߛߐ߬ߘߐ߲߬ ߘߐ߬ߞߊ߬ߙߊ߲߬ߠߌ߲ ߥߟߊ߫ ߛߓߍߟߌ߫ ߓߟߏ ߡߊ߬</string>
     <string name="file_name_empty_error">ߞߐߕߐ߯ ߕߐ߮ ߘߐߞߏߟߏ߲ ߕߍ߫ ߛߋ߫ ߕߏ߫ ߟߊ߫</string>
-    <string name="error_occurred_detail">ߝߎ߬ߕߎ߲߬ߕߌ ߘߏ߫ ߓߘߊ߫ ߞߍ߫: %1$s</string>
     <string name="no_streams_available_download">ߥߦߏ߬ ߟߊߖߌ߰ߕߊ߬ ߕߍ߫߫ ߦߋ߲߬</string>
     <string name="saved_tabs_invalid_json">ߛߏ߬ߙߌ߲߬ߘߐ߬ ߟߊߞߎ߲߬ߘߎ߬ߣߍ߲ ߠߎ߬ ߕߍ߫ ߞߊ߬ߙߊ߲߬ ߠߊ߫߸ ߛߏ߬ߙߏ߲߬ߘߐ߬ ߖߏߣߡߊ ߟߎ߬ ߟߋ߬ ߟߊߓߊ߯ߙߊ ߌߘߐ߫</string>
     <string name="error_report_notification_toast">ߝߎ߬ߕߎ߲߬ߕߌ ߘߏ߫ ߓߘߊ߫ ߞߍ߫߸ ߛߐ߬ߓߌ߬ߘߐ߬ߓߏ߲ ߡߊߝߍߣߍ߲߫</string>
@@ -299,7 +296,6 @@
     <string name="pause">ߞߵߊ߬ ߟߊߟߐ߬</string>
     <string name="create">ߞߵߊ߬ ߛߌ߲ߘߌ߫</string>
     <string name="checksum">ߜߋ߲߬ߟߎ߲߬ߠߌ߲߫ ߘߊ߬ߡߊ</string>
-    <string name="dismiss">ߞߵߊ߬ ߟߊߓߌ߬ߟߊ߬</string>
     <string name="rename">ߞߵߊ߬ ߕߐ߯ߟߊ߫</string>
     <string name="msg_name">ߞߐߕߐ߯ ߕߐ߮</string>
     <string name="msg_threads">ߜߊ߲߬ߞߎ߲߬ߠߌ߲߫ ߢߐ߲߰ߝߍ</string>
@@ -310,7 +306,6 @@
     <string name="recaptcha_solve">ߞߵߊ߬ ߝߎߟߋ߲߫</string>
     <string name="charset_most_special_characters">ߞߟߏߘߋ߲߫ ߞߙߍߞߙߍߣߍ߲ ߝߊ߲߬ߓߊ</string>
     <string name="title_activity_about">ߣߌߎߔߌߔ ߞߊ߲߬</string>
-    <string name="copyright">© %1$s߸ %2$s ߓߟߏ߫ %3$s ߞߘߐ߫</string>
     <string name="tab_about">ߊ߬ ߞߊ߲߬ &amp; ߢߞߛ</string>
     <string name="contribution_title">ߡߊ߬ߜߍ߲߬ߠߌ߲ ߞߍ߫</string>
     <string name="app_license_title">ߣߌߎߔߌߔ ߟߊ߬ߘߌߜߍ</string>
@@ -371,7 +366,6 @@
     <string name="msg_calculating_hash">ߢߋߙߋ߲ߞߎ߲߫ ߖߊ߬ߕߋ߬ߓߐ</string>
     <string name="msg_popup_permission">ߡߊ߬ߞߏ ߦߋ߫ ߟߊ߬ߘߌ߬ߢߍ߬ߟߌ ߣߌ߲߬ ߠߊ߫ ߞߊ߬
 \nߝߎ߲ߞߊ߲ߡߊ߫ ߗߏ߯ߦߊ ߘߊߦߟߍ߬</string>
-    <string name="one_item_deleted">ߝߛߌ߬ ߞߋߟߋ߲߫ ߓߘߊ߫ ߖߏ߬ߛߌ߬.</string>
     <string name="title_activity_recaptcha">ߡߐ߰ߦߊ߬ߟߐ߲߫ ߓߋ߭</string>
     <string name="recaptcha_request_toast">ߡߐ߰ߦߊ߬ߟߐ߲߫ ߓߋ߭ ߡߊߢߌߣߌ߲ߣߍ߲߫</string>
     <string name="subtitle_activity_recaptcha">ߌ ߓߴߊ߬ ߝߎߟߋ߲߫ ߦߋ߫ \"ߊ߬ ߓߘߊ߫ ߓߊ߲߫\" ߛߐ߲߬ߞߌ߲߫</string>
@@ -389,7 +383,6 @@
     <string name="website_encouragement">ߣߌߎߔߌߔ ߟߊ߫ ߗߍߦߙߐ ߡߊߝߍߣߍ߲߫ ߞߊ߬ ߟߌ߬ߤߟߊ ߟߎ߬ ߣߌ߫ ߗߍߞߎߘߊ ߟߎ߫ ߛߐ߬ߘߐ߲߬.</string>
     <string name="privacy_policy_title">ߣߌߎߔߌߔ ߟߊ߫ ߜߎ߲߬ߘߎ߬ߞߏ ߓߘߍ߬ߓߘߍ߬ߟߌ</string>
     <string name="read_privacy_policy">ߞߊ߬ ߜߎ߲߬ߘߎ߬ߞߏ ߓߘߍ߬ߓߘߍ߬ߟߌ ߞߊ߬ߙߊ߲߬</string>
-    <string name="read_full_license">ߞߊ߬ ߟߊ߬ߘߌߢߍ ߞߊ߬ߙߊ߲߬</string>
     <string name="faq">ߊ߬ ߡߊߝߍߣߍ߲߫ ߗߍߦߙߐ ߟߊ߫</string>
     <string name="title_activity_history">ߘߝߐ߬ߦߊ</string>
     <string name="channel_page_summary">ߥߙߏߝߋ߫ ߞߐߜߍ</string>
@@ -644,7 +637,6 @@
     <string name="off">ߟߊߛߊ߬ߣߍ߲</string>
     <string name="notifications_disabled">ߛߏ߬ߓߌ߬ߘߐ߬ߓߏ߲ ߠߎ߬ ߟߊߛߊ߬ߣߍ߲߫</string>
     <string name="get_notified">ߞߊ߬ ߛߏ߬ߓߌ߬ߘߐ߬ߓߏ߲ ߠߎ߬ ߡߊߛߐ߬ߘߐ߲߬</string>
-    <string name="enumeration_comma">߸</string>
     <string name="no_video_streams_available_for_external_players">ߦߋߡߍ߲ߕߊ߫ ߥߦߏ߫ ߛߌ߫ ߡߊߛߐ߬ߘߐ߲߬ߕߊ߬ ߕߍ߫ ߦߋ߲߬ ߞߐߞߊ߲߫ ߘߐߛߊߙߌߟߊ߲ ߠߎ߬ ߢߍ߫</string>
     <string name="select_quality_external_players">ߓߘߍ߬ߦߊ ߛߎߥߊ߲ߘߌ߫ ߞߐߞߊ߲߫ ߘߐߛߊߙߌߟߊ߲ ߠߎ߬ ߢߍ߫</string>
     <string name="unknown_quality">ߓߘߍ߬ߦߊ߬ ߟߐ߲ߓߊߟߌ</string>
@@ -695,7 +687,6 @@
     <string name="description_select_enable">ߞߊ߬ ߞߟߏߜߍ߫ ߓߊߕߐߡߐ߲ ߠߊߢߊ߯ ߞߊ߲߬ߛߓߍ ߘߐ߫</string>
     <string name="progressive_load_interval_exoplayer_default">ExoPlayer ߡߐ߬ߟߐ߲߬ ߖߏߣߡߊ</string>
     <string name="you_successfully_subscribed">ߝߙߏߝߋ ߣߌ߲߬ ߡߊߝߘߎߣߌ߲߫ ߌ ߓߟߏ߫ ߡߎ߬ߕߎ߲߬</string>
-    <string name="open_website_license">ߞߊ߬ ߞߍߦߙߐ ߘߊߦߟߍ߬</string>
     <string name="soundcloud_go_plus_content">ߣߌ߲߬ ߦߋ߫ SoundCloud Go+ ߜߋ߬ߙߋ ߘߏ߫ ߟߋ߬ ߘߌ߫߸ ߡߍ߲ ߕߴߌ ߟߊ߫ ߖߡߊ߬ߣߊ ߞߣߐ߫߸ ߏ߬ ߘߐ߫ ߊ߬ ߕߍ߫ ߛߋ߫ ߘߐߛߊߙߌ߫ ߟߊ߫ ߥߟߊ߫ ߞߵߊ߬ ߟߊߖߌ߰ ߣߌߎߔߌߔ ߓߟߏ߫.</string>
     <string name="feed_use_dedicated_fetch_method_summary">ߊ߬ ߦߋ߫ ߗߋߢߊ ߘߏ߫ ߟߎ߫ ߘߐ߫߸ ߊ߬ߟߋ߬ ߞߊߟߌߡߊ߲ߓߊ ߟߋ߬ ߝߊߣߊ߲߫ ߦߋ߫߸ ߞߏ߬ߣߌ߲߬ ߊ߬ ߘߌ߫ ߛߋ߫ ߝߌ߬ߛߌ߫ ߘߊ߲߬ߠߊߕߍ߰ߣߍ߲ ߠߥߊ߫ ߟߊ߫ ߊ߬ߣߌ߫ ߟߌ߬ߤߟߊ߬ ߘߝߊߓߊߟߌ ߟߎ߬ (ߟߊߒߡߊ߫ ߘߐ߫߸ ߥߎ߬ߛߎ߸ ߝߌ߬ߛߌ ߛߎ߯ߦߊ ߥߟߊ߫ ߝߊ߲ߞߢߊ߫ ߟߌ߬ߤߟߊ)</string>
     <string name="paid_content">ߞߣߐߘߐ ߣߌ߲߬ ߦߋ߫ ߡߊߛߐ߬ߘߐ߲߬ ߠߊ߫ ߕߣߐ߬ߓߐ߬ߟߊ߫ ߛߙߊ߬ߓߐ߬ߟߊ ߟߎ߬ ߟߋ߬ ߘߐߙߐ߲߫ ߓߟߏ߫߸ ߏ߬ ߘߐ߫ ߊ߬ ߕߍ߫ ߛߋ߫ ߘߐߛߊߙߌ߫ ߟߊ߫ ߥߟߊ߫ ߞߵߊ߬ ߟߊߖߌ߰ ߣߌߎߔߌߔ ߓߟߏ.</string>

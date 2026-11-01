@@ -63,7 +63,6 @@
     <string name="error_snackbar_action">अहवाल करा</string>
     <string name="what_device_headline">माहिती:</string>
     <string name="enable_watch_history_title">इतिहास पाहा</string>
-    <string name="dismiss">रद्द करा</string>
     <string name="rename">नाव बदला</string>
     <string name="msg_threads">धागे</string>
     <string name="msg_name">फाईल चे नाव</string>
@@ -108,7 +107,6 @@
     <string name="queued">रांगेत आहे</string>
     <string name="metadata_support">पाठींबा</string>
     <string name="off">बंद</string>
-    <string name="enumeration_comma">,</string>
     <string name="unknown_audio_track">अज्ञात</string>
     <string name="channel_tab_videos">व्हिडिओज</string>
     <string name="play">सुरू</string>

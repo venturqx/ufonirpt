@@ -67,7 +67,6 @@
     <string name="contribution_title">Col·labora-hi</string>
     <string name="website_title">Lloc web</string>
     <string name="app_license_title">Llicència del NewPipe</string>
-    <string name="read_full_license">Llegiu la llicència</string>
     <string name="title_activity_history">Historial</string>
     <string name="action_history">Historial</string>
     <string name="delete_item_search_history">Voleu eliminar aquest element de l\'historial de cerca\?</string>
@@ -148,10 +147,7 @@
     <string name="video_streams_empty">No s\'ha trobat cap flux de vídeo</string>
     <string name="audio_streams_empty">No s\'ha trobat cap flux d\'àudio</string>
     <string name="invalid_directory">La carpeta no existeix</string>
-    <string name="invalid_source">El fitxer o la font de contingut no existeix</string>
-    <string name="invalid_file">El fitxer no existeix o bé no teniu permisos de lectura/escriptura</string>
     <string name="file_name_empty_error">El nom del fitxer no pot estar en blanc</string>
-    <string name="error_occurred_detail">S\'ha produït un error: %1$s</string>
     <string name="error_report_button_text">Informeu per correu electrònic</string>
     <string name="error_snackbar_message">S\'han produït alguns errors.</string>
     <string name="error_snackbar_action">Informe</string>
@@ -183,7 +179,6 @@
     <string name="create">Crea</string>
     <string name="delete">Elimina</string>
     <string name="checksum">Suma de verificació</string>
-    <string name="dismiss">Tanca</string>
     <string name="rename">Canvia el nom</string>
     <string name="msg_threads">Fils</string>
     <string name="msg_running">Baixada del NewPipe activa</string>
@@ -192,7 +187,6 @@
     <string name="settings_file_charset_title">Caràcters permesos als noms de fitxer</string>
     <string name="charset_letters_and_digits">Lletres i dígits</string>
     <string name="title_activity_about">Quant al NewPipe</string>
-    <string name="copyright" formatted="true">© %1$s per %2$s sota %3$s</string>
     <string name="app_description">Reprodueix transmissions de manera lliure i lleugera a l\'Android.</string>
     <string name="view_on_github">Visualitza a GitHub</string>
     <string name="donation_title">Feu una donació</string>
@@ -294,7 +288,6 @@
     <string name="clear_search_history_summary">Neteja l\'historial de paraules cercades</string>
     <string name="delete_search_history_alert">Voleu suprimir tot l\'historial de cerca\?</string>
     <string name="search_history_deleted">S\'ha esborrat l\'historial de cerca</string>
-    <string name="one_item_deleted">S\'ha esborrat 1 element.</string>
     <string name="app_license">El NewPipe és programari lliure sota llicència copyleft: el podeu fer servir, estudiar, compartir i millorar com vulgueu. Concretament, el podeu redistribuir i/o modificar d\'acord amb els termes de la llicència GNU GPL publicada per la Free Software Foundation, versió 3 o qualsevol altra versió posterior.</string>
     <string name="import_settings">Voleu importar també els paràmetres\?</string>
     <string name="privacy_policy_title">Política de privadesa del NewPipe</string>
@@ -588,7 +581,6 @@
     <string name="off">Desactiva</string>
     <string name="on">Activa</string>
     <string name="tablet_mode_title">Mode tablet</string>
-    <string name="open_website_license">Obra pàgina web</string>
     <string name="detail_heart_img_view_description">Destacat pel creador</string>
     <string name="metadata_privacy_internal">Intern</string>
     <string name="metadata_privacy_private">Privat</string>
@@ -666,7 +658,6 @@
     <string name="streams_notifications_interval_title">Comprovant freqüència</string>
     <string name="streams_notifications_network_title">Es necesita una conexió a Internet</string>
     <string name="any_network">Qualsevol xarxa</string>
-    <string name="enumeration_comma">,</string>
     <string name="settings_category_player_notification_title">Notificació del reproductor</string>
     <string name="notifications">Notificacions</string>
     <string name="faq_description">Si tens problemes utilitzant la aplicació, comprova las preguntes freqüents!</string>
@@ -835,7 +826,6 @@
     <string name="export_subscriptions_title">Exportar suscripcions</string>
     <string name="migration_info_7_8_title">Esborrades tendències combinades de YouTube</string>
     <string name="trending_movies">Tendències de pel·lícules i sèries</string>
-    <string name="import_from_previous_export">Importar des d\'exportació anterior</string>
     <string name="permission_display_over_apps_message">Per utilitzar el reproductor emergent, seleccioneu %1$s al següent menú de configuració d\'Android i habiliteu %2$s.</string>
     <string name="permission_display_over_apps_permission_name">“Permetre visualització sobre altres aplicacions”</string>
     <string name="short_thousand">%sK</string>

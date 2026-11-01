@@ -143,10 +143,7 @@
     <string name="video_streams_empty">Tiada strim video yang dijumpai</string>
     <string name="audio_streams_empty">Tiada strim audio yang dijumpai</string>
     <string name="invalid_directory">Tiada folder itu</string>
-    <string name="invalid_source">Tiada fail/sumber kandungan itu</string>
-    <string name="invalid_file">Fail tidak wujud atau tiada kebenaran untuk membaca atau menulis kepadanya</string>
     <string name="file_name_empty_error">Nama fail tidak boleh kosong</string>
-    <string name="error_occurred_detail">Ralat berlaku: %1$s</string>
     <string name="no_streams_available_download">Tiada strim yang tersedia untuk dimuat turun</string>
     <string name="saved_tabs_invalid_json">Menggunakan tab utama, ralat semasa membaca tab tersimpan</string>
     <string name="restore_defaults">Kembali kepada asal</string>
@@ -185,7 +182,6 @@
     <string name="create">Buat</string>
     <string name="delete">Padam</string>
     <string name="checksum">Ceksum</string>
-    <string name="dismiss">Buangkan</string>
     <string name="rename">Namakan semula</string>
     <string name="ok">OK</string>
     <string name="msg_name">Nama fail</string>
@@ -198,7 +194,6 @@
     <string name="no_available_dir">Sila pilih folder muat turun nanti dalam tetapan</string>
     <string name="msg_popup_permission">Kebenaran ini diperlukan untuk
 \nbuka dalam mod popup</string>
-    <string name="one_item_deleted">1 item dipadamkan.</string>
     <string name="title_activity_recaptcha">Cabaran reCAPTCHA</string>
     <string name="recaptcha_request_toast">Meminta kod reCAPTCHA</string>
     <string name="settings_category_downloads_title">Muat turun</string>
@@ -209,7 +204,6 @@
     <string name="charset_most_special_characters">Karakter yang paling istimewa</string>
     <string name="title_activity_about">Tentang NewPipe</string>
     <string name="title_licenses">Lesen Pihak Ketiga</string>
-    <string name="copyright" formatted="true">© %1$s oleh %2$s di bawah %3$s</string>
     <string name="tab_about">Tentang</string>
     <string name="tab_licenses">Lesen</string>
     <string name="app_description">Aplikasi strim yang percuma dan ringan untuk Android.</string>
@@ -227,7 +221,6 @@
     <string name="read_privacy_policy">Baca dasar privasi</string>
     <string name="app_license_title">Lesen NewPipe</string>
     <string name="app_license">NewPipe adalah perisian copyleft percuma: Anda boleh menggunakan, berkongsi kajian dan memperbaikinya mengikut kehendak. Khususnya anda boleh mengagihkan semula dan / atau mengubahnya di bawah syarat GNU General Public License seperti yang diterbitkan oleh Free Software Foundation, sama ada versi 3 dari Lesen, atau (pada pilihan anda) versi yang lebih baru.</string>
-    <string name="read_full_license">Baca lesen</string>
     <string name="title_activity_history">Sejarah</string>
     <string name="action_history">Sejarah</string>
     <string name="delete_item_search_history">Adakah anda mahu memadamkan item ini dari sejarah carian\?</string>
@@ -452,7 +445,6 @@
     <string name="no_audio_streams_available_for_external_players">Tiada strim audio tersedia untuk pemain luaran</string>
     <string name="streams_not_yet_supported_removed">Strim yang belum disokong oleh pemuat turun tidak akan ditunjukkan</string>
     <string name="metadata_avatars">Avatar</string>
-    <string name="enumeration_comma">,</string>
     <string name="question_mark">\?</string>
     <string name="share_playlist_content_details">%1$s\n%2$s</string>
     <string name="get_notified">Dapatkan pemberitahuan</string>

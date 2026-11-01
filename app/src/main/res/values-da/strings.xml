@@ -147,10 +147,7 @@
     <string name="video_streams_empty">Ingen videostreams fundet</string>
     <string name="audio_streams_empty">Ingen lydstreams fundet</string>
     <string name="invalid_directory">Mappen findes ikke</string>
-    <string name="invalid_source">Fil eller indholdskilde findes ikke</string>
-    <string name="invalid_file">Filen findes ikke, ellers mangler der tilladelse til at læse eller skrive til den</string>
     <string name="file_name_empty_error">Filnavn må ikke være tomt</string>
-    <string name="error_occurred_detail">En fejl opstod: %1$s</string>
     <string name="no_streams_available_download">Ingen streams tilgængelige til hentning</string>
     <string name="saved_tabs_invalid_json">Kunne ikke læse gemte faner, så bruger standardfaner</string>
     <string name="restore_defaults">Gendan standardindstillinger</string>
@@ -184,7 +181,6 @@
     <string name="create">Opret</string>
     <string name="delete">Slet</string>
     <string name="checksum">Kontrolsum</string>
-    <string name="dismiss">Afvis</string>
     <string name="rename">Omdøb</string>
     <string name="ok">OK</string>
     <string name="msg_name">Filnavn</string>
@@ -197,7 +193,6 @@
     <string name="no_available_dir">Angiv venligst en lagringsmappe senere i indstillinger</string>
     <string name="msg_popup_permission">Denne tilladelse er nødvendig for
 \nat åbne i popup-tilstand</string>
-    <string name="one_item_deleted">1 element slettet.</string>
     <string name="title_activity_recaptcha">reCAPTCHA-udfordring</string>
     <string name="recaptcha_request_toast">reCAPTCHA-udfordring anmodet</string>
     <string name="settings_category_downloads_title">Hent</string>
@@ -208,7 +203,6 @@
     <string name="charset_most_special_characters">De fleste specialtegn</string>
     <string name="title_activity_about">Om NewPipe</string>
     <string name="title_licenses">Tredjepartslicenser</string>
-    <string name="copyright" formatted="true">© %1$s af %2$s under %3$s</string>
     <string name="tab_about">Om &amp; Ofte Stillede Spørgsmål</string>
     <string name="tab_licenses">Licenser</string>
     <string name="app_description">Fri letvægtsstreaming på Android.</string>
@@ -224,7 +218,6 @@
     <string name="read_privacy_policy">Læs privatlivspolitik</string>
     <string name="app_license_title">NewPipe\'s Licens</string>
     <string name="app_license">NewPipe er copyleft, fri software: Du kan bruge, studere, dele og forbedre den, som du vil. Specifikt kan du redistribuere og/eller ændre den under betingelserne i GNU General Public License som udgivet af Free Software Foundation, enten version 3 af licensen eller (efter dit ønske) en vilkårlig senere version.</string>
-    <string name="read_full_license">Læs licens</string>
     <string name="title_activity_history">Historik</string>
     <string name="action_history">Historik</string>
     <string name="delete_item_search_history">Vil du slette dette element fra søgehistorikken\?</string>
@@ -405,7 +398,6 @@
     <string name="dont_show">Vis ikke</string>
     <string name="notification_action_shuffle">Bland</string>
     <string name="show_description_title">Vis beskrivelse</string>
-    <string name="open_website_license">Åbn hjemmeside</string>
     <string name="metadata_language">Sprog</string>
     <string name="low_quality_smaller">Lav kvalitet (mindre)</string>
     <string name="autoplay_summary">Start afspilning automatisk — %s</string>
@@ -645,7 +637,6 @@
     <string name="description_select_disable">Deaktivér valg af tekst i beskrivelsen</string>
     <string name="detail_pinned_comment_view_description">Fastgjort kommentar</string>
     <string name="you_successfully_subscribed">Du abonnerer nu på denne kanal</string>
-    <string name="enumeration_comma">,</string>
     <string name="get_notified">Få besked</string>
     <string name="downloads_storage_ask_summary_no_saf_notice">Du vil blive spurgt, hvor du vil gemme hver enkelt download</string>
     <string name="feed_use_dedicated_fetch_method_summary">Tilgængelig i nogle tjenester og er normalt meget hurtigere, men kan returnere en begrænset mængde elementer og ofte ufuldstændige oplysninger (fx ingen varighed, elementtype, ingen live-status)</string>

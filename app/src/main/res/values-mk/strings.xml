@@ -123,10 +123,7 @@
     <string name="video_streams_empty">Нема видео стримови</string>
     <string name="audio_streams_empty">Нема аудио стримови</string>
     <string name="invalid_directory">Таква папка не постои</string>
-    <string name="invalid_source">Таков фајл / содржина не постои</string>
-    <string name="invalid_file">Фајлот не постои или недостасува дозвола за негово читање или допишување</string>
     <string name="file_name_empty_error">Името на фајлот не може да биде празно</string>
-    <string name="error_occurred_detail">Настана проблем: %1$s</string>
     <string name="sorry_string">Извинете, не требаше да се случи тоа.</string>
     <string name="error_report_button_text">Пријави ја грешката по мејл</string>
     <string name="error_snackbar_message">Извинете, нешто тргна наопаку.</string>
@@ -166,7 +163,6 @@
     <string name="create">Создади</string>
     <string name="delete">Избриши</string>
     <string name="checksum">Чексума</string>
-    <string name="dismiss">Отфрли</string>
     <string name="rename">Прекрсти</string>
     <string name="ok">Готово</string>
     <string name="msg_name">Име на датотека</string>
@@ -189,7 +185,6 @@
     <string name="charset_most_special_characters">Повеќето посебни знаци</string>
     <string name="title_activity_about">За NewPipe</string>
     <string name="title_licenses">Лиценци од трети страни</string>
-    <string name="copyright" formatted="true">© %1$s од %2$s под %3$s</string>
     <string name="tab_about">За апликацијата и често поставувани прашања</string>
     <string name="tab_licenses">Лиценци</string>
     <string name="app_description">Слободна, лесна YouTube апликација за Андроид.</string>
@@ -202,7 +197,6 @@
     <string name="website_title">Вебсајт</string>
     <string name="website_encouragement">За повеќе информации и новости за NewPipe посети ја вебстраната.</string>
     <string name="app_license_title">Лиценцата на NewPipe</string>
-    <string name="read_full_license">Прочитај лиценца</string>
     <string name="title_activity_history">Историја</string>
     <string name="action_history">Историја</string>
     <string name="delete_item_search_history">Сакаш да го избришеш предметот од историјата?</string>
@@ -291,7 +285,6 @@
     <string name="delete_search_history_alert">Да се избрише сета историја на пребарувања?</string>
     <string name="search_history_deleted">Историјата на пребарувања е избришана.</string>
     <string name="no_streams_available_download">Нема стримови за симнување</string>
-    <string name="one_item_deleted">1 ставка избришана.</string>
     <string name="app_license">NewPipe е „copyleft“ слободен софтвер: Можеш да го користиш, истражуваш и подобруваш по твоја желба. Можеш да го редистрибуираш и/или да го промениш под условите на GNU GPL лиценцата, објавена од фондацијата FSF - или верзија 3 од лиценцата, или (по можност) понова верзија.</string>
     <string name="import_settings">Дали сакаш да се внесат и подесувањата?</string>
     <string name="preferred_open_action_settings_title">Претпочитана акција за „отворање“</string>
@@ -512,10 +505,8 @@
     <string name="metadata_subscribers">Претплатници</string>
     <string name="detail_pinned_comment_view_description">Закачен коментар</string>
     <string name="detail_heart_img_view_description">Обележан со срце од авторот</string>
-    <string name="open_website_license">Отвори ја веб-страницата</string>
     <string name="off">Исклучено</string>
     <string name="notifications_disabled">Известувањата се оневозможени</string>
-    <string name="enumeration_comma">,</string>
     <string name="unknown_quality">Непознат квалитет</string>
     <string name="download_already_pending">Веќе има преземање со тоа име кое претстои</string>
     <string name="error_download_resource_gone">Неуспешно враќање на преземањето</string>
