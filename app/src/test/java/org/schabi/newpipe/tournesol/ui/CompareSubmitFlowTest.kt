@@ -29,6 +29,7 @@ class CompareSubmitFlowTest {
     }
 
     private fun selectSettledPair() {
+        rig.historyChanged(listOf(historyEntry(URL_A, 1), historyEntry(URL_B, 2)))
         rig.selectPair(PAIR_AB)
         rig.deliver()
         rig.server.calls.clear()
@@ -301,9 +302,7 @@ class CompareSubmitFlowTest {
     fun `destroying the view drops the rating`() {
         failNextSave()
         rig.destroyView()
-        rig.selectPair(PAIR_AB)
-        rig.deliver()
-        rig.server.calls.clear()
+        selectSettledPair()
 
         rig.submitLogin("name", "secret")
         rig.deliver()
