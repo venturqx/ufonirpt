@@ -391,10 +391,11 @@ internal fun CompareCompactScreen(
                                                 if (hasSuggestedLeft) {
                                                     val sl = suggestedLeft
                                                     val slServiceId = suggestionServiceId(sl)
-                                                    if (sl.videoUrl != null && slServiceId != null) {
+                                                    val slUrl = sl.videoUrl
+                                                    if (slUrl != null && slServiceId != null) {
                                                         onNavigateToVideo?.invoke(
                                                             slServiceId,
-                                                            sl.videoUrl,
+                                                            slUrl,
                                                             sl.title
                                                         )
                                                     }
@@ -450,10 +451,11 @@ internal fun CompareCompactScreen(
                                                                     if (hasSuggestedLeft) {
                                                                         val sl = suggestedLeft
                                                                         val slServiceId = suggestionServiceId(sl)
-                                                                        if (sl.videoUrl != null && slServiceId != null) {
+                                                                        val slUrl = sl.videoUrl
+                                                                        if (slUrl != null && slServiceId != null) {
                                                                             onNavigateToVideo?.invoke(
                                                                                 slServiceId,
-                                                                                sl.videoUrl,
+                                                                                slUrl,
                                                                                 sl.title
                                                                             )
                                                                         }
@@ -530,10 +532,11 @@ internal fun CompareCompactScreen(
                                                                     if (hasSuggestedRight) {
                                                                         val sr = suggestedRight
                                                                         val srServiceId = suggestionServiceId(sr)
-                                                                        if (sr.videoUrl != null && srServiceId != null) {
+                                                                        val srUrl = sr.videoUrl
+                                                                        if (srUrl != null && srServiceId != null) {
                                                                             onNavigateToVideo?.invoke(
                                                                                 srServiceId,
-                                                                                sr.videoUrl,
+                                                                                srUrl,
                                                                                 sr.title
                                                                             )
                                                                         }
@@ -612,10 +615,11 @@ internal fun CompareCompactScreen(
                                                 if (hasSuggestedRight) {
                                                     val sr = suggestedRight
                                                     val srServiceId = suggestionServiceId(sr)
-                                                    if (sr.videoUrl != null && srServiceId != null) {
+                                                    val srUrl = sr.videoUrl
+                                                    if (srUrl != null && srServiceId != null) {
                                                         onNavigateToVideo?.invoke(
                                                             srServiceId,
-                                                            sr.videoUrl,
+                                                            srUrl,
                                                             sr.title
                                                         )
                                                     }

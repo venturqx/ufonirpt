@@ -1,8 +1,8 @@
 package org.schabi.newpipe.tournesol
 
-internal fun suggestionServiceId(video: CompareComparisonVideo): Int? = video.serviceId ?: TournesolUid.parse(video.uid)?.serviceId
+fun suggestionServiceId(video: CompareComparisonVideo): Int? = video.serviceId ?: TournesolUid.parse(video.uid)?.serviceId
 
-internal fun suggestedPair(
+fun suggestedPair(
     left: CompareComparisonVideo,
     right: CompareComparisonVideo
 ): ComparePairSelection? {
@@ -16,7 +16,7 @@ internal fun suggestedPair(
     return ComparePairSelection(leftServiceId, leftUrl, rightServiceId, rightUrl)
 }
 
-internal fun historyPair(
+fun historyPair(
     leftServiceId: Int,
     leftUrl: String,
     rightServiceId: Int,

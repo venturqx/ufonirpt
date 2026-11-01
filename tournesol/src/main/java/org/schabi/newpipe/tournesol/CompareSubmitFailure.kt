@@ -1,6 +1,6 @@
 package org.schabi.newpipe.tournesol
 
-internal sealed interface CompareSubmitFailure {
+sealed interface CompareSubmitFailure {
     data object LoginRequired : CompareSubmitFailure
 
     data class Failed(val message: String?) : CompareSubmitFailure

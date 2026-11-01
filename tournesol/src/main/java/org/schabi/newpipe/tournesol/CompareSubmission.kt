@@ -1,6 +1,6 @@
 package org.schabi.newpipe.tournesol
 
-internal fun compareKeyFor(
+fun compareKeyFor(
     selection: ComparePairSelection,
     uidOf: (url: String, serviceId: Int) -> String?
 ): CompareKey? {
@@ -9,7 +9,7 @@ internal fun compareKeyFor(
     return CompareKey(entityA = leftUid, entityB = rightUid)
 }
 
-internal fun scoresWithCriterion(
+fun scoresWithCriterion(
     stored: ComparisonScores?,
     criterionId: String,
     value: Int

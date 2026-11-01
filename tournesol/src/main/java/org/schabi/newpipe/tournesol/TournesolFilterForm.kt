@@ -1,23 +1,23 @@
 package org.schabi.newpipe.tournesol
 
-internal const val DURATION_SLIDER_MAX = 120f
+const val DURATION_SLIDER_MAX = 120f
 
-internal const val PREF_TOURNESOL_FILTER_WEIGHTS_ENABLED = "tournesol_filter_weights_enabled"
+const val PREF_TOURNESOL_FILTER_WEIGHTS_ENABLED = "tournesol_filter_weights_enabled"
 
 private const val UNSET = -1
 private const val SECONDS_PER_MINUTE = 60f
 
 private val WEIGHT_LEVELS = intArrayOf(0, 25, 50, 75, 100)
 
-internal val TournesolFilterCriterion.weightLevelPrefKey: String
+val TournesolFilterCriterion.weightLevelPrefKey: String
     get() = "tournesol_filter_weight_level_$apiKey"
 
-internal fun quantizeToLevel(value: Int): Int {
+fun quantizeToLevel(value: Int): Int {
     if (value < 0) return 50
     return WEIGHT_LEVELS.minByOrNull { kotlin.math.abs(it - value) } ?: 50
 }
 
-internal data class TournesolFilterForm(
+data class TournesolFilterForm(
     val languages: List<String>,
     val dateRange: TournesolDateRange,
     val includeLowScoreVideos: Boolean,

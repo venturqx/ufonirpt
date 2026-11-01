@@ -10,9 +10,9 @@ import com.grack.nanojson.JsonWriter
 import okio.ByteString.Companion.decodeBase64
 import okio.ByteString.Companion.encodeUtf8
 
-internal data class CompareKey(val entityA: String, val entityB: String)
+data class CompareKey(val entityA: String, val entityB: String)
 
-internal data class ComparisonScores(
+data class ComparisonScores(
     val mainScore: Int? = null,
     val extraScores: Map<String, Int> = emptyMap()
 )
@@ -98,7 +98,7 @@ internal class CompareScoreLegacyPrefs(
     }
 }
 
-internal class CompareScoreStore(private val backend: CompareScoreBackend) {
+class CompareScoreStore internal constructor(private val backend: CompareScoreBackend) {
     private val submitted = backend.readSubmitted()
         .mapNotNullTo(LinkedHashSet<CompareKey>(), ::parseCompareKey)
     private val scores = parseScores(backend.readScores()).toMutableMap()
@@ -145,7 +145,7 @@ internal class CompareScoreStore(private val backend: CompareScoreBackend) {
     }
 
     @Synchronized
-    fun clear() {
+    internal fun clear() {
         submitted.clear()
         scores.clear()
         saveSubmitted()

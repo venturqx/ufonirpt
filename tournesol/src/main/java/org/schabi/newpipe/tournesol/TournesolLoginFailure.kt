@@ -2,7 +2,7 @@ package org.schabi.newpipe.tournesol
 
 import java.io.IOException
 
-internal enum class TournesolLoginFailure {
+enum class TournesolLoginFailure {
     INVALID_CREDENTIALS,
     NETWORK,
     UNKNOWN;

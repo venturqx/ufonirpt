@@ -37,7 +37,7 @@ object CompareRepository {
         }
     }
 
-    internal fun saveComparison(
+    fun saveComparison(
         token: String,
         key: CompareKey,
         criteriaScores: List<CriteriaScore>,
@@ -105,7 +105,7 @@ object CompareRepository {
         }
     }.subscribeOn(Schedulers.io())
 
-    internal fun patchComparison(
+    fun patchComparison(
         token: String,
         entityA: String,
         entityB: String,

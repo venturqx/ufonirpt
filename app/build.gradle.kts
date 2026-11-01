@@ -132,6 +132,8 @@ configure<ApplicationExtension> {
             initWith(getByName("release"))
             signingConfig = signingConfigs.getByName("debug")
             isDefault = true
+            // Plain library modules such as :tournesol only have debug and release
+            matchingFallbacks += "release"
 
             // suffix the app id and the app name with git branch name
             if (normalizedWorkingBranch.isEmpty() || workingBranch in defaultBranches) {
@@ -147,6 +149,7 @@ configure<ApplicationExtension> {
             initWith(getByName("continuous"))
             isDefault = false
             proguardFile("proguard-diagnostic.pro")
+            matchingFallbacks += "release"
         }
     }
 
@@ -319,6 +322,7 @@ dependencies {
 
     // NewPipe libraries
     implementation(projects.shared)
+    implementation(projects.tournesol)
     implementation(libs.newpipe.nanojson)
     implementation(libs.newpipe.extractor)
     implementation(libs.newpipe.filepicker)
