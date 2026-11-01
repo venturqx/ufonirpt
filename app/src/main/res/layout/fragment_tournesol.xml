@@ -15,7 +15,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
 
-        <org.schabi.newpipe.views.TournesolScoreCard
+        <org.schabi.newpipe.tournesol.ui.TournesolScoreCard
             android:id="@+id/tournesol_score_card"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

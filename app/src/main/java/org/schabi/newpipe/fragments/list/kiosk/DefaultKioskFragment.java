@@ -12,10 +12,11 @@ import org.schabi.newpipe.error.UserAction;
 import org.schabi.newpipe.extractor.NewPipe;
 import org.schabi.newpipe.extractor.exceptions.ExtractionException;
 import org.schabi.newpipe.extractor.kiosk.KioskList;
+import org.schabi.newpipe.tournesol.TournesolFilterConfig;
+import org.schabi.newpipe.tournesol.TournesolHelper;
+import org.schabi.newpipe.tournesol.ui.TournesolFilterController;
 import org.schabi.newpipe.util.KioskTranslator;
 import org.schabi.newpipe.util.ServiceHelper;
-import org.schabi.newpipe.util.TournesolFilterConfig;
-import org.schabi.newpipe.util.TournesolHelper;
 
 public class DefaultKioskFragment extends KioskFragment {
 

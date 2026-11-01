@@ -26,9 +26,9 @@ import org.schabi.newpipe.extractor.stream.StreamInfoItem;
 import org.schabi.newpipe.extractor.stream.StreamType;
 import org.schabi.newpipe.info_list.InfoItemBuilder;
 import org.schabi.newpipe.local.history.HistoryRecordManager;
+import org.schabi.newpipe.tournesol.TournesolHelper;
+import org.schabi.newpipe.tournesol.ui.TournesolCriterionStyle;
 import org.schabi.newpipe.util.Localization;
-import org.schabi.newpipe.util.TournesolHelper;
-import org.schabi.newpipe.views.TournesolCriterionStyle;
 
 import java.util.List;
 

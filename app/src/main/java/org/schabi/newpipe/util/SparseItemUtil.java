@@ -2,6 +2,7 @@ package org.schabi.newpipe.util;
 
 import static org.schabi.newpipe.extractor.utils.Utils.isNullOrEmpty;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.widget.Toast;
 
@@ -22,6 +23,7 @@ import java.util.function.Consumer;
 
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
 import io.reactivex.rxjava3.core.Completable;
+import io.reactivex.rxjava3.core.Scheduler;
 import io.reactivex.rxjava3.schedulers.Schedulers;
 
 /**
@@ -107,15 +109,13 @@ public final class SparseItemUtil {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(result -> {
                     // save to database in the background (not on main thread)
-                    Completable.fromAction(() -> NewPipeDatabase.getInstance(context)
-                            .streamDAO().upsert(new StreamEntity(result)))
-                            .subscribeOn(Schedulers.io())
-                            .observeOn(Schedulers.io())
-                            .doOnError(throwable ->
-                                    ErrorUtil.createNotification(context,
-                                            new ErrorInfo(throwable, UserAction.REQUESTED_STREAM,
-                                                    "Saving stream info to database", result)))
-                            .subscribe();
+                    saveInBackground(
+                            Completable.fromAction(() -> NewPipeDatabase.getInstance(context)
+                                    .streamDAO().upsert(new StreamEntity(result))),
+                            Schedulers.io(),
+                            throwable -> ErrorUtil.createNotification(context,
+                                    new ErrorInfo(throwable, UserAction.REQUESTED_STREAM,
+                                            "Saving stream info to database", result)));
 
                     // call callback on main thread with the obtained result
                     callback.accept(result);
@@ -123,5 +123,12 @@ public final class SparseItemUtil {
                         new ErrorInfo(throwable, UserAction.REQUESTED_STREAM,
                                 "Loading stream info: " + url, serviceId, url)
                 ));
+    }
+
+    @SuppressLint("CheckResult")
+    static void saveInBackground(@NonNull final Completable save,
+                                 @NonNull final Scheduler scheduler,
+                                 @NonNull final Consumer<Throwable> onError) {
+        save.subscribeOn(scheduler).subscribe(() -> { }, onError::accept);
     }
 }

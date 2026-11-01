@@ -35,6 +35,7 @@ import org.schabi.newpipe.extractor.downloader.Downloader
 import org.schabi.newpipe.extractor.services.youtube.extractors.YoutubeStreamExtractor
 import org.schabi.newpipe.ktx.hasAssignableCause
 import org.schabi.newpipe.settings.NewPipeSettings
+import org.schabi.newpipe.tournesol.TournesolHttpClient
 import org.schabi.newpipe.util.BridgeStateSaverInitializer
 import org.schabi.newpipe.util.Localization
 import org.schabi.newpipe.util.ServiceHelper
@@ -105,6 +106,7 @@ open class App :
             Localization.getPreferredContentCountry(this)
         )
         Localization.initPrettyTime(Localization.resolvePrettyTime())
+        TournesolHttpClient.provider = { DownloaderImpl.getInstance()?.client }
 
         BridgeStateSaverInitializer.init(this)
         StateSaver.init(this)

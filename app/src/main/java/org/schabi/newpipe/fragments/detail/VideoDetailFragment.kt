@@ -108,6 +108,9 @@ import org.schabi.newpipe.player.playqueue.SinglePlayQueue
 import org.schabi.newpipe.player.ui.MainPlayerUi
 import org.schabi.newpipe.player.ui.VideoPlayerUi
 import org.schabi.newpipe.settings.tabs.TabsJsonHelper
+import org.schabi.newpipe.tournesol.TournesolHelper
+import org.schabi.newpipe.tournesol.TournesolScoreCache
+import org.schabi.newpipe.tournesol.ui.TournesolFragment
 import org.schabi.newpipe.util.DependentPreferenceHelper
 import org.schabi.newpipe.util.DeviceUtils
 import org.schabi.newpipe.util.ExtractorHelper
@@ -120,8 +123,6 @@ import org.schabi.newpipe.util.PermissionHelper
 import org.schabi.newpipe.util.PermissionHelper.checkStoragePermissions
 import org.schabi.newpipe.util.PlayButtonHelper
 import org.schabi.newpipe.util.StreamTypeUtil
-import org.schabi.newpipe.util.TournesolHelper
-import org.schabi.newpipe.util.TournesolScoreCache
 import org.schabi.newpipe.util.external_communication.KoreUtils
 import org.schabi.newpipe.util.external_communication.ShareUtils
 import org.schabi.newpipe.util.image.CoilHelper

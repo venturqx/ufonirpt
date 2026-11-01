@@ -433,7 +433,7 @@
             android:exported="false" />
 
         <activity
-            android:name=".fragments.detail.CompareHistoryActivity"
+            android:name=".tournesol.ui.CompareHistoryActivity"
             android:exported="false" />
 
         <activity

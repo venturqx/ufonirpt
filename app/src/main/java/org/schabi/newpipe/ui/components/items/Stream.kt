@@ -10,11 +10,11 @@ import org.schabi.newpipe.database.stream.StreamStatisticsEntry
 import org.schabi.newpipe.extractor.Image
 import org.schabi.newpipe.extractor.stream.StreamInfoItem
 import org.schabi.newpipe.extractor.stream.StreamType
+import org.schabi.newpipe.tournesol.TournesolCacheEntry
+import org.schabi.newpipe.tournesol.TournesolScoreCache
 import org.schabi.newpipe.util.Localization
 import org.schabi.newpipe.util.NO_SERVICE_ID
 import org.schabi.newpipe.util.ServiceHelper
-import org.schabi.newpipe.util.TournesolCacheEntry
-import org.schabi.newpipe.util.TournesolScoreCache
 import org.schabi.newpipe.util.image.ImageStrategy
 
 @Parcelize

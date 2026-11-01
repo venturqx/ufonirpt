@@ -37,7 +37,7 @@ public class DescriptionFragment extends BaseDescriptionFragment {
     @Nullable
     @Override
     protected Description getDescription() {
-        return streamInfo.getDescription();
+        return StreamInfoDescription.descriptionOf(streamInfo);
     }
 
     @NonNull
@@ -60,7 +60,7 @@ public class DescriptionFragment extends BaseDescriptionFragment {
     @NonNull
     @Override
     public List<String> getTags() {
-        return streamInfo.getTags();
+        return StreamInfoDescription.tagsOf(streamInfo);
     }
 
     @Override

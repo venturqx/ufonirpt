@@ -29,9 +29,9 @@ import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import org.schabi.newpipe.R
+import org.schabi.newpipe.tournesol.TournesolHelper
 import org.schabi.newpipe.ui.components.items.Stream
 import org.schabi.newpipe.ui.theme.AppTheme
-import org.schabi.newpipe.util.TournesolHelper
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable

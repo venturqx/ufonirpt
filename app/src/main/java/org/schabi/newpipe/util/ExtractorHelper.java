@@ -54,6 +54,8 @@ import org.schabi.newpipe.extractor.services.youtube.extractors.kiosk.TournesolK
 import org.schabi.newpipe.extractor.stream.StreamInfo;
 import org.schabi.newpipe.extractor.stream.StreamInfoItem;
 import org.schabi.newpipe.extractor.suggestion.SuggestionExtractor;
+import org.schabi.newpipe.tournesol.TournesolHelper;
+import org.schabi.newpipe.tournesol.TournesolKioskQuery;
 import org.schabi.newpipe.util.text.TextLinkifier;
 
 import java.io.IOException;

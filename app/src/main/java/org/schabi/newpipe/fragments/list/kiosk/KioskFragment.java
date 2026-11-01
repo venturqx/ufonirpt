@@ -40,7 +40,7 @@ import io.reactivex.rxjava3.core.Single;
 
 public class KioskFragment extends BaseListInfoFragment<StreamInfoItem, KioskInfo> {
     @State
-    String kioskId = "";
+    protected String kioskId = "";
     String kioskTranslatedName;
     @State
     ContentCountry contentCountry;
