@@ -648,7 +648,7 @@ class VideoDetailFragment :
 
         pageAdapter = StateSavingTabAdapter(getChildFragmentManager())
         binding.viewPager.setAdapter(pageAdapter)
-        binding.viewPager.offscreenPageLimit = 1
+        binding.viewPager.offscreenPageLimit = 3
         binding.tabLayout.setupWithViewPager(binding.viewPager)
 
         binding.detailThumbnailRootLayout.requestFocus()
