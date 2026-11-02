@@ -116,25 +116,24 @@ import org.schabi.newpipe.ui.components.items.Stream
 import org.schabi.newpipe.ui.components.items.stream.StreamThumbnail
 
 @Composable
-internal fun CompareComparisonRow(item: CompareRecommendationItem, index: Int = 0) {
+internal fun CompareComparisonRow(item: CompareRecommendationItem) {
     val score = item.largelyRecommendedScore
     val leftWins = score != null && score < 0
     val rightWins = score != null && score > 0
     val leftBorderColor = Color(0xFF42A5F5)
     val rightBorderColor = Color(0xFFE57373)
+    val winnerColor = colorResource(R.color.tournesol_chip_bg_selected)
 
     Surface(
         modifier = Modifier.fillMaxWidth(),
-        color = if (index % 2 == 0) {
-            MaterialTheme.colorScheme.surface
-        } else {
-            colorResource(R.color.tournesol_chip_bg_unselected)
-        }
+        shape = RoundedCornerShape(12.dp),
+        color = colorResource(R.color.tournesol_overlay_card),
+        border = BorderStroke(1.dp, colorResource(R.color.tournesol_overlay_outline))
     ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 6.dp, vertical = 12.dp),
+                .padding(horizontal = 12.dp, vertical = 12.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             // Left label (video A)
@@ -149,7 +148,7 @@ internal fun CompareComparisonRow(item: CompareRecommendationItem, index: Int = 
                 )
             }
 
-            Spacer(modifier = Modifier.width(4.dp))
+            Spacer(modifier = Modifier.width(8.dp))
 
             // Center: thumbnails + VS badge
             Box(
@@ -167,7 +166,7 @@ internal fun CompareComparisonRow(item: CompareRecommendationItem, index: Int = 
                             contentAlignment = Alignment.Center
                         ) {
                             Surface(
-                                shape = RoundedCornerShape(6.dp),
+                                shape = RoundedCornerShape(8.dp),
                                 border = BorderStroke(2.dp, leftBorderColor),
                                 color = MaterialTheme.colorScheme.surface
                             ) {
@@ -181,7 +180,7 @@ internal fun CompareComparisonRow(item: CompareRecommendationItem, index: Int = 
                                         modifier = Modifier
                                             .fillMaxWidth()
                                             .aspectRatio(16f / 9f)
-                                            .clip(RoundedCornerShape(4.dp))
+                                            .clip(RoundedCornerShape(6.dp))
                                     )
                                 }
                             }
@@ -189,10 +188,10 @@ internal fun CompareComparisonRow(item: CompareRecommendationItem, index: Int = 
                                 Box(
                                     modifier = Modifier
                                         .align(Alignment.BottomCenter)
-                                        .offset(y = 4.dp)
+                                        .offset(y = 6.dp)
                                         .fillMaxWidth(0.4f)
-                                        .height(2.dp)
-                                        .background(Color(0xFFFFD54F), RoundedCornerShape(1.dp))
+                                        .height(3.dp)
+                                        .background(winnerColor, RoundedCornerShape(50))
                                 )
                             }
                         }
@@ -203,7 +202,7 @@ internal fun CompareComparisonRow(item: CompareRecommendationItem, index: Int = 
                             contentAlignment = Alignment.Center
                         ) {
                             Surface(
-                                shape = RoundedCornerShape(6.dp),
+                                shape = RoundedCornerShape(8.dp),
                                 border = BorderStroke(2.dp, rightBorderColor),
                                 color = MaterialTheme.colorScheme.surface
                             ) {
@@ -217,7 +216,7 @@ internal fun CompareComparisonRow(item: CompareRecommendationItem, index: Int = 
                                         modifier = Modifier
                                             .fillMaxWidth()
                                             .aspectRatio(16f / 9f)
-                                            .clip(RoundedCornerShape(4.dp))
+                                            .clip(RoundedCornerShape(6.dp))
                                     )
                                 }
                             }
@@ -225,10 +224,10 @@ internal fun CompareComparisonRow(item: CompareRecommendationItem, index: Int = 
                                 Box(
                                     modifier = Modifier
                                         .align(Alignment.BottomCenter)
-                                        .offset(y = 4.dp)
+                                        .offset(y = 6.dp)
                                         .fillMaxWidth(0.4f)
-                                        .height(2.dp)
-                                        .background(Color(0xFFFFD54F), RoundedCornerShape(1.dp))
+                                        .height(3.dp)
+                                        .background(winnerColor, RoundedCornerShape(50))
                                 )
                             }
                         }
@@ -238,11 +237,8 @@ internal fun CompareComparisonRow(item: CompareRecommendationItem, index: Int = 
                     Box(
                         modifier = Modifier
                             .align(Alignment.Center)
-                            .background(
-                                colorResource(R.color.tournesol_chip_bg_selected),
-                                RoundedCornerShape(6.dp)
-                            )
-                            .padding(horizontal = 4.dp, vertical = 1.dp)
+                            .background(winnerColor, RoundedCornerShape(50))
+                            .padding(horizontal = 6.dp, vertical = 2.dp)
                     ) {
                         Text(
                             text = stringResource(R.string.compare_vs),
@@ -256,7 +252,7 @@ internal fun CompareComparisonRow(item: CompareRecommendationItem, index: Int = 
                 }
             }
 
-            Spacer(modifier = Modifier.width(4.dp))
+            Spacer(modifier = Modifier.width(8.dp))
 
             // Right label (video B)
             Box(
@@ -284,7 +280,7 @@ internal fun CompareSideLabel(
     Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
         Text(
             text = title,
-            style = MaterialTheme.typography.labelSmall.copy(fontSize = 10.sp),
+            style = MaterialTheme.typography.labelMedium,
             color = titleColor,
             textAlign = textAlign,
             modifier = Modifier.fillMaxWidth(),
@@ -294,10 +290,7 @@ internal fun CompareSideLabel(
         if (uploader.isNotBlank()) {
             Text(
                 text = uploader,
-                style = MaterialTheme.typography.labelSmall.copy(
-                    fontWeight = FontWeight.Medium,
-                    fontSize = 10.sp
-                ),
+                style = MaterialTheme.typography.labelSmall,
                 color = uploaderColor,
                 textAlign = textAlign,
                 modifier = Modifier.fillMaxWidth(),
@@ -387,20 +380,23 @@ internal fun LollipopDescriptionRow(
         Image(
             painter = painterResource(criterion.iconRes),
             contentDescription = null,
-            modifier = Modifier.size(17.dp)
+            modifier = Modifier.size(20.dp)
         )
-        Spacer(modifier = Modifier.width(7.dp))
+        Spacer(modifier = Modifier.width(8.dp))
         Column(modifier = Modifier.weight(1f)) {
             Text(
                 text = stringResource(criterion.labelRes),
-                style = MaterialTheme.typography.labelMedium.copy(fontSize = 8.sp, lineHeight = 10.sp),
-                color = MaterialTheme.colorScheme.onSurface
+                style = MaterialTheme.typography.labelMedium.copy(fontSize = 11.sp, lineHeight = 14.sp),
+                color = MaterialTheme.colorScheme.onSurface,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
             )
             Text(
                 text = stringResource(compactDescriptionRes(criterion.id)),
-                style = MaterialTheme.typography.bodySmall.copy(fontSize = 8.sp, lineHeight = 10.sp),
+                style = MaterialTheme.typography.bodySmall.copy(fontSize = 11.sp, lineHeight = 14.sp),
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
-                maxLines = 3
+                maxLines = 3,
+                overflow = TextOverflow.Ellipsis
             )
         }
     }
@@ -466,7 +462,7 @@ internal fun SuggestedVideoThumbnail(
             .build(),
         imageLoader = context.imageLoader,
         contentDescription = stringResource(R.string.compare_thumbnail_description),
-        contentScale = ContentScale.Fit,
+        contentScale = ContentScale.Crop,
         modifier = Modifier
             .aspectRatio(16f / 9f)
             .height(thumbnailHeight)

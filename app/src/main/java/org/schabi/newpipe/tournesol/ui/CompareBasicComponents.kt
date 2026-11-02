@@ -149,7 +149,7 @@ internal fun UserGreetingBanner(
                     Text(
                         text = stringResource(R.string.compare_greeting_comparisons, comparisonCount),
                         style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
             }
@@ -179,9 +179,9 @@ internal fun UserGreetingBanner(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(vertical = 4.dp * scale),
+                .padding(vertical = 8.dp * scale),
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween
+            horizontalArrangement = Arrangement.spacedBy(12.dp * scale)
         ) {
             Text(
                 text = stringResource(R.string.compare_login_prompt),
@@ -216,13 +216,13 @@ internal fun CompareStatusPanel(
         return
     }
     val scale = LocalCompareScale.current
-    val textColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
+    val textColor = MaterialTheme.colorScheme.onSurfaceVariant
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 24.dp * scale),
+            .padding(horizontal = 16.dp * scale, vertical = 32.dp * scale),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(12.dp * scale)
+        verticalArrangement = Arrangement.spacedBy(16.dp * scale)
     ) {
         if (status is CompareScreenStatus.NoPair) {
             Text(
@@ -235,7 +235,11 @@ internal fun CompareStatusPanel(
                 Text(text = stringResource(R.string.retry))
             }
         } else {
-            CircularProgressIndicator()
+            CircularProgressIndicator(
+                modifier = Modifier.size(32.dp * scale),
+                strokeWidth = 3.dp * scale,
+                strokeCap = StrokeCap.Round
+            )
             Text(
                 text = stringResource(R.string.compare_loading_pair),
                 style = MaterialTheme.typography.bodyMedium,

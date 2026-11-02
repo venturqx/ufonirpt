@@ -31,8 +31,12 @@ import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.KeyboardArrowDown
+import androidx.compose.material.icons.rounded.KeyboardArrowUp
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FilterChipDefaults
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Surface
@@ -50,6 +54,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.graphics.Color
@@ -81,7 +86,6 @@ import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.TextUnitType
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import androidx.compose.ui.window.DialogWindowProvider
@@ -104,6 +108,48 @@ private val COMPACT_DIMENSIONS = listOf(
         iconRes = R.drawable.logo_small
     )
 ) + EXTRA_CRITERIA
+
+@Composable
+private fun HistoryStepButtons(
+    tint: Color,
+    canStepUp: Boolean,
+    canStepDown: Boolean,
+    onStepUp: () -> Unit,
+    onStepDown: () -> Unit
+) {
+    Column(
+        modifier = Modifier
+            .clip(RoundedCornerShape(50))
+            .background(MaterialTheme.colorScheme.onSurface.copy(alpha = 0.06f))
+    ) {
+        Box(
+            modifier = Modifier
+                .size(width = 36.dp, height = 36.dp)
+                .clickable(enabled = canStepUp, onClick = onStepUp),
+            contentAlignment = Alignment.Center
+        ) {
+            Icon(
+                imageVector = Icons.Rounded.KeyboardArrowUp,
+                contentDescription = stringResource(R.string.compare_history_previous),
+                tint = tint.copy(alpha = if (canStepUp) 0.85f else 0.25f),
+                modifier = Modifier.size(22.dp)
+            )
+        }
+        Box(
+            modifier = Modifier
+                .size(width = 36.dp, height = 36.dp)
+                .clickable(enabled = canStepDown, onClick = onStepDown),
+            contentAlignment = Alignment.Center
+        ) {
+            Icon(
+                imageVector = Icons.Rounded.KeyboardArrowDown,
+                contentDescription = stringResource(R.string.compare_history_next),
+                tint = tint.copy(alpha = if (canStepDown) 0.85f else 0.25f),
+                modifier = Modifier.size(22.dp)
+            )
+        }
+    }
+}
 
 @Composable
 private fun WithScores(
@@ -387,7 +433,7 @@ internal fun CompareCompactScreen(
                                 }
                                 Column(
                                     modifier = Modifier.fillMaxWidth(),
-                                    verticalArrangement = Arrangement.spacedBy(4.dp * scale)
+                                    verticalArrangement = Arrangement.spacedBy(8.dp * scale)
                                 ) {
                                     Box(
                                         modifier = Modifier.fillMaxWidth(),
@@ -396,9 +442,17 @@ internal fun CompareCompactScreen(
                                         Box {
                                             Row(
                                                 modifier = Modifier.fillMaxWidth(),
-                                                horizontalArrangement = Arrangement.spacedBy(4.dp)
+                                                horizontalArrangement = Arrangement.spacedBy(4.dp),
+                                                verticalAlignment = Alignment.CenterVertically
                                             ) {
                                                 if (showLeftContent) {
+                                                    HistoryStepButtons(
+                                                        tint = Color(0xFF42A5F5),
+                                                        canStepUp = !hasSuggestedLeft && leftHistoryIndex > 0,
+                                                        canStepDown = !hasSuggestedLeft && leftHistoryIndex < leftEntries.lastIndex,
+                                                        onStepUp = { leftHistoryIndex -= 1 },
+                                                        onStepDown = { leftHistoryIndex += 1 }
+                                                    )
                                                     Box(
                                                         modifier = Modifier.weight(1f),
                                                         contentAlignment = Alignment.Center
@@ -407,7 +461,7 @@ internal fun CompareCompactScreen(
                                                             Image(
                                                                 painter = painterResource(R.drawable.ic_arrow_drop_down),
                                                                 contentDescription = null,
-                                                                colorFilter = ColorFilter.tint(Color(0xFF64B5F6)),
+                                                                colorFilter = ColorFilter.tint(Color(0xFF42A5F5)),
                                                                 modifier = Modifier
                                                                     .align(Alignment.TopCenter)
                                                                     .offset(y = (-18).dp)
@@ -417,6 +471,7 @@ internal fun CompareCompactScreen(
                                                         }
                                                         Surface(
                                                             modifier = Modifier
+                                                                .clip(RoundedCornerShape(10.dp))
                                                                 .combinedClickable(
                                                                     onClick = {
                                                                         openHistoryOverlay(OverlayTarget.LEFT)
@@ -440,12 +495,14 @@ internal fun CompareCompactScreen(
                                                                         }
                                                                     }
                                                                 ),
-                                                            shape = RoundedCornerShape(6.dp),
+                                                            shape = RoundedCornerShape(10.dp),
                                                             border = BorderStroke(2.dp, Color(0xFF42A5F5)),
                                                             color = MaterialTheme.colorScheme.surface
                                                         ) {
                                                             Box(
-                                                                modifier = Modifier.padding(2.dp)
+                                                                modifier = Modifier
+                                                                    .padding(2.dp)
+                                                                    .clip(RoundedCornerShape(8.dp))
                                                             ) {
                                                                 if (hasSuggestedLeft) {
                                                                     SuggestedVideoThumbnail(
@@ -467,6 +524,16 @@ internal fun CompareCompactScreen(
                                                     Spacer(modifier = Modifier.weight(1f))
                                                 }
 
+                                                if (showLeftContent && showRightContent) {
+                                                    Text(
+                                                        text = stringResource(R.string.compare_vs),
+                                                        style = MaterialTheme.typography.labelSmall.copy(
+                                                            fontWeight = FontWeight.Bold
+                                                        ),
+                                                        color = colorResource(R.color.tournesol_chip_bg_selected)
+                                                    )
+                                                }
+
                                                 if (showRightContent) {
                                                     Box(
                                                         modifier = Modifier.weight(1f),
@@ -486,6 +553,7 @@ internal fun CompareCompactScreen(
                                                         }
                                                         Surface(
                                                             modifier = Modifier
+                                                                .clip(RoundedCornerShape(10.dp))
                                                                 .combinedClickable(
                                                                     onClick = {
                                                                         openHistoryOverlay(OverlayTarget.RIGHT)
@@ -509,12 +577,14 @@ internal fun CompareCompactScreen(
                                                                         }
                                                                     }
                                                                 ),
-                                                            shape = RoundedCornerShape(6.dp),
+                                                            shape = RoundedCornerShape(10.dp),
                                                             border = BorderStroke(2.dp, Color(0xFFE57373)),
                                                             color = MaterialTheme.colorScheme.surface
                                                         ) {
                                                             Box(
-                                                                modifier = Modifier.padding(2.dp)
+                                                                modifier = Modifier
+                                                                    .padding(2.dp)
+                                                                    .clip(RoundedCornerShape(8.dp))
                                                             ) {
                                                                 if (hasSuggestedRight) {
                                                                     SuggestedVideoThumbnail(
@@ -532,32 +602,22 @@ internal fun CompareCompactScreen(
                                                             }
                                                         }
                                                     }
+                                                    HistoryStepButtons(
+                                                        tint = Color(0xFFE57373),
+                                                        canStepUp = !hasSuggestedRight && rightHistoryIndex > 0,
+                                                        canStepDown = !hasSuggestedRight && rightHistoryIndex < rightEntries.lastIndex,
+                                                        onStepUp = { rightHistoryIndex -= 1 },
+                                                        onStepDown = { rightHistoryIndex += 1 }
+                                                    )
                                                 } else {
                                                     Spacer(modifier = Modifier.weight(1f))
-                                                }
-                                            }
-
-                                            if (showLeftContent && showRightContent) {
-                                                Box(
-                                                    modifier = Modifier
-                                                        .align(Alignment.TopCenter)
-                                                        .background(colorResource(R.color.tournesol_chip_bg_selected), RoundedCornerShape(6.dp))
-                                                        .padding(horizontal = 4.dp, vertical = 1.dp)
-                                                ) {
-                                                    Text(
-                                                        text = stringResource(R.string.compare_vs),
-                                                        style = MaterialTheme.typography.labelSmall.copy(
-                                                            fontWeight = FontWeight.Bold
-                                                        ),
-                                                        color = Color(0xFF1B1B1B)
-                                                    )
                                                 }
                                             }
                                         }
                                     }
                                     Row(
                                         modifier = Modifier.fillMaxWidth(),
-                                        horizontalArrangement = Arrangement.spacedBy(4.dp)
+                                        horizontalArrangement = Arrangement.spacedBy(8.dp)
                                     ) {
                                         Column(
                                             modifier = Modifier
@@ -698,7 +758,7 @@ internal fun CompareCompactScreen(
                             Row(
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .padding(top = 4.dp, bottom = 2.dp),
+                                    .padding(top = 8.dp, bottom = 4.dp),
                                 horizontalArrangement = Arrangement.Center,
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
@@ -720,7 +780,7 @@ internal fun CompareCompactScreen(
                                             append(cancelParts.getOrNull(1).orEmpty())
                                         }
                                     }
-                                    Text(text = cancelText, fontSize = 11.sp)
+                                    Text(text = cancelText, style = MaterialTheme.typography.labelSmall)
                                 } else {
                                     // Text A — main criterion
                                     val textA = when {
@@ -734,7 +794,7 @@ internal fun CompareCompactScreen(
                                     Text(
                                         text = "$textA ",
                                         color = statusColor,
-                                        fontSize = 11.sp
+                                        style = MaterialTheme.typography.labelSmall
                                     )
                                     Image(
                                         painter = painterResource(R.drawable.logo_small),
@@ -752,9 +812,9 @@ internal fun CompareCompactScreen(
                                         )
                                     }
                                     Text(
-                                        text = " - $textB",
+                                        text = " · $textB",
                                         color = statusColor,
-                                        fontSize = 11.sp
+                                        style = MaterialTheme.typography.labelSmall
                                     )
                                 }
                             }
@@ -808,35 +868,39 @@ internal fun CompareCompactScreen(
                                     }
                                 }
                                 Surface(
-                                    modifier = Modifier
-                                        .size(36.dp)
-                                        .clickable(enabled = diceEnabled) { randomizeLeftFallback() },
-                                    shape = RoundedCornerShape(8.dp),
-                                    color = Color(0xFF42A5F5).copy(alpha = 0.15f)
+                                    onClick = { randomizeLeftFallback() },
+                                    enabled = diceEnabled,
+                                    modifier = Modifier.size(width = 56.dp, height = 40.dp),
+                                    shape = RoundedCornerShape(12.dp),
+                                    color = Color(0xFF42A5F5).copy(alpha = if (diceEnabled) 0.15f else 0.08f)
                                 ) {
                                     Box(contentAlignment = Alignment.Center) {
                                         Image(
                                             painter = painterResource(R.drawable.ic_casino),
                                             contentDescription = stringResource(R.string.compare_randomize_left),
-                                            colorFilter = ColorFilter.tint(Color(0xFF42A5F5)),
-                                            modifier = Modifier.size(20.dp)
+                                            colorFilter = ColorFilter.tint(
+                                                Color(0xFF42A5F5).copy(alpha = if (diceEnabled) 1f else 0.38f)
+                                            ),
+                                            modifier = Modifier.size(22.dp)
                                         )
                                     }
                                 }
-                                Spacer(modifier = Modifier.width(6.dp))
+                                Spacer(modifier = Modifier.width(12.dp))
                                 Surface(
-                                    modifier = Modifier
-                                        .size(36.dp)
-                                        .clickable(enabled = diceEnabled) { randomizeRightFallback() },
-                                    shape = RoundedCornerShape(8.dp),
-                                    color = Color(0xFFE57373).copy(alpha = 0.15f)
+                                    onClick = { randomizeRightFallback() },
+                                    enabled = diceEnabled,
+                                    modifier = Modifier.size(width = 56.dp, height = 40.dp),
+                                    shape = RoundedCornerShape(12.dp),
+                                    color = Color(0xFFE57373).copy(alpha = if (diceEnabled) 0.15f else 0.08f)
                                 ) {
                                     Box(contentAlignment = Alignment.Center) {
                                         Image(
                                             painter = painterResource(R.drawable.ic_casino),
                                             contentDescription = stringResource(R.string.compare_randomize_right),
-                                            colorFilter = ColorFilter.tint(Color(0xFFE57373)),
-                                            modifier = Modifier.size(20.dp)
+                                            colorFilter = ColorFilter.tint(
+                                                Color(0xFFE57373).copy(alpha = if (diceEnabled) 1f else 0.38f)
+                                            ),
+                                            modifier = Modifier.size(22.dp)
                                         )
                                     }
                                 }
@@ -878,7 +942,7 @@ internal fun CompareCompactScreen(
                         Color(0xFF42A5F5)
                     }
                     val overlayBackground = colorResource(R.color.tournesol_overlay_surface)
-                    val overlayRowSpacing = 6.dp
+                    val overlayRowSpacing = 8.dp
                     val overlayColumnSpacing = 6.dp
                     val overlayCardHeight = 54.dp
                     val overlayRowSpacingPx = with(density) { overlayRowSpacing.roundToPx() }
@@ -1018,7 +1082,7 @@ internal fun CompareCompactScreen(
                                 modifier = Modifier
                                     .fillMaxSize()
                                     .statusBarsPadding()
-                                    .padding(horizontal = 6.dp, vertical = 10.dp),
+                                    .padding(horizontal = 12.dp, vertical = 8.dp),
                                 verticalArrangement = Arrangement.spacedBy(8.dp)
                             ) {
                                 Box(modifier = Modifier.fillMaxWidth()) {
@@ -1043,8 +1107,10 @@ internal fun CompareCompactScreen(
                                         colorFilter = ColorFilter.tint(colorResource(R.color.tournesol_on_overlay)),
                                         modifier = Modifier
                                             .align(Alignment.CenterEnd)
-                                            .size(22.dp)
+                                            .size(48.dp)
+                                            .clip(RoundedCornerShape(50))
                                             .clickable { showHistoryOverlay = false }
+                                            .padding(12.dp)
                                     )
                                 }
                                 Column(

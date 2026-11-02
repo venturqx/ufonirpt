@@ -546,6 +546,8 @@
     <string name="compare_loading_pair">Finding videos to compare…</string>
     <string name="compare_no_pair">No videos to compare right now</string>
     <string name="compare_vs">VS</string>
+    <string name="compare_history_previous">Previous video in history</string>
+    <string name="compare_history_next">Next video in history</string>
     <string name="compare_playing">playing..</string>
     <string name="compare_cancel">CANCEL</string>
     <string name="compare_slide_up_to_cancel">Slide up to %1$s.</string>

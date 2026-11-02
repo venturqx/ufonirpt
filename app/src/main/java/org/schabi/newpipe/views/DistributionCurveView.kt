@@ -2,13 +2,18 @@ package org.schabi.newpipe.views
 
 import android.content.Context
 import android.graphics.Canvas
+import android.graphics.LinearGradient
 import android.graphics.Paint
 import android.graphics.Path
+import android.graphics.Shader
 import android.view.View
 import androidx.core.content.ContextCompat
+import androidx.core.graphics.ColorUtils
+import kotlin.math.ceil
 import org.schabi.newpipe.R
 
-private const val FILL_ALPHA = 55
+private const val FILL_TOP_ALPHA = 110
+private const val FILL_BOTTOM_ALPHA = 20
 private const val SEPARATOR_ALPHA = 140
 private const val SEPARATOR_STROKE_RATIO = 0.6f
 private const val CONTROL_POINT_DIVISOR = 3f
@@ -19,16 +24,15 @@ class DistributionCurveView(
     private val distribution: IntArray,
     strokePx: Float
 ) : View(context) {
+    private val curveColor = ContextCompat.getColor(context, R.color.tournesol_score)
     private val curvePaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        color = ContextCompat.getColor(context, R.color.tournesol_score)
+        color = curveColor
         style = Paint.Style.STROKE
         strokeWidth = strokePx
         strokeCap = Paint.Cap.ROUND
         strokeJoin = Paint.Join.ROUND
     }
     private val fillPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        color = ContextCompat.getColor(context, R.color.tournesol_score)
-        alpha = FILL_ALPHA
         style = Paint.Style.FILL
     }
     private val separatorPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
@@ -43,7 +47,18 @@ class DistributionCurveView(
 
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
         super.onSizeChanged(w, h, oldw, oldh)
-        curve = DistributionCurve.of(bins, distribution, w, h)?.also { rebuildPaths(it, h) }
+        val plotHeight = h - ceil(curvePaint.strokeWidth / 2f).toInt()
+        fillPaint.shader = LinearGradient(
+            0f,
+            0f,
+            0f,
+            plotHeight.toFloat(),
+            ColorUtils.setAlphaComponent(curveColor, FILL_TOP_ALPHA),
+            ColorUtils.setAlphaComponent(curveColor, FILL_BOTTOM_ALPHA),
+            Shader.TileMode.CLAMP
+        )
+        curve = DistributionCurve.of(bins, distribution, w, plotHeight)
+            ?.also { rebuildPaths(it, plotHeight) }
     }
 
     private fun rebuildPaths(curve: DistributionCurve, height: Int) {

@@ -16,7 +16,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.compositeOver
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.font.FontWeight
@@ -40,7 +42,9 @@ internal fun CompareHistoryOverlayGridCard(
     val stream = remember(entry) { Stream(entry.toStreamInfoItem()) }
     val titleColor = compareMetaTitleColor()
     val uploaderColor = compareMetaUploaderColor()
-    val cardBackground = colorResource(R.color.tournesol_overlay_card)
+    val cardBackground = colorResource(R.color.tournesol_overlay_card).let {
+        if (selected) accentColor.copy(alpha = 0.1f).compositeOver(it) else it
+    }
     val borderColor = if (selected) {
         accentColor
     } else {
@@ -50,14 +54,14 @@ internal fun CompareHistoryOverlayGridCard(
         modifier = Modifier
             .then(modifier)
             .clickable(onClick = onClick),
-        shape = RoundedCornerShape(10.dp),
+        shape = RoundedCornerShape(12.dp),
         color = cardBackground,
-        border = BorderStroke(1.dp, borderColor)
+        border = BorderStroke(if (selected) 2.dp else 1.dp, borderColor)
     ) {
         Row(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(horizontal = 6.dp * scale, vertical = 3.dp * scale),
+                .padding(horizontal = 8.dp * scale, vertical = 3.dp * scale),
             verticalAlignment = Alignment.CenterVertically
         ) {
             StreamThumbnail(
@@ -66,12 +70,14 @@ internal fun CompareHistoryOverlayGridCard(
                 showDuration = true,
                 durationTextStyle = MaterialTheme.typography.labelSmall.copy(fontSize = 8.sp),
                 contentScale = ContentScale.Crop,
-                modifier = Modifier.size(width = 84.dp * scale, height = 48.dp * scale)
+                modifier = Modifier
+                    .size(width = 84.dp * scale, height = 48.dp * scale)
+                    .clip(RoundedCornerShape(6.dp * scale))
             )
             Column(
                 modifier = Modifier
                     .weight(1f)
-                    .padding(start = 8.dp * scale),
+                    .padding(start = 12.dp * scale),
                 verticalArrangement = Arrangement.spacedBy(2.dp)
             ) {
                 Text(

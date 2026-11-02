@@ -12,6 +12,7 @@ import android.view.View
 import android.view.View.MeasureSpec
 import androidx.core.content.ContextCompat
 import java.util.Locale
+import kotlin.math.ceil
 import org.schabi.newpipe.R
 import org.schabi.newpipe.tournesol.CriterionScore
 
@@ -54,7 +55,7 @@ class LollipopChartView(
     }
     private val circlePaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         style = Paint.Style.FILL
-        color = Color.parseColor("#0F0F0F")
+        color = ContextCompat.getColor(context, R.color.tournesol_surface_section)
     }
     private val circleStrokePaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         style = Paint.Style.STROKE
@@ -79,6 +80,7 @@ class LollipopChartView(
 
     private var geometry: LollipopChartGeometry? = null
     private var selectedIndex: Int? = null
+    private var bottomTrim = 0
 
     init {
         isClickable = true
@@ -95,13 +97,29 @@ class LollipopChartView(
 
         val desiredHeight = LollipopChartGeometry.desiredHeight(scores, metrics) +
             paddingTop + paddingBottom
+        val trimmedHeight = LollipopChartGeometry.of(scores, metrics, measuredWidth, desiredHeight)
+            ?.let { minOf(desiredHeight, ceil(contentBottom(it)).toInt() + paddingBottom) }
+            ?: desiredHeight
+        bottomTrim = desiredHeight - trimmedHeight
 
-        setMeasuredDimension(measuredWidth, desiredHeight)
+        setMeasuredDimension(measuredWidth, trimmedHeight)
+    }
+
+    private fun contentBottom(chart: LollipopChartGeometry): Float {
+        val headExtent = selectedGlowRadius + selectedGlowPaint.strokeWidth / 2f
+        var bottom = chart.zeroY
+        for (i in scores.indices) {
+            bottom = maxOf(bottom, chart.barEndYs[i] + headExtent)
+            if (scores[i] < 0.0) {
+                bottom = maxOf(bottom, chart.labelYs[i] + scorePaint.descent())
+            }
+        }
+        return bottom
     }
 
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
         super.onSizeChanged(w, h, oldw, oldh)
-        geometry = LollipopChartGeometry.of(scores, metrics, w, h)?.also(::placeIcons)
+        geometry = LollipopChartGeometry.of(scores, metrics, w, h + bottomTrim)?.also(::placeIcons)
     }
 
     private fun placeIcons(chart: LollipopChartGeometry) {

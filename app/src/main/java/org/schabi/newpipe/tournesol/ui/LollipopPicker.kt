@@ -22,6 +22,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.selection.selectable
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FilterChipDefaults
@@ -38,6 +39,7 @@ import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
@@ -47,6 +49,7 @@ import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.clipRect
 import androidx.compose.ui.graphics.drawscope.translate
+import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.graphics.nativeCanvas
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.toArgb
@@ -101,6 +104,7 @@ internal fun LollipopPicker(
     val painters = dimensions.map { painterResource(it.iconRes) }
     val colors = dimensions.map { shadedAccent(LOLLIPOP_COLORS[it.id] ?: Color.White) }
     val contentColor = colorResource(R.color.tournesol_content)
+    val headFillColor = colorResource(R.color.tournesol_surface_band)
     fun scoreAt(i: Int): Int = if (dimensions[i].id == COMPACT_MAIN_CRITERION_ID) {
         mainScore
     } else {
@@ -228,6 +232,7 @@ internal fun LollipopPicker(
                 drawLollipopHead(
                     center = Offset(cx, cy),
                     color = color,
+                    fillColor = headFillColor,
                     score = score,
                     painter = painters[i],
                     dimensionId = dimensions[i].id,
@@ -366,7 +371,7 @@ private fun LargelyRecommendedSlider(
     val isInCancelZone = remember { mutableStateOf(false) }
     LaunchedEffect(activeIndex.intValue) { showCriteriaDesc = false }
 
-    Column(modifier = modifier.fillMaxWidth()) {
+    Column(modifier = modifier.fillMaxWidth().padding(bottom = 8.dp)) {
         if (allExtrasDone.value) {
             AllCriteriaScoredMessage()
             SubmitExtrasChip(
@@ -663,10 +668,14 @@ private fun QualifierRow(
                     textAlign = TextAlign.Center
                 )
                 Text(
-                    text = " ⓘ",
-                    color = contentColor.copy(alpha = if (descriptionShown) 0.5f else 0.2f),
-                    fontSize = 11.sp,
-                    modifier = Modifier.clickable(onClick = onToggleDescription)
+                    text = "ⓘ",
+                    color = contentColor.copy(alpha = if (descriptionShown) 0.85f else 0.45f),
+                    fontSize = 12.sp,
+                    modifier = Modifier
+                        .padding(start = 2.dp)
+                        .clip(CircleShape)
+                        .clickable(onClick = onToggleDescription)
+                        .padding(horizontal = 6.dp, vertical = 2.dp)
                 )
             }
             Text(
@@ -696,6 +705,7 @@ private fun criterionQuestionRes(criterionId: String): Int = when (criterionId) 
 private fun DrawScope.drawLollipopHead(
     center: Offset,
     color: Color,
+    fillColor: Color,
     score: Int,
     painter: Painter,
     dimensionId: String,
@@ -713,12 +723,14 @@ private fun DrawScope.drawLollipopHead(
     val cx = center.x
     val cy = center.y
     // Three-state opacity: untouched → edited → submitted.
+    val lightSurface = fillColor.luminance() > 0.5f
+    val untouchedAlpha = if (lightSurface) 0.55f else 0.30f
     val ringAlpha = when {
         submitted -> 1f
-        touched -> 0.65f
-        else -> 0.30f
+        touched -> if (lightSurface) 0.8f else 0.65f
+        else -> untouchedAlpha
     }
-    val iconAlpha = if (touched) 1f else 0.30f
+    val iconAlpha = if (touched) 1f else untouchedAlpha
     // Selected outer ring (drawn first so head circle overdraws inner half,
     // leaving a halo flush with the border outer edge)
     if (selected) {
@@ -730,7 +742,7 @@ private fun DrawScope.drawLollipopHead(
         )
     }
     drawCircle(
-        color = Color(0xFF0F0F0F),
+        color = fillColor,
         radius = circleRadius,
         center = Offset(cx, cy)
     )
@@ -799,6 +811,7 @@ private fun LollipopHead(
         }
     }
     labelPaint.textSize = textSizePx
+    val headFillColor = colorResource(R.color.tournesol_surface_band)
     val interactionSource = remember { MutableInteractionSource() }
     Canvas(
         modifier = modifier
@@ -818,6 +831,7 @@ private fun LollipopHead(
         drawLollipopHead(
             center = Offset(size.width / 2f, size.height / 2f),
             color = color,
+            fillColor = headFillColor,
             score = score,
             painter = painter,
             dimensionId = dimensionId,

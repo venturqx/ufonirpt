@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
+import android.graphics.drawable.GradientDrawable;
 import android.text.SpannableString;
 import android.text.Spanned;
 import android.text.style.StyleSpan;
@@ -69,6 +70,7 @@ public class TournesolScoreCard extends LinearLayout {
     }
 
     private static final int CHART_HEIGHT_DP = 28;
+    private static final int DESCRIPTION_SURFACE_ALPHA = 0x10;
 
     private final Map<String, CriterionDistribution> criteriaDistributions = new LinkedHashMap<>();
     private final CompositeDisposable disposables = new CompositeDisposable();
@@ -329,7 +331,13 @@ public class TournesolScoreCard extends LinearLayout {
         final LinearLayout root = new LinearLayout(getContext());
         root.setOrientation(LinearLayout.HORIZONTAL);
         root.setGravity(Gravity.CENTER_VERTICAL);
-        root.setPadding(dpToPx(12), dpToPx(8), dpToPx(12), 0);
+        root.setPadding(dpToPx(12), dpToPx(12), dpToPx(12), dpToPx(12));
+        root.setBackground(createDescriptionBackground());
+        final LinearLayout.LayoutParams rootParams = new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT);
+        rootParams.topMargin = dpToPx(4);
+        root.setLayoutParams(rootParams);
         root.setVisibility(GONE);
 
         final ImageView icon = createDescriptionIcon();
@@ -340,6 +348,15 @@ public class TournesolScoreCard extends LinearLayout {
         root.addView(text);
         root.addView(miniChart);
         return new DescriptionRow(root, icon, text, miniChart);
+    }
+
+    private GradientDrawable createDescriptionBackground() {
+        final GradientDrawable background = new GradientDrawable();
+        background.setColor(ColorUtils.setAlphaComponent(
+                ContextCompat.getColor(getContext(), R.color.tournesol_content),
+                DESCRIPTION_SURFACE_ALPHA));
+        background.setCornerRadius(dpToPx(12));
+        return background;
     }
 
     private ImageView createDescriptionIcon() {
@@ -353,9 +370,10 @@ public class TournesolScoreCard extends LinearLayout {
         final TextView text = new TextView(getContext());
         final LinearLayout.LayoutParams textParams = new LinearLayout.LayoutParams(
                 0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f);
-        textParams.setMarginStart(dpToPx(10));
+        textParams.setMarginStart(dpToPx(12));
         text.setLayoutParams(textParams);
-        text.setTextSize(TypedValue.COMPLEX_UNIT_SP, 12);
+        text.setTextSize(TypedValue.COMPLEX_UNIT_SP, 13);
+        text.setLineSpacing(dpToPx(2), 1f);
         text.setTextColor(ContextCompat.getColor(getContext(), R.color.tournesol_content_muted));
         text.setMaxLines(4);
         return text;
@@ -365,7 +383,7 @@ public class TournesolScoreCard extends LinearLayout {
         final LinearLayout miniChart = new LinearLayout(getContext());
         final LinearLayout.LayoutParams miniParams = new LinearLayout.LayoutParams(
                 dpToPx(72), LinearLayout.LayoutParams.WRAP_CONTENT);
-        miniParams.setMarginStart(dpToPx(8));
+        miniParams.setMarginStart(dpToPx(12));
         miniChart.setLayoutParams(miniParams);
         return miniChart;
     }
@@ -448,7 +466,7 @@ public class TournesolScoreCard extends LinearLayout {
             return new View(getContext());
         }
         final View curveView = new DistributionCurveView(
-                getContext(), bins, distribution, dpToPx(2) / 3f);
+                getContext(), bins, distribution, dpToPx(3) / 2f);
         curveView.setLayoutParams(new LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT, dpToPx(CHART_HEIGHT_DP)));
         return curveView;

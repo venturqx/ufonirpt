@@ -22,7 +22,6 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -210,7 +209,7 @@ internal fun LoginDialogContent(
                 ) {
                     Text(stringResource(R.string.tournesol_register_button), maxLines = 1, softWrap = false)
                 }
-                OutlinedButton(
+                TextButton(
                     onClick = onDismiss,
                     enabled = !inProgress
                 ) {

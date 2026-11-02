@@ -2,8 +2,10 @@ package org.schabi.newpipe.tournesol.ui
 
 import android.os.Bundle
 import android.view.View
+import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import java.util.function.Supplier
+import org.schabi.newpipe.R
 import org.schabi.newpipe.databinding.PlaylistControlBinding
 import org.schabi.newpipe.extractor.NewPipe
 import org.schabi.newpipe.extractor.StreamingService
@@ -27,9 +29,12 @@ class TournesolKioskFragment : KioskFragment(), PlaylistControlViewHolder {
         val binding = PlaylistControlBinding
             .inflate(requireActivity().layoutInflater, itemsList, false)
         playlistControlBinding = binding
-        // Reduce playlist control bar height for Tournesol to match filter bar proportions
-        val compactHeight = (38 * resources.displayMetrics.density).toInt()
-        binding.playlistCtrlPlayBgButton.layoutParams.height = compactHeight
+        binding.playlistCtrlPlayBgButton.layoutParams.height = ViewGroup.LayoutParams.WRAP_CONTENT
+        binding.playlistCtrlPlayBgButton.minimumHeight =
+            resources.getDimensionPixelSize(R.dimen.tournesol_feed_control_min_height)
+        val horizontalPadding =
+            resources.getDimensionPixelSize(R.dimen.tournesol_feed_control_horizontal_padding)
+        binding.root.setPaddingRelative(horizontalPadding, 0, horizontalPadding, 0)
         return Supplier { binding.root }
     }
 

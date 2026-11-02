@@ -2,12 +2,12 @@ package org.schabi.newpipe.tournesol.ui
 
 import android.app.Dialog
 import android.content.Context
-import android.graphics.Typeface
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.StringRes
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -19,6 +19,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -36,7 +37,6 @@ import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateMapOf
@@ -46,19 +46,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ComposeView
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.Density
-import androidx.compose.ui.unit.TextUnit
-import androidx.compose.ui.unit.TextUnitType
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.preference.PreferenceManager
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
@@ -175,11 +168,7 @@ private fun TournesolFilterSheet(
         labelColor = MaterialTheme.colorScheme.onSurface
     )
     val chipShape = RoundedCornerShape(8.dp)
-    val chipTextStyle = TextStyle(
-        fontFamily = FontFamily(Typeface.create("sans-serif-medium", Typeface.NORMAL)),
-        fontSize = 14.sp,
-        letterSpacing = TextUnit(0.04f, TextUnitType.Em)
-    )
+    val chipTextStyle = MaterialTheme.typography.labelLarge
     val prefs = remember { PreferenceManager.getDefaultSharedPreferences(appContext) }
     val initialForm = remember {
         TournesolFilterForm.from(
@@ -242,173 +231,169 @@ private fun TournesolFilterSheet(
     }
     val dateOptions = TournesolDateRange.entries
 
-    val baseDensity = LocalDensity.current
-    val scaledDensity = remember(baseDensity) {
-        Density(
-            density = baseDensity.density * 0.5f,
-            fontScale = baseDensity.fontScale * 1.6f
-        )
-    }
-    CompositionLocalProvider(LocalDensity provides scaledDensity) {
-        Surface(
-            color = MaterialTheme.colorScheme.surface,
-            tonalElevation = 2.dp
+    Surface(
+        color = MaterialTheme.colorScheme.surfaceContainerLow,
+        shape = RoundedCornerShape(topStart = 28.dp, topEnd = 28.dp)
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .navigationBarsPadding()
+                .verticalScroll(rememberScrollState())
+                .padding(start = 16.dp, end = 16.dp, bottom = 16.dp)
         ) {
-            Column(
+            Box(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .navigationBarsPadding()
-                    .verticalScroll(rememberScrollState())
-                    .padding(horizontal = 16.dp, vertical = 10.dp)
+                    .align(Alignment.CenterHorizontally)
+                    .padding(top = 16.dp, bottom = 4.dp)
+                    .size(width = 32.dp, height = 4.dp)
+                    .background(
+                        MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.4f),
+                        RoundedCornerShape(2.dp)
+                    )
+            )
+            // Header
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.fillMaxWidth()
             ) {
-                // Header
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Text(
-                        text = stringResource(R.string.filter_tournesol),
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.SemiBold,
-                        modifier = Modifier.weight(1f)
-                    )
-                    IconButton(onClick = onClose, modifier = Modifier.height(32.dp)) {
-                        Icon(
-                            painter = painterResource(R.drawable.ic_close),
-                            contentDescription = stringResource(R.string.cancel),
-                            tint = MaterialTheme.colorScheme.onSurface
-                        )
-                    }
-                }
-
-                // Advanced
-                CompactSectionHeader(stringResource(R.string.filter_advanced))
-                FilterChip(
-                    selected = includeLowScoreVideos,
-                    onClick = {
-                        includeLowScoreVideos = !includeLowScoreVideos
-                        applyAll()
-                    },
-                    label = {
-                        Text(
-                            text = stringResource(R.string.include_low_score_videos_short),
-                            style = chipTextStyle
-                        )
-                    },
-                    colors = chipColors,
-                    shape = chipShape,
-                    border = null,
-                    modifier = Modifier.height(38.dp)
+                Text(
+                    text = stringResource(R.string.filter_tournesol),
+                    style = MaterialTheme.typography.titleLarge,
+                    color = MaterialTheme.colorScheme.onSurface,
+                    modifier = Modifier.weight(1f)
                 )
-
-                // Languages
-                CompactSectionHeader(stringResource(R.string.filter_languages))
-                FlowRow(
-                    horizontalArrangement = Arrangement.spacedBy(6.dp),
-                    verticalArrangement = Arrangement.spacedBy(6.dp)
-                ) {
-                    languageOptions.forEach { option ->
-                        val isSelected = selectedLanguages.contains(option.key)
-                        FilterChip(
-                            selected = isSelected,
-                            onClick = {
-                                if (isSelected) {
-                                    selectedLanguages.remove(option.key)
-                                } else {
-                                    selectedLanguages.add(option.key)
-                                }
-                                applyAll()
-                            },
-                            label = { Text(text = stringResource(option.labelResId), style = chipTextStyle) },
-                            colors = chipColors,
-                            shape = chipShape,
-                            border = null,
-                            modifier = Modifier.height(38.dp)
-                        )
-                    }
-                }
-
-                // Date
-                CompactSectionHeader(stringResource(R.string.filter_date))
-                FlowRow(
-                    horizontalArrangement = Arrangement.spacedBy(6.dp),
-                    verticalArrangement = Arrangement.spacedBy(6.dp)
-                ) {
-                    dateOptions.forEach { dateRange ->
-                        val isSelected = selectedDateRange == dateRange
-                        FilterChip(
-                            selected = isSelected,
-                            onClick = {
-                                if (!isSelected) {
-                                    selectedDateRange = dateRange
-                                    applyAll()
-                                }
-                            },
-                            label = { Text(text = stringResource(dateRangeLabelRes(dateRange)), style = chipTextStyle) },
-                            colors = chipColors,
-                            shape = chipShape,
-                            border = null,
-                            modifier = Modifier.height(38.dp)
-                        )
-                    }
-                }
-
-                // Duration: single range slider
-                CompactSectionHeader(stringResource(R.string.filter_duration))
-                DurationRangeRow(
-                    minMinutes = durationMinMinutes,
-                    maxMinutes = durationMaxMinutes,
-                    onValueChange = { lo, hi ->
-                        durationMinMinutes = lo
-                        durationMaxMinutes = hi
-                    },
-                    onValueChangeFinished = { applyAll() }
-                )
-
-                // Criteria weights: 2-column compact grid
-                CompactSectionHeader(stringResource(R.string.filter_criteria))
-                Row(
-                    modifier = Modifier.fillMaxWidth().padding(bottom = 4.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(
-                        text = stringResource(R.string.filter_weights_enable),
-                        fontSize = 12.sp,
-                        color = MaterialTheme.colorScheme.onSurface,
-                        modifier = Modifier.weight(1f)
+                IconButton(onClick = onClose) {
+                    Icon(
+                        painter = painterResource(R.drawable.ic_close),
+                        contentDescription = stringResource(R.string.cancel),
+                        tint = MaterialTheme.colorScheme.onSurface
                     )
-                    Switch(
-                        checked = weightsEnabled,
-                        onCheckedChange = {
-                            weightsEnabled = it
+                }
+            }
+
+            // Advanced
+            CompactSectionHeader(stringResource(R.string.filter_advanced))
+            FilterChip(
+                selected = includeLowScoreVideos,
+                onClick = {
+                    includeLowScoreVideos = !includeLowScoreVideos
+                    applyAll()
+                },
+                label = {
+                    Text(
+                        text = stringResource(R.string.include_low_score_videos_short),
+                        style = chipTextStyle
+                    )
+                },
+                colors = chipColors,
+                shape = chipShape,
+                border = null
+            )
+
+            // Languages
+            CompactSectionHeader(stringResource(R.string.filter_languages))
+            FlowRow(
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                languageOptions.forEach { option ->
+                    val isSelected = selectedLanguages.contains(option.key)
+                    FilterChip(
+                        selected = isSelected,
+                        onClick = {
+                            if (isSelected) {
+                                selectedLanguages.remove(option.key)
+                            } else {
+                                selectedLanguages.add(option.key)
+                            }
                             applyAll()
                         },
-                        colors = SwitchDefaults.colors(
-                            checkedThumbColor = colorResource(R.color.tournesol_chip_bg_selected),
-                            checkedTrackColor = colorResource(R.color.tournesol_chip_bg_selected).copy(alpha = 0.4f)
-                        )
+                        label = { Text(text = stringResource(option.labelResId), style = chipTextStyle) },
+                        colors = chipColors,
+                        shape = chipShape,
+                        border = null
                     )
                 }
-                TournesolFilterCriterion.entries.chunked(2).forEach { pair ->
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(12.dp)
-                    ) {
-                        pair.forEach { criterion ->
-                            Box(modifier = Modifier.weight(1f)) {
-                                CompactWeightSlider(
-                                    label = stringResource(criterionLabelRes(criterion)),
-                                    value = weightLevels.getValue(criterion),
-                                    enabled = weightsEnabled,
-                                    onValueChange = { weightLevels[criterion] = it },
-                                    onValueChangeFinished = { if (weightsEnabled) applyAll() }
-                                )
+            }
+
+            // Date
+            CompactSectionHeader(stringResource(R.string.filter_date))
+            FlowRow(
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                dateOptions.forEach { dateRange ->
+                    val isSelected = selectedDateRange == dateRange
+                    FilterChip(
+                        selected = isSelected,
+                        onClick = {
+                            if (!isSelected) {
+                                selectedDateRange = dateRange
+                                applyAll()
                             }
-                        }
-                        if (pair.size == 1) Spacer(modifier = Modifier.weight(1f))
-                    }
+                        },
+                        label = { Text(text = stringResource(dateRangeLabelRes(dateRange)), style = chipTextStyle) },
+                        colors = chipColors,
+                        shape = chipShape,
+                        border = null
+                    )
                 }
-                Spacer(modifier = Modifier.height(8.dp))
+            }
+
+            // Duration: single range slider
+            CompactSectionHeader(stringResource(R.string.filter_duration))
+            DurationRangeRow(
+                minMinutes = durationMinMinutes,
+                maxMinutes = durationMaxMinutes,
+                onValueChange = { lo, hi ->
+                    durationMinMinutes = lo
+                    durationMaxMinutes = hi
+                },
+                onValueChangeFinished = { applyAll() }
+            )
+
+            // Criteria weights: 2-column compact grid
+            CompactSectionHeader(stringResource(R.string.filter_criteria))
+            Row(
+                modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = stringResource(R.string.filter_weights_enable),
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = MaterialTheme.colorScheme.onSurface,
+                    modifier = Modifier.weight(1f)
+                )
+                Switch(
+                    checked = weightsEnabled,
+                    onCheckedChange = {
+                        weightsEnabled = it
+                        applyAll()
+                    },
+                    colors = SwitchDefaults.colors(
+                        checkedThumbColor = MaterialTheme.colorScheme.surface,
+                        checkedTrackColor = colorResource(R.color.tournesol_chip_bg_selected),
+                        checkedIconColor = colorResource(R.color.tournesol_chip_bg_selected)
+                    )
+                )
+            }
+            TournesolFilterCriterion.entries.chunked(2).forEach { pair ->
+                Row(
+                    modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp),
+                    horizontalArrangement = Arrangement.spacedBy(16.dp)
+                ) {
+                    pair.forEach { criterion ->
+                        Box(modifier = Modifier.weight(1f)) {
+                            CompactWeightSlider(
+                                label = stringResource(criterionLabelRes(criterion)),
+                                value = weightLevels.getValue(criterion),
+                                enabled = weightsEnabled,
+                                onValueChange = { weightLevels[criterion] = it },
+                                onValueChangeFinished = { if (weightsEnabled) applyAll() }
+                            )
+                        }
+                    }
+                    if (pair.size == 1) Spacer(modifier = Modifier.weight(1f))
+                }
             }
         }
     }
@@ -416,14 +401,12 @@ private fun TournesolFilterSheet(
 
 @Composable
 private fun CompactSectionHeader(title: String) {
-    Spacer(modifier = Modifier.height(10.dp))
+    Spacer(modifier = Modifier.height(12.dp))
     Text(
-        text = title.uppercase(),
-        fontSize = 10.sp,
-        fontWeight = FontWeight.SemiBold,
-        letterSpacing = 1.sp,
-        color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
-        modifier = Modifier.padding(bottom = 6.dp)
+        text = title,
+        style = MaterialTheme.typography.titleSmall,
+        color = MaterialTheme.colorScheme.primary,
+        modifier = Modifier.padding(bottom = 4.dp)
     )
 }
 
@@ -455,12 +438,12 @@ private fun DurationRangeRow(
         ) {
             Text(
                 text = formatDurationLabel(minMinutes, 0f),
-                fontSize = 12.sp,
+                style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
             Text(
                 text = formatDurationLabel(maxMinutes, DURATION_SLIDER_MAX),
-                fontSize = 12.sp,
+                style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
         }
@@ -471,7 +454,7 @@ private fun DurationRangeRow(
             valueRange = 0f..DURATION_SLIDER_MAX,
             steps = 23,
             colors = sliderColors,
-            modifier = Modifier.fillMaxWidth().height(28.dp)
+            modifier = Modifier.fillMaxWidth()
         )
     }
 }
@@ -490,22 +473,21 @@ private fun CompactWeightSlider(
     )
     val level = quantizeToLevel(value)
     Column {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
+        Row(modifier = Modifier.fillMaxWidth()) {
             Text(
                 text = label,
-                fontSize = 11.sp,
+                style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurface,
-                maxLines = 1,
-                modifier = Modifier.weight(1f, fill = false)
+                minLines = 2,
+                maxLines = 2,
+                overflow = TextOverflow.Ellipsis,
+                modifier = Modifier.weight(1f)
             )
             Text(
                 text = stringResource(weightLevelLabelRes(level)),
-                fontSize = 11.sp,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.padding(start = 4.dp, top = 2.dp)
             )
         }
         Slider(
@@ -516,7 +498,7 @@ private fun CompactWeightSlider(
             valueRange = 0f..100f,
             steps = 3,
             colors = sliderColors,
-            modifier = Modifier.fillMaxWidth().height(20.dp)
+            modifier = Modifier.fillMaxWidth().height(36.dp)
         )
     }
 }
