@@ -971,7 +971,7 @@
     <string name="compare_score_state_left">%1$d, vidéo de gauche %2$s</string>
     <string name="compare_score_state_right">%1$d, vidéo de droite %2$s</string>
     <string name="compare_score_state_even">%1$d, %2$s</string>
-    <string name="compare_playing">en lecture..</string>
+    <string name="compare_playing">En lecture</string>
     <string name="compare_cancel">ANNULER</string>
     <string name="compare_slide_up_to_cancel">Glissez vers le haut pour %1$s.</string>
     <string name="compare_goal_daily">Votre objectif du jour</string>

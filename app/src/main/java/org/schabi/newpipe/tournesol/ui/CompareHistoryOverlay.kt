@@ -16,6 +16,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.compositeOver
@@ -36,7 +37,8 @@ internal fun CompareHistoryOverlayGridCard(
     selected: Boolean,
     accentColor: Color,
     onClick: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    enabled: Boolean = true
 ) {
     val scale = LocalCompareScale.current
     val stream = remember(entry) { Stream(entry.toStreamInfoItem()) }
@@ -53,7 +55,8 @@ internal fun CompareHistoryOverlayGridCard(
     Surface(
         modifier = Modifier
             .then(modifier)
-            .clickable(onClick = onClick),
+            .alpha(if (enabled) 1f else 0.35f)
+            .clickable(enabled = enabled, onClick = onClick),
         shape = RoundedCornerShape(12.dp),
         color = cardBackground,
         border = BorderStroke(if (selected) 2.dp else 1.dp, borderColor)

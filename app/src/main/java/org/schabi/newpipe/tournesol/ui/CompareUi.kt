@@ -273,7 +273,8 @@ internal fun CompareComparisonRow(item: CompareRecommendationItem) {
 internal fun CompareSideLabel(
     title: String,
     uploader: String,
-    textAlign: TextAlign
+    textAlign: TextAlign,
+    fixedTitleLines: Int? = null
 ) {
     val titleColor = compareMetaTitleColor()
     val uploaderColor = compareMetaUploaderColor()
@@ -284,10 +285,11 @@ internal fun CompareSideLabel(
             color = titleColor,
             textAlign = textAlign,
             modifier = Modifier.fillMaxWidth(),
-            maxLines = 3,
+            minLines = fixedTitleLines ?: 1,
+            maxLines = fixedTitleLines ?: 3,
             overflow = TextOverflow.Ellipsis
         )
-        if (uploader.isNotBlank()) {
+        if (uploader.isNotBlank() || fixedTitleLines != null) {
             Text(
                 text = uploader,
                 style = MaterialTheme.typography.labelSmall,

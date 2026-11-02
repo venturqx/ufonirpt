@@ -44,6 +44,28 @@ internal fun comparePairSelection(
     return historyPair(leftServiceId, leftUrl, rightServiceId, rightUrl)
 }
 
+internal fun isSameVideo(a: StreamHistoryEntry?, b: StreamHistoryEntry?): Boolean = a != null && b != null &&
+    a.streamEntity.serviceId == b.streamEntity.serviceId &&
+    a.streamEntity.url == b.streamEntity.url
+
+internal fun stepHistoryIndex(
+    entries: List<StreamHistoryEntry>,
+    from: Int,
+    step: Int,
+    avoid: StreamHistoryEntry?
+): Int? = generateSequence(from + step) { it + step }
+    .takeWhile { it in entries.indices }
+    .firstOrNull { !isSameVideo(entries[it], avoid) }
+
+internal fun distinctHistoryIndex(
+    entries: List<StreamHistoryEntry>,
+    from: Int,
+    avoid: StreamHistoryEntry?
+): Int? = when {
+    from in entries.indices && !isSameVideo(entries[from], avoid) -> from
+    else -> stepHistoryIndex(entries, from, 1, avoid) ?: stepHistoryIndex(entries, from, -1, avoid)
+}
+
 private fun displayedVideo(
     suggested: CompareComparisonVideo?,
     entry: StreamHistoryEntry?

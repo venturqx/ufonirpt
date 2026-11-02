@@ -34,6 +34,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.KeyboardArrowDown
 import androidx.compose.material.icons.rounded.KeyboardArrowUp
+import androidx.compose.material.icons.rounded.PlayArrow
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.Icon
@@ -86,6 +87,7 @@ import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.TextUnitType
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import androidx.compose.ui.window.DialogWindowProvider
@@ -117,14 +119,11 @@ private fun HistoryStepButtons(
     onStepUp: () -> Unit,
     onStepDown: () -> Unit
 ) {
-    Column(
-        modifier = Modifier
-            .clip(RoundedCornerShape(50))
-            .background(MaterialTheme.colorScheme.onSurface.copy(alpha = 0.06f))
-    ) {
+    Column {
         Box(
             modifier = Modifier
-                .size(width = 36.dp, height = 36.dp)
+                .size(width = 32.dp, height = 40.dp)
+                .clip(RoundedCornerShape(50))
                 .clickable(enabled = canStepUp, onClick = onStepUp),
             contentAlignment = Alignment.Center
         ) {
@@ -132,12 +131,13 @@ private fun HistoryStepButtons(
                 imageVector = Icons.Rounded.KeyboardArrowUp,
                 contentDescription = stringResource(R.string.compare_history_previous),
                 tint = tint.copy(alpha = if (canStepUp) 0.85f else 0.25f),
-                modifier = Modifier.size(22.dp)
+                modifier = Modifier.size(26.dp)
             )
         }
         Box(
             modifier = Modifier
-                .size(width = 36.dp, height = 36.dp)
+                .size(width = 32.dp, height = 40.dp)
+                .clip(RoundedCornerShape(50))
                 .clickable(enabled = canStepDown, onClick = onStepDown),
             contentAlignment = Alignment.Center
         ) {
@@ -145,9 +145,33 @@ private fun HistoryStepButtons(
                 imageVector = Icons.Rounded.KeyboardArrowDown,
                 contentDescription = stringResource(R.string.compare_history_next),
                 tint = tint.copy(alpha = if (canStepDown) 0.85f else 0.25f),
-                modifier = Modifier.size(22.dp)
+                modifier = Modifier.size(26.dp)
             )
         }
+    }
+}
+
+@Composable
+private fun PlayingBadge(accent: Color, modifier: Modifier = Modifier) {
+    Row(
+        modifier = modifier
+            .padding(4.dp)
+            .clip(RoundedCornerShape(4.dp))
+            .background(Color.Black.copy(alpha = 0.72f))
+            .padding(start = 2.dp, end = 5.dp, top = 1.dp, bottom = 1.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Icon(
+            imageVector = Icons.Rounded.PlayArrow,
+            contentDescription = null,
+            tint = accent,
+            modifier = Modifier.size(14.dp)
+        )
+        Text(
+            text = stringResource(R.string.compare_playing),
+            style = MaterialTheme.typography.labelSmall.copy(fontSize = 10.sp),
+            color = Color.White
+        )
     }
 }
 
@@ -225,6 +249,8 @@ internal fun CompareCompactScreen(
     val suggestedRight = state.suggestedRight
     val hasSuggestedLeft = suggestedLeft != null
     val hasSuggestedRight = suggestedRight != null
+    val leftAvoid = selectedHistoryEntryRight.takeIf { !hasSuggestedRight }
+    val rightAvoid = selectedHistoryEntryLeft.takeIf { !hasSuggestedLeft }
     val suggestedLeftTitle = suggestedLeft?.title.orEmpty()
     val suggestedLeftUploader = suggestedLeft?.uploader.orEmpty()
     val suggestedRightTitle = suggestedRight?.title.orEmpty()
@@ -280,6 +306,14 @@ internal fun CompareCompactScreen(
                 rightHistoryIndex = 1
                 initialPairSeeded = true
             }
+        }
+    }
+    LaunchedEffect(selectedHistoryEntryLeft, selectedHistoryEntryRight, hasSuggestedLeft, hasSuggestedRight) {
+        if (!hasSuggestedLeft && !hasSuggestedRight &&
+            isSameVideo(selectedHistoryEntryLeft, selectedHistoryEntryRight)
+        ) {
+            distinctHistoryIndex(rightEntries, rightHistoryIndex, selectedHistoryEntryLeft)
+                ?.let { rightHistoryIndex = it }
         }
     }
     BackHandler(enabled = showHistoryOverlay) {
@@ -448,10 +482,18 @@ internal fun CompareCompactScreen(
                                                 if (showLeftContent) {
                                                     HistoryStepButtons(
                                                         tint = Color(0xFF42A5F5),
-                                                        canStepUp = !hasSuggestedLeft && leftHistoryIndex > 0,
-                                                        canStepDown = !hasSuggestedLeft && leftHistoryIndex < leftEntries.lastIndex,
-                                                        onStepUp = { leftHistoryIndex -= 1 },
-                                                        onStepDown = { leftHistoryIndex += 1 }
+                                                        canStepUp = !hasSuggestedLeft &&
+                                                            stepHistoryIndex(leftEntries, leftHistoryIndex, -1, leftAvoid) != null,
+                                                        canStepDown = !hasSuggestedLeft &&
+                                                            stepHistoryIndex(leftEntries, leftHistoryIndex, 1, leftAvoid) != null,
+                                                        onStepUp = {
+                                                            stepHistoryIndex(leftEntries, leftHistoryIndex, -1, leftAvoid)
+                                                                ?.let { leftHistoryIndex = it }
+                                                        },
+                                                        onStepDown = {
+                                                            stepHistoryIndex(leftEntries, leftHistoryIndex, 1, leftAvoid)
+                                                                ?.let { leftHistoryIndex = it }
+                                                        }
                                                     )
                                                     Box(
                                                         modifier = Modifier.weight(1f),
@@ -515,6 +557,12 @@ internal fun CompareCompactScreen(
                                                                         thumbnailHeight = 52.dp * scale,
                                                                         showMeta = false,
                                                                         contentScale = ContentScale.Fit
+                                                                    )
+                                                                }
+                                                                if (isLeftCurrent) {
+                                                                    PlayingBadge(
+                                                                        accent = Color(0xFF42A5F5),
+                                                                        modifier = Modifier.align(Alignment.TopStart)
                                                                     )
                                                                 }
                                                             }
@@ -599,15 +647,29 @@ internal fun CompareCompactScreen(
                                                                         contentScale = ContentScale.Fit
                                                                     )
                                                                 }
+                                                                if (isRightCurrent) {
+                                                                    PlayingBadge(
+                                                                        accent = Color(0xFFE57373),
+                                                                        modifier = Modifier.align(Alignment.TopStart)
+                                                                    )
+                                                                }
                                                             }
                                                         }
                                                     }
                                                     HistoryStepButtons(
                                                         tint = Color(0xFFE57373),
-                                                        canStepUp = !hasSuggestedRight && rightHistoryIndex > 0,
-                                                        canStepDown = !hasSuggestedRight && rightHistoryIndex < rightEntries.lastIndex,
-                                                        onStepUp = { rightHistoryIndex -= 1 },
-                                                        onStepDown = { rightHistoryIndex += 1 }
+                                                        canStepUp = !hasSuggestedRight &&
+                                                            stepHistoryIndex(rightEntries, rightHistoryIndex, -1, rightAvoid) != null,
+                                                        canStepDown = !hasSuggestedRight &&
+                                                            stepHistoryIndex(rightEntries, rightHistoryIndex, 1, rightAvoid) != null,
+                                                        onStepUp = {
+                                                            stepHistoryIndex(rightEntries, rightHistoryIndex, -1, rightAvoid)
+                                                                ?.let { rightHistoryIndex = it }
+                                                        },
+                                                        onStepDown = {
+                                                            stepHistoryIndex(rightEntries, rightHistoryIndex, 1, rightAvoid)
+                                                                ?.let { rightHistoryIndex = it }
+                                                        }
                                                     )
                                                 } else {
                                                     Spacer(modifier = Modifier.weight(1f))
@@ -646,17 +708,11 @@ internal fun CompareCompactScreen(
                                                     }
                                                 )
                                         ) {
-                                            if (isLeftCurrent) {
-                                                Text(
-                                                    text = stringResource(R.string.compare_playing),
-                                                    style = MaterialTheme.typography.labelSmall,
-                                                    color = shadedAccent(Color(0xFF42A5F5))
-                                                )
-                                            }
                                             CompareSideLabel(
                                                 title = effectiveLeftTitle,
                                                 uploader = effectiveLeftUploader,
-                                                textAlign = TextAlign.Start
+                                                textAlign = TextAlign.Start,
+                                                fixedTitleLines = 2
                                             )
                                         }
                                         Column(
@@ -686,17 +742,11 @@ internal fun CompareCompactScreen(
                                                     }
                                                 )
                                         ) {
-                                            if (isRightCurrent) {
-                                                Text(
-                                                    text = stringResource(R.string.compare_playing),
-                                                    style = MaterialTheme.typography.labelSmall,
-                                                    color = shadedAccent(Color(0xFFE57373))
-                                                )
-                                            }
                                             CompareSideLabel(
                                                 title = effectiveRightTitle,
                                                 uploader = effectiveRightUploader,
-                                                textAlign = TextAlign.Start
+                                                textAlign = TextAlign.Start,
+                                                fixedTitleLines = 2
                                             )
                                         }
                                     }
@@ -941,6 +991,7 @@ internal fun CompareCompactScreen(
                     } else {
                         Color(0xFF42A5F5)
                     }
+                    val overlayAvoid = if (activeOverlayTarget == OverlayTarget.RIGHT) rightAvoid else leftAvoid
                     val overlayBackground = colorResource(R.color.tournesol_overlay_surface)
                     val overlayRowSpacing = 8.dp
                     val overlayColumnSpacing = 6.dp
@@ -1133,7 +1184,8 @@ internal fun CompareCompactScreen(
                                             overlayGridColumns,
                                             overlayCardHeightPx,
                                             overlayRowSpacingPx,
-                                            overlayColumnSpacingPx
+                                            overlayColumnSpacingPx,
+                                            overlayAvoid
                                         ) {
                                             if (!showHistoryOverlay) {
                                                 return@pointerInput
@@ -1162,7 +1214,9 @@ internal fun CompareCompactScreen(
                                                     }
                                                     overlayDragPreviewIndex = previewIndex
                                                     if (!change.pressed) {
-                                                        releasedOnIndex = hoveredIndex
+                                                        releasedOnIndex = hoveredIndex?.takeIf {
+                                                            !isSameVideo(overlayEntries[it], overlayAvoid)
+                                                        }
                                                         break
                                                     }
                                                 }
@@ -1193,6 +1247,7 @@ internal fun CompareCompactScreen(
                                                         entry = pageEntries[offsetInPage],
                                                         selected = offsetInPage == selectedOffsetInPage,
                                                         accentColor = accentColor,
+                                                        enabled = !isSameVideo(pageEntries[offsetInPage], overlayAvoid),
                                                         onClick = {
                                                             when (activeOverlayTarget) {
                                                                 OverlayTarget.LEFT -> leftHistoryIndex = absoluteIndex
