@@ -8,7 +8,6 @@ import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import org.schabi.newpipe.R
 import org.schabi.newpipe.extractor.stream.StreamInfo
-import org.schabi.newpipe.fragments.detail.VideoDetailFragment
 import org.schabi.newpipe.ktx.serializable
 
 class TournesolFragment : Fragment() {
@@ -24,12 +23,6 @@ class TournesolFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val video = arguments?.serializable<TournesolVideoRef>(KEY_VIDEO) ?: return
-        val scoreCard = view.findViewById<TournesolScoreCard>(R.id.tournesol_score_card)
-        val detailFragment = parentFragment as? VideoDetailFragment
-        scoreCard.bind(video) { hasInsufficientReason, score ->
-            detailFragment?.updateTournesolDetailIcon(hasInsufficientReason, score)
-        }
         attachCompareIfRequested()
     }
 

@@ -111,6 +111,7 @@ import org.schabi.newpipe.settings.tabs.TabsJsonHelper
 import org.schabi.newpipe.tournesol.TournesolHelper
 import org.schabi.newpipe.tournesol.TournesolScoreCache
 import org.schabi.newpipe.tournesol.ui.TournesolFragment
+import org.schabi.newpipe.tournesol.ui.TournesolScoresFragment
 import org.schabi.newpipe.util.DependentPreferenceHelper
 import org.schabi.newpipe.util.DeviceUtils
 import org.schabi.newpipe.util.ExtractorHelper
@@ -651,7 +652,7 @@ class VideoDetailFragment :
 
         pageAdapter = StateSavingTabAdapter(getChildFragmentManager())
         binding.viewPager.setAdapter(pageAdapter)
-        binding.viewPager.offscreenPageLimit = 3
+        binding.viewPager.offscreenPageLimit = 4
         binding.tabLayout.setupWithViewPager(binding.viewPager)
 
         binding.detailThumbnailRootLayout.requestFocus()
@@ -933,6 +934,10 @@ class VideoDetailFragment :
         tabIcons.add(R.drawable.logo_small)
         tabContentDescriptions.add(R.string.tournesol_tab_description)
 
+        pageAdapter.addFragment(TournesolScoresFragment(), TOURNESOL_SCORES_TAB_TAG)
+        tabIcons.add(R.drawable.ic_trending_up)
+        tabContentDescriptions.add(R.string.tournesol_detail_scores_header)
+
         if (showDescription) {
             // temp empty fragment. will be updated in handleResult
             pageAdapter.addFragment(EmptyFragment.newInstance(false), DESCRIPTION_TAB_TAG)
@@ -1103,6 +1108,7 @@ class VideoDetailFragment :
         }
 
         pageAdapter.updateItem(TOURNESOL_TAB_TAG, TournesolFragment.getInstance(info))
+        pageAdapter.updateItem(TOURNESOL_SCORES_TAB_TAG, TournesolScoresFragment.getInstance(info))
 
         if (showDescription) {
             pageAdapter.updateItem(DESCRIPTION_TAB_TAG, DescriptionFragment(info))
@@ -2615,6 +2621,7 @@ class VideoDetailFragment :
         private const val COMMENTS_TAB_TAG = "COMMENTS"
         private const val RELATED_TAB_TAG = "NEXT VIDEO"
         private const val TOURNESOL_TAB_TAG = "TOURNESOL TAB"
+        private const val TOURNESOL_SCORES_TAB_TAG = "TOURNESOL SCORES TAB"
         private const val DESCRIPTION_TAB_TAG = "DESCRIPTION TAB"
         private const val EMPTY_TAB_TAG = "EMPTY TAB"
 

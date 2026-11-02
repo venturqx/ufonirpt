@@ -980,9 +980,9 @@
     <string name="compare_submit_extras">Envoyer</string>
     <string name="compare_status_please_rate">Veuillez noter</string>
     <string name="compare_status_submitting_main">Envoi du principal</string>
-    <string name="compare_status_submitted_main">Principal envoyé</string>
-    <string name="compare_status_rating_extra">Supplémentaires notés %1$d/%2$d</string>
-    <string name="compare_status_submitted_extra">Supplémentaires envoyés</string>
+    <string name="compare_status_submitted_main">Envoyé</string>
+    <string name="compare_status_rating_extra">%1$d/%2$d facultatifs</string>
+    <string name="compare_status_submitted_extra">%1$d/%2$d</string>
     <string name="compare_question_largely_recommended">Devrait être recommandée… ?</string>
     <string name="compare_question_reliability">Est plus fiable… ?</string>
     <string name="compare_question_pedagogy">Est plus pédagogique… ?</string>

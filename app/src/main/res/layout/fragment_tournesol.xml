@@ -15,11 +15,5 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
 
-        <org.schabi.newpipe.tournesol.ui.TournesolScoreCard
-            android:id="@+id/tournesol_score_card"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp" />
-
     </LinearLayout>
 </androidx.core.widget.NestedScrollView>

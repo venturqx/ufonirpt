@@ -718,6 +718,8 @@ private fun DrawScope.drawLollipopHead(
     labelPaint: AndroidPaint,
     submitted: Boolean = false,
     touched: Boolean = true,
+    iconHighlighted: Boolean = false,
+    belowLabelShift: Float = 0f,
     scale: Float = 1f
 ) {
     val cx = center.x
@@ -730,7 +732,7 @@ private fun DrawScope.drawLollipopHead(
         touched -> if (lightSurface) 0.8f else 0.65f
         else -> untouchedAlpha
     }
-    val iconAlpha = if (touched) 1f else untouchedAlpha
+    val iconAlpha = if (touched || iconHighlighted) 1f else untouchedAlpha
     // Selected outer ring (drawn first so head circle overdraws inner half,
     // leaving a halo flush with the border outer edge)
     if (selected) {
@@ -778,7 +780,7 @@ private fun DrawScope.drawLollipopHead(
     val labelY = if (score >= 0) {
         cy - circleRadius - textGap
     } else {
-        cy + circleRadius + textSizePx + textGap * 0.3f
+        cy + circleRadius + textSizePx + textGap * 0.3f + belowLabelShift
     }
     drawContext.canvas.nativeCanvas.drawText(txt, cx, labelY, labelPaint)
 }
@@ -804,6 +806,11 @@ private fun LollipopHead(
     val textSizePx = with(density) { (10.sp * scale).toPx() }
     val textHeight = with(density) { textSizePx.toDp() }
     val textGap = with(density) { (6.dp * scale).toPx() }
+    val indicatorSpace = 8.dp * scale
+    val indicatorSpacePx = with(density) { indicatorSpace.toPx() }
+    val indicatorGapPx = with(density) { (3.dp * scale).toPx() }
+    val indicatorWidthPx = with(density) { (12.dp * scale).toPx() }
+    val indicatorHeightPx = with(density) { (3.dp * scale).toPx() }
     val labelPaint = remember {
         AndroidPaint(AndroidPaint.ANTI_ALIAS_FLAG).apply {
             textAlign = AndroidPaint.Align.CENTER
@@ -815,7 +822,7 @@ private fun LollipopHead(
     val interactionSource = remember { MutableInteractionSource() }
     Canvas(
         modifier = modifier
-            .size(width = 36.dp * scale, height = 34.dp * scale + textHeight * 2)
+            .size(width = 36.dp * scale, height = 34.dp * scale + textHeight * 2 + indicatorSpace)
             .selectable(
                 selected = selected,
                 interactionSource = interactionSource,
@@ -828,14 +835,15 @@ private fun LollipopHead(
                 stateDescription = score.toString()
             }
     ) {
+        val center = Offset(size.width / 2f, (size.height - indicatorSpacePx) / 2f)
         drawLollipopHead(
-            center = Offset(size.width / 2f, size.height / 2f),
+            center = center,
             color = color,
             fillColor = headFillColor,
             score = score,
             painter = painter,
             dimensionId = dimensionId,
-            selected = selected,
+            selected = false,
             circleRadius = circleRadius,
             strokeWidth = strokeWidth,
             iconSize = iconSize,
@@ -844,8 +852,21 @@ private fun LollipopHead(
             labelPaint = labelPaint,
             submitted = submitted,
             touched = touched,
+            iconHighlighted = selected,
+            belowLabelShift = indicatorSpacePx,
             scale = scale
         )
+        if (selected) {
+            drawRoundRect(
+                color = color,
+                topLeft = Offset(
+                    center.x - indicatorWidthPx / 2f,
+                    center.y + circleRadius + strokeWidth / 2f + indicatorGapPx
+                ),
+                size = Size(indicatorWidthPx, indicatorHeightPx),
+                cornerRadius = CornerRadius(indicatorHeightPx / 2f)
+            )
+        }
     }
 }
 

@@ -557,9 +557,9 @@
     <string name="compare_submit_extras">Submit</string>
     <string name="compare_status_please_rate">Please rate</string>
     <string name="compare_status_submitting_main">Submitting main</string>
-    <string name="compare_status_submitted_main">Submitted main</string>
-    <string name="compare_status_rating_extra">Extras rated %1$d/%2$d</string>
-    <string name="compare_status_submitted_extra">Submitted extra</string>
+    <string name="compare_status_submitted_main">Sent</string>
+    <string name="compare_status_rating_extra">%1$d/%2$d optional</string>
+    <string name="compare_status_submitted_extra">%1$d/%2$d</string>
     <string name="compare_question_largely_recommended">Should be recommended..?</string>
     <string name="compare_question_reliability">Is more reliable..?</string>
     <string name="compare_question_pedagogy">Is more pedagogical..?</string>

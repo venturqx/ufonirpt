@@ -32,6 +32,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Check
 import androidx.compose.material.icons.rounded.KeyboardArrowDown
 import androidx.compose.material.icons.rounded.KeyboardArrowUp
 import androidx.compose.material.icons.rounded.PlayArrow
@@ -829,7 +830,11 @@ internal fun CompareCompactScreen(
                                     )
                                     // Text B — extra criteria
                                     val textB = when {
-                                        state.extraSubmitted -> stringResource(R.string.compare_status_submitted_extra)
+                                        state.extraSubmitted -> stringResource(
+                                            R.string.compare_status_submitted_extra,
+                                            touchedExtras,
+                                            EXTRA_CRITERIA.size
+                                        )
 
                                         else -> stringResource(
                                             R.string.compare_status_rating_extra,
@@ -842,6 +847,14 @@ internal fun CompareCompactScreen(
                                         color = statusColor,
                                         style = MaterialTheme.typography.labelSmall
                                     )
+                                    if (state.extraSubmitted) {
+                                        Icon(
+                                            imageVector = Icons.Rounded.Check,
+                                            contentDescription = null,
+                                            tint = shadedAccent(Color(0xFF81C784)),
+                                            modifier = Modifier.padding(start = 2.dp).size(14.dp)
+                                        )
+                                    }
                                 }
                             }
 
