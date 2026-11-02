@@ -57,14 +57,7 @@ internal class CompareRecommendationsLoader(
     }
 
     private fun onLoaded(result: CompareComparisonsResult) {
-        state.recommendations = if (result.comparisons.isEmpty()) {
-            CompareRecommendations.Failed(
-                CompareMessage(R.string.compare_no_comparisons_available),
-                result.totalCount
-            )
-        } else {
-            CompareRecommendations.Loaded(result.comparisons, result.totalCount)
-        }
+        state.recommendations = CompareRecommendations.Loaded(result.comparisons, result.totalCount)
         result.totalCount?.let(host::saveComparisonCount)
     }
 

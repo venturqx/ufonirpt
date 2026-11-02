@@ -883,6 +883,12 @@
     <string name="filter_criteria_diversity_inclusion">Diversité et inclusion</string>
     <string name="filter_criteria_better_habits">Meilleures habitudes</string>
     <string name="filter_criteria_backfire_risk">Résistance aux effets contre-productifs</string>
+    <string name="filter_weights_enable">Activer la pondération</string>
+    <string name="filter_weight_ignore">Ignorer</string>
+    <string name="filter_weight_not_important">Pas important</string>
+    <string name="filter_weight_neutral">Neutre</string>
+    <string name="filter_weight_important">Important</string>
+    <string name="filter_weight_crucial">Crucial</string>
     <string name="language_english">Anglais</string>
     <string name="language_french">Français</string>
     <string name="language_spanish">Espagnol</string>
@@ -901,8 +907,17 @@
     <string name="tournesol_login_success">Connexion réussie</string>
     <string name="tournesol_login_failed">Échec de la connexion</string>
     <string name="tournesol_login_invalid_credentials">Nom d\’utilisateur ou mot de passe incorrect</string>
-    <string name="tournesol_detail_contributors">%1$d contributeurs</string>
+    <plurals name="tournesol_detail_contributors">
+        <item quantity="one">%1$d contributeur</item>
+        <item quantity="many">%1$d contributeurs</item>
+        <item quantity="other">%1$d contributeurs</item>
+    </plurals>
     <string name="tournesol_detail_comparisons">%1$d comparaisons</string>
+    <string name="tournesol_detail_scores_header">Scores</string>
+    <string name="tournesol_detail_criteria_header">Critères</string>
+    <string name="tournesol_detail_loading">Chargement du score Tournesol…</string>
+    <string name="tournesol_detail_not_rated">Pas encore évalué sur Tournesol</string>
+    <string name="tournesol_detail_load_error">Impossible de charger le score Tournesol</string>
     <string name="tournesol_criteria_reliability">Fiable et non trompeuse</string>
     <string name="tournesol_criteria_importance">Importante et utile</string>
     <string name="tournesol_criteria_engaging">Engageante et stimulante</string>
@@ -1041,8 +1056,8 @@
     <string name="manifesto_s3_p3">C\’est tout à fait possible, à condition de développer des IA de recommandation basées sur les jugements réfléchis des citoyens, et non sur les intérêts des géants du numérique.</string>
 
     <string name="manifesto_tournesol_title">Le projet Tournesol</string>
-    <string name="manifesto_tournesol_body_prefix">Le projet Tournesol développe des IA de recommandation alternatives et plus démocratiques, qui s\’appuient sur vos jugements et vos intérêts. Venez essayer la plateforme sur </string>
-    <string name="manifesto_tournesol_body_suffix"> !</string>
+    <string name="manifesto_tournesol_body_prefix">Le projet Tournesol développe des IA de recommandation alternatives et plus démocratiques, qui s\’appuient sur vos jugements et vos intérêts. Venez essayer la plateforme sur\u0020</string>
+    <string name="manifesto_tournesol_body_suffix">\u00A0!</string>
     <string name="manifesto_tournesol_body2">Au-delà, l\’association Tournesol rassemble des citoyens bénévoles, des chercheurs, des créateurs de contenus, des développeurs. Elle a pour objet de défendre les trois principes proposés dans ce manifeste.</string>
 
     <string name="manifesto_help_title">Ce manifeste vous parle et vous souhaitez nous aider ?</string>
@@ -1055,7 +1070,7 @@
     <string name="manifesto_help_regular_title">Plus régulièrement</string>
     <string name="manifesto_help_regular_detail">Présentez-vous par mail ou sur le canal Discord dédié (#intros) : communication, recherche, demandes de financement ou stratégie de développement, nous avons toujours besoin de personnes motivées. Ou assistez à une présentation Tournesol, organisée une fois tous les deux mois.</string>
     <string name="manifesto_help_more_title">Encore plus ?</string>
-    <string name="manifesto_help_more_prefix">Découvrez-en plus sur </string>
+    <string name="manifesto_help_more_prefix">Découvrez-en plus sur\u0020</string>
 
     <string name="manifesto_further_title">Pour aller plus loin</string>
     <string name="manifesto_further_link">[lien]</string>

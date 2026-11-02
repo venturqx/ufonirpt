@@ -18,6 +18,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -36,6 +37,7 @@ internal fun CompareComparisonsFullScreen(
     totalCount: Int? = null,
     isLoading: Boolean,
     errorMessage: String?,
+    onRetry: () -> Unit,
     onDismiss: () -> Unit
 ) {
     Box(
@@ -91,11 +93,20 @@ internal fun CompareComparisonsFullScreen(
                 }
 
                 errorMessage != null -> {
-                    Text(
-                        text = errorMessage,
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.error
-                    )
+                    Column(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.spacedBy(12.dp)
+                    ) {
+                        Text(
+                            text = errorMessage,
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.error
+                        )
+                        OutlinedButton(onClick = onRetry) {
+                            Text(text = stringResource(R.string.retry))
+                        }
+                    }
                 }
 
                 recommendations.isEmpty() -> {

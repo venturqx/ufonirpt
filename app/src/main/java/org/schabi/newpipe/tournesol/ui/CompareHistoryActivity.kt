@@ -37,6 +37,7 @@ class CompareHistoryActivity : AppCompatActivity() {
                     totalCount = totalCount,
                     isLoading = loading,
                     errorMessage = error,
+                    onRetry = { loadComparisons() },
                     onDismiss = { finish() }
                 )
             }
@@ -66,9 +67,6 @@ class CompareHistoryActivity : AppCompatActivity() {
                     totalCount = result.totalCount
                     result.totalCount?.let {
                         TournesolAuthManager.saveComparisonCount(this, it)
-                    }
-                    if (result.comparisons.isEmpty()) {
-                        error = getString(R.string.compare_no_comparisons_available)
                     }
                 },
                 { throwable ->

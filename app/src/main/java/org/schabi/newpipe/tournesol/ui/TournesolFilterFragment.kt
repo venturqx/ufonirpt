@@ -60,6 +60,7 @@ import androidx.compose.ui.unit.TextUnitType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.preference.PreferenceManager
+import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import org.schabi.newpipe.R
@@ -86,6 +87,8 @@ class TournesolFilterFragment : BottomSheetDialogFragment() {
                 // Ensure the parent bottom sheet is transparent so our background shows.
                 bottomSheet.setBackgroundResource(android.R.color.transparent)
             }
+            bottomSheetDialog.behavior.skipCollapsed = true
+            bottomSheetDialog.behavior.state = BottomSheetBehavior.STATE_EXPANDED
         }
         return dialog
     }
@@ -124,12 +127,13 @@ class TournesolFilterFragment : BottomSheetDialogFragment() {
 
 private data class FilterOption(val key: String, @StringRes val labelResId: Int)
 
-private fun weightLevelLabel(value: Int): String = when (value) {
-    0 -> "Ignore"
-    25 -> "Not important"
-    50 -> "Neutral"
-    75 -> "Important"
-    else -> "Crucial"
+@StringRes
+private fun weightLevelLabelRes(value: Int): Int = when (value) {
+    0 -> R.string.filter_weight_ignore
+    25 -> R.string.filter_weight_not_important
+    50 -> R.string.filter_weight_neutral
+    75 -> R.string.filter_weight_important
+    else -> R.string.filter_weight_crucial
 }
 
 @StringRes
@@ -368,7 +372,7 @@ private fun TournesolFilterSheet(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        text = "Enable weighting",
+                        text = stringResource(R.string.filter_weights_enable),
                         fontSize = 12.sp,
                         color = MaterialTheme.colorScheme.onSurface,
                         modifier = Modifier.weight(1f)
@@ -499,7 +503,7 @@ private fun CompactWeightSlider(
                 modifier = Modifier.weight(1f, fill = false)
             )
             Text(
-                text = weightLevelLabel(level),
+                text = stringResource(weightLevelLabelRes(level)),
                 fontSize = 11.sp,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )

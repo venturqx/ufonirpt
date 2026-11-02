@@ -42,16 +42,13 @@ class CompareRecommendationsFlowTest {
     }
 
     @Test
-    fun `an empty result is reported as an error and keeps the count`() {
+    fun `an empty result shows an empty list, not an error, and keeps the count`() {
         rig.server.reply(COMPARISONS, 200, """{"count":3,"results":[]}""")
         rig.openRecommendations()
 
         rig.deliver()
 
-        assertEquals(
-            idle.copy(error = message(R.string.compare_no_comparisons_available), totalCount = 3),
-            rig.recommendations
-        )
+        assertEquals(idle.copy(totalCount = 3), rig.recommendations)
         assertEquals(3, rig.comparisonCount)
     }
 
@@ -174,13 +171,13 @@ class CompareRecommendationsFlowTest {
     }
 
     @Test
-    fun `destroying the view keeps an error but drops the count`() {
-        rig.server.reply(COMPARISONS, 200, """{"count":3,"results":[]}""")
+    fun `destroying the view keeps an error`() {
+        rig.server.reply(COMPARISONS, 500)
         rig.openRecommendations()
         rig.deliver()
 
         rig.destroyView()
 
-        assertEquals(idle.copy(error = message(R.string.compare_no_comparisons_available)), rig.recommendations)
+        assertEquals(idle.copy(error = message(R.string.compare_failed)), rig.recommendations)
     }
 }

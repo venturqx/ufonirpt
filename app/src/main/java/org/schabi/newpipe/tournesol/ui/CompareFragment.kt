@@ -84,6 +84,7 @@ class CompareFragment : Fragment() {
                         onRandomizeLeft = { controller.suggestions.randomize(SuggestionSlot.LEFT) },
                         onRandomizeRight = { controller.suggestions.randomize(SuggestionSlot.RIGHT) },
                         onRetryPair = { controller.fillPair() },
+                        onRetryRecommendations = { controller.recommendations.open() },
                         showGreeting = currentVideo == null,
                         reserveMiniPlayerSpace = !embedInDetail,
                         externalScroll = externalScroll,

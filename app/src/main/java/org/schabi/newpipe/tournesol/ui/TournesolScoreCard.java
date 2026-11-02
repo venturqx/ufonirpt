@@ -15,10 +15,12 @@ import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
 import androidx.core.content.ContextCompat;
 import androidx.core.graphics.ColorUtils;
 
@@ -39,7 +41,6 @@ import org.schabi.newpipe.views.TitledDescription;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
@@ -82,6 +83,10 @@ public class TournesolScoreCard extends LinearLayout {
     private TextView tournesolContributors;
     private TextView tournesolComparisons;
     private FrameLayout tournesolLollipopContainer;
+    private LinearLayout tournesolStatusRow;
+    private ProgressBar tournesolStatusProgress;
+    private TextView tournesolStatusText;
+    private TextView tournesolStatusRetry;
 
     @Nullable
     private TournesolVideoRef video;
@@ -117,6 +122,25 @@ public class TournesolScoreCard extends LinearLayout {
         tournesolContributors = findViewById(R.id.tournesol_contributors);
         tournesolComparisons = findViewById(R.id.tournesol_comparisons);
         tournesolLollipopContainer = findViewById(R.id.tournesol_lollipop_container);
+        tournesolStatusRow = findViewById(R.id.tournesol_status_row);
+        tournesolStatusProgress = findViewById(R.id.tournesol_status_progress);
+        tournesolStatusText = findViewById(R.id.tournesol_status_text);
+        tournesolStatusRetry = findViewById(R.id.tournesol_status_retry);
+        tournesolStatusRetry.setOnClickListener(v -> retry());
+    }
+
+    private void retry() {
+        if (video != null && ratingListener != null) {
+            bind(video, ratingListener);
+        }
+    }
+
+    private void showStatus(@StringRes final int messageRes, final boolean loading,
+                            final boolean retryable) {
+        tournesolStatusText.setText(messageRes);
+        tournesolStatusProgress.setVisibility(loading ? VISIBLE : GONE);
+        tournesolStatusRetry.setVisibility(retryable ? VISIBLE : GONE);
+        tournesolStatusRow.setVisibility(VISIBLE);
     }
 
     public void bind(@NonNull final TournesolVideoRef videoRef,
@@ -164,13 +188,16 @@ public class TournesolScoreCard extends LinearLayout {
         if (video == null) {
             return;
         }
+        showStatus(R.string.tournesol_detail_loading, true, false);
         disposables.add(
                 TournesolEntityApi.fetchRating(video.getServiceId(), video.getVideoId())
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnTerminate(() -> load.onFinished(ScoreCardLoad.Fetch.INFO))
                 .subscribe(
                         this::displayTournesolInfo,
-                        throwable -> { /* silently ignore */ }
+                        throwable -> showStatus(
+                                R.string.tournesol_detail_load_error, false, true),
+                        () -> showStatus(R.string.tournesol_detail_not_rated, false, false)
                 )
         );
     }
@@ -188,9 +215,9 @@ public class TournesolScoreCard extends LinearLayout {
         final int nComparisons = rating.getComparisonCount();
         final int nContributors = rating.getContributorCount();
 
-        tournesolScoreValue.setText(String.format(Locale.US, "%.1f", tournesolScore));
-        tournesolContributors.setText(
-                getContext().getString(R.string.tournesol_detail_contributors, nContributors));
+        tournesolScoreValue.setText(LollipopChartViewKt.formatScore(tournesolScore, 1));
+        tournesolContributors.setText(getResources().getQuantityString(
+                R.plurals.tournesol_detail_contributors, nContributors, nContributors));
         tournesolComparisons.setText(
                 getContext().getString(R.string.tournesol_detail_comparisons, nComparisons));
 
@@ -206,6 +233,7 @@ public class TournesolScoreCard extends LinearLayout {
 
         displayCriteriaScores(rating.getCriterionScores());
 
+        tournesolStatusRow.setVisibility(GONE);
         tournesolInfoSection.setVisibility(VISIBLE);
     }
 

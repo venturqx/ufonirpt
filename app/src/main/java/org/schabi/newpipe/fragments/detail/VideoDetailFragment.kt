@@ -1098,6 +1098,8 @@ class VideoDetailFragment :
                     relatedItemsLayout.isVisible = !this.isFullscreen
                 }
             }
+        } else {
+            binding.relatedItemsLayout?.isVisible = false
         }
 
         pageAdapter.updateItem(TOURNESOL_TAB_TAG, TournesolFragment.getInstance(info))
@@ -1632,7 +1634,7 @@ class VideoDetailFragment :
         binding.detailTitleRootLayout.isClickable = false
         binding.detailSecondaryControlPanel.visibility = View.GONE
 
-        binding.relatedItemsLayout?.isVisible = showRelatedItems && !this.isFullscreen
+        binding.relatedItemsLayout?.isVisible = showRelatedItems && !isTournesolTab && !this.isFullscreen
 
         CoilUtils.dispose(binding.detailThumbnailImageView)
         CoilUtils.dispose(binding.detailSubChannelThumbnailView)
@@ -2034,7 +2036,7 @@ class VideoDetailFragment :
             showSystemUi()
         }
 
-        binding.relatedItemsLayout?.isVisible = if (showRelatedItems) !fullscreen else false
+        binding.relatedItemsLayout?.isVisible = if (showRelatedItems && !isTournesolTab) !fullscreen else false
         scrollToTop()
 
         tryAddVideoPlayerView()

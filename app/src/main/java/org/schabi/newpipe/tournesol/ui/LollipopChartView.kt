@@ -24,6 +24,11 @@ private const val SELECTED_GLOW_GAP_DP = 3f
 private const val SELECTED_GLOW_WIDTH_DP = 4f
 private const val SELECTED_GLOW_ALPHA = 160
 
+fun formatScore(score: Double, decimals: Int): String {
+    val text = "%.${decimals}f".format(Locale.US, score)
+    return if (text.all { it == '-' || it == '0' || it == '.' }) text.removePrefix("-") else text
+}
+
 class LollipopChartView(
     context: Context,
     private val criteria: List<CriterionScore>,
@@ -38,7 +43,7 @@ class LollipopChartView(
     var onSelectionChangedListener: OnSelectionChangedListener? = null
 
     private val scores = DoubleArray(criteria.size) { criteria[it].score }
-    private val scoreLabels = Array(criteria.size) { "%.0f".format(Locale.US, scores[it]) }
+    private val scoreLabels = Array(criteria.size) { formatScore(scores[it], 0) }
     private val metrics = LollipopChartMetrics.of(iconSizePx, ::dp)
     private val selectedGlowRadius = (metrics.circleRadius + dp(SELECTED_GLOW_GAP_DP)).toFloat()
 

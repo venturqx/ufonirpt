@@ -337,7 +337,6 @@ private fun TournesolProjectCard() {
                     append(stringResource(R.string.manifesto_tournesol_body_prefix))
                     withStyle(
                         SpanStyle(
-                            color = SunflowerYellow,
                             textDecoration = TextDecoration.Underline,
                             fontWeight = FontWeight.Bold
                         )

@@ -131,6 +131,7 @@ internal fun CompareCompactScreen(
     onRandomizeLeft: () -> Unit = {},
     onRandomizeRight: () -> Unit = {},
     onRetryPair: () -> Unit = {},
+    onRetryRecommendations: () -> Unit = {},
     showGreeting: Boolean = true,
     reserveMiniPlayerSpace: Boolean = true,
     externalScroll: Boolean = false,
@@ -536,19 +537,21 @@ internal fun CompareCompactScreen(
                                                 }
                                             }
 
-                                            Box(
-                                                modifier = Modifier
-                                                    .align(Alignment.TopCenter)
-                                                    .background(colorResource(R.color.tournesol_chip_bg_selected), RoundedCornerShape(6.dp))
-                                                    .padding(horizontal = 4.dp, vertical = 1.dp)
-                                            ) {
-                                                Text(
-                                                    text = stringResource(R.string.compare_vs),
-                                                    style = MaterialTheme.typography.labelSmall.copy(
-                                                        fontWeight = FontWeight.Bold
-                                                    ),
-                                                    color = Color(0xFF1B1B1B)
-                                                )
+                                            if (showLeftContent && showRightContent) {
+                                                Box(
+                                                    modifier = Modifier
+                                                        .align(Alignment.TopCenter)
+                                                        .background(colorResource(R.color.tournesol_chip_bg_selected), RoundedCornerShape(6.dp))
+                                                        .padding(horizontal = 4.dp, vertical = 1.dp)
+                                                ) {
+                                                    Text(
+                                                        text = stringResource(R.string.compare_vs),
+                                                        style = MaterialTheme.typography.labelSmall.copy(
+                                                            fontWeight = FontWeight.Bold
+                                                        ),
+                                                        color = Color(0xFF1B1B1B)
+                                                    )
+                                                }
                                             }
                                         }
                                     }
@@ -1246,6 +1249,7 @@ internal fun CompareCompactScreen(
             totalCount = comparisons.totalCount,
             isLoading = comparisons == CompareRecommendations.Loading,
             errorMessage = (comparisons as? CompareRecommendations.Failed)?.message?.resolve(),
+            onRetry = onRetryRecommendations,
             onDismiss = onDismissRecommendations
         )
     }

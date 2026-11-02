@@ -79,7 +79,7 @@ public class StreamInfoItemHolder extends StreamMiniInfoItemHolder {
         itemInlineWorstArrow = itemView.findViewById(R.id.itemInlineWorstArrow);
         itemInlineWorstIcon = itemView.findViewById(R.id.itemInlineWorstIcon);
         tournesolScoreColor = ContextCompat.getColor(
-                itemBuilder.getContext(), R.color.dark_settings_accent_color);
+                itemBuilder.getContext(), R.color.tournesol_score);
     }
 
     @Override

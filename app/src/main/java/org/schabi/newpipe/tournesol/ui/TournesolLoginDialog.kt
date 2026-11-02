@@ -9,12 +9,16 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
@@ -32,9 +36,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
@@ -97,6 +104,7 @@ class TournesolLoginDialog : DialogFragment() {
     }
 }
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 internal fun LoginDialogContent(
     inProgress: Boolean,
@@ -120,6 +128,15 @@ internal fun LoginDialogContent(
         MaterialTheme.colorScheme.onSurfaceVariant
     }
     val missingFieldsText = stringResource(R.string.tournesol_login_missing_fields)
+    val passwordFocusRequester = remember { FocusRequester() }
+    val submit: () -> Unit = {
+        if (username.isBlank() || password.isBlank()) {
+            localError = missingFieldsText
+        } else {
+            localError = null
+            onLogin(username.trim(), password)
+        }
+    }
 
     Surface(
         shape = RoundedCornerShape(24.dp),
@@ -127,7 +144,9 @@ internal fun LoginDialogContent(
         tonalElevation = 6.dp
     ) {
         Column(
-            modifier = Modifier.padding(24.dp),
+            modifier = Modifier
+                .verticalScroll(rememberScrollState())
+                .padding(24.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             Text(
@@ -148,6 +167,8 @@ internal fun LoginDialogContent(
                 },
                 label = { Text(stringResource(R.string.tournesol_username_hint)) },
                 singleLine = true,
+                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
+                keyboardActions = KeyboardActions(onNext = { passwordFocusRequester.requestFocus() }),
                 enabled = !inProgress,
                 modifier = Modifier.fillMaxWidth()
             )
@@ -160,9 +181,15 @@ internal fun LoginDialogContent(
                 label = { Text(stringResource(R.string.tournesol_password_hint)) },
                 singleLine = true,
                 visualTransformation = PasswordVisualTransformation(),
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+                keyboardOptions = KeyboardOptions(
+                    keyboardType = KeyboardType.Password,
+                    imeAction = ImeAction.Done
+                ),
+                keyboardActions = KeyboardActions(onDone = { if (!inProgress) submit() }),
                 enabled = !inProgress,
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .focusRequester(passwordFocusRequester)
             )
             if (statusText != null) {
                 Text(
@@ -171,47 +198,36 @@ internal fun LoginDialogContent(
                     color = statusColor
                 )
             }
-            Row(
+            FlowRow(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
+                horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.End),
+                verticalArrangement = Arrangement.spacedBy(8.dp),
+                itemVerticalAlignment = Alignment.CenterVertically
             ) {
                 TextButton(
                     onClick = onRegister,
                     enabled = !inProgress
                 ) {
-                    Text(stringResource(R.string.tournesol_register_button))
+                    Text(stringResource(R.string.tournesol_register_button), maxLines = 1, softWrap = false)
                 }
-                Row(
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    verticalAlignment = Alignment.CenterVertically
+                OutlinedButton(
+                    onClick = onDismiss,
+                    enabled = !inProgress
                 ) {
-                    OutlinedButton(
-                        onClick = onDismiss,
-                        enabled = !inProgress
-                    ) {
-                        Text(stringResource(R.string.cancel))
-                    }
-                    Button(
-                        onClick = {
-                            if (username.isBlank() || password.isBlank()) {
-                                localError = missingFieldsText
-                            } else {
-                                localError = null
-                                onLogin(username.trim(), password)
-                            }
-                        },
-                        enabled = !inProgress
-                    ) {
-                        if (inProgress) {
-                            CircularProgressIndicator(
-                                modifier = Modifier.size(18.dp),
-                                color = MaterialTheme.colorScheme.onPrimary,
-                                strokeWidth = 2.dp
-                            )
-                        } else {
-                            Text(stringResource(R.string.tournesol_login_button))
-                        }
+                    Text(stringResource(R.string.cancel), maxLines = 1, softWrap = false)
+                }
+                Button(
+                    onClick = submit,
+                    enabled = !inProgress
+                ) {
+                    if (inProgress) {
+                        CircularProgressIndicator(
+                            modifier = Modifier.size(18.dp),
+                            color = MaterialTheme.colorScheme.onPrimary,
+                            strokeWidth = 2.dp
+                        )
+                    } else {
+                        Text(stringResource(R.string.tournesol_login_button), maxLines = 1, softWrap = false)
                     }
                 }
             }

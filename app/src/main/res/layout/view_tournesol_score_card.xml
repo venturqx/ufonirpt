@@ -2,6 +2,68 @@
 <merge xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <LinearLayout
+        android:id="@+id/tournesol_status_row"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/bg_tournesol_section"
+        android:gravity="center_vertical"
+        android:minHeight="48dp"
+        android:orientation="horizontal"
+        android:paddingStart="16dp"
+        android:paddingTop="8dp"
+        android:paddingEnd="8dp"
+        android:paddingBottom="8dp"
+        android:visibility="gone"
+        tools:visibility="visible">
+
+        <ImageView
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:importantForAccessibility="no"
+            android:src="@drawable/logo_small" />
+
+        <ProgressBar
+            android:id="@+id/tournesol_status_progress"
+            style="?android:attr/progressBarStyleSmall"
+            android:layout_width="16dp"
+            android:layout_height="16dp"
+            android:layout_marginStart="10dp"
+            android:indeterminateTint="@color/tournesol_score"
+            android:visibility="gone"
+            tools:visibility="visible" />
+
+        <org.schabi.newpipe.views.NewPipeTextView
+            android:id="@+id/tournesol_status_text"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:layout_weight="1"
+            android:textColor="@color/tournesol_content_muted"
+            android:textSize="@dimen/video_item_detail_description_text_size"
+            tools:text="@string/tournesol_detail_load_error" />
+
+        <org.schabi.newpipe.views.NewPipeTextView
+            android:id="@+id/tournesol_status_retry"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:background="?attr/selectableItemBackground"
+            android:gravity="center"
+            android:minWidth="48dp"
+            android:minHeight="48dp"
+            android:paddingStart="8dp"
+            android:paddingEnd="8dp"
+            android:text="@string/retry"
+            android:textAllCaps="true"
+            android:textColor="@color/tournesol_section_header"
+            android:textSize="13sp"
+            android:textStyle="bold"
+            android:visibility="gone"
+            tools:visibility="visible" />
+
+    </LinearLayout>
+
     <!-- Tournesol info section (shown when data is available) -->
     <LinearLayout
         android:id="@+id/tournesol_info_section"
@@ -21,7 +83,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="8dp"
-            android:text="SCORES"
+            android:text="@string/tournesol_detail_scores_header"
             android:textAllCaps="true"
             android:textColor="@color/tournesol_section_header"
             android:textSize="11sp"
@@ -121,7 +183,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="4dp"
-            android:text="CRITERIA"
+            android:text="@string/tournesol_detail_criteria_header"
             android:textAllCaps="true"
             android:textColor="@color/tournesol_section_header"
             android:textSize="11sp"

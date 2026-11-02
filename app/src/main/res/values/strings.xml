@@ -446,14 +446,20 @@
     <string name="filter_criteria_diversity_inclusion">Diversity &amp; inclusion</string>
     <string name="filter_criteria_better_habits">Better habits</string>
     <string name="filter_criteria_backfire_risk">Resilience to backfiring</string>
+    <string name="filter_weights_enable">Enable weighting</string>
+    <string name="filter_weight_ignore">Ignore</string>
+    <string name="filter_weight_not_important">Not important</string>
+    <string name="filter_weight_neutral">Neutral</string>
+    <string name="filter_weight_important">Important</string>
+    <string name="filter_weight_crucial">Crucial</string>
 
     <!-- Language names for Tournesol filter -->
     <string name="language_english">English</string>
-    <string name="language_french">Francais</string>
-    <string name="language_spanish">Espanol</string>
+    <string name="language_french">Français</string>
+    <string name="language_spanish">Español</string>
     <string name="language_german">Deutsch</string>
     <string name="language_italian">Italiano</string>
-    <string name="language_portuguese">Portugues</string>
+    <string name="language_portuguese">Português</string>
     <string name="tournesol_hi_greeting">Hi</string>
     <string name="tournesol_login_title">Log in to Tournesol</string>
     <string name="tournesol_username_hint">Username</string>
@@ -466,8 +472,16 @@
     <string name="tournesol_login_success">Login successful</string>
     <string name="tournesol_login_failed">Login failed</string>
     <string name="tournesol_login_invalid_credentials">Incorrect username or password</string>
-    <string name="tournesol_detail_contributors">%1$d contributors</string>
+    <plurals name="tournesol_detail_contributors">
+        <item quantity="one">%1$d contributor</item>
+        <item quantity="other">%1$d contributors</item>
+    </plurals>
     <string name="tournesol_detail_comparisons">%1$d comparisons</string>
+    <string name="tournesol_detail_scores_header">Scores</string>
+    <string name="tournesol_detail_criteria_header">Criteria</string>
+    <string name="tournesol_detail_loading">Loading Tournesol score…</string>
+    <string name="tournesol_detail_not_rated">Not rated on Tournesol yet</string>
+    <string name="tournesol_detail_load_error">Couldn\'t load the Tournesol score</string>
     <string name="tournesol_criteria_reliability">Reliable &amp; not misleading</string>
     <string name="tournesol_criteria_importance">Important &amp; actionable</string>
     <string name="tournesol_criteria_engaging">Engaging &amp; thought-provoking</string>
@@ -1101,7 +1115,7 @@
     <string name="manifesto_s3_p3">This is quite possible, provided we develop recommendation AIs based on citizens\' thoughtful judgments, and not on the interests of digital giants.</string>
 
     <string name="manifesto_tournesol_title">The Tournesol project</string>
-    <string name="manifesto_tournesol_body_prefix">The Tournesol project develops alternative and more democratic recommendation AIs, which rely on your judgments and your interests. Come try the platform on </string>
+    <string name="manifesto_tournesol_body_prefix">The Tournesol project develops alternative and more democratic recommendation AIs, which rely on your judgments and your interests. Come try the platform on\u0020</string>
     <string name="manifesto_tournesol_body_suffix"> !</string>
     <string name="manifesto_tournesol_body2">Beyond that, the Tournesol association brings together volunteer citizens, researchers, content creators, developers. Its purpose is to defend the three principles proposed in this manifesto.</string>
 
@@ -1115,7 +1129,7 @@
     <string name="manifesto_help_regular_title">More regularly</string>
     <string name="manifesto_help_regular_detail">Introduce yourself by email or on the dedicated Discord channel (#intros): communication, research, funding requests or development strategy, we always need motivated people. Or attend a Tournesol presentation, organized once every two months.</string>
     <string name="manifesto_help_more_title">Even more?</string>
-    <string name="manifesto_help_more_prefix">Find out more on </string>
+    <string name="manifesto_help_more_prefix">Find out more on\u0020</string>
 
     <string name="manifesto_further_title">To go further</string>
     <string name="manifesto_further_link">[link]</string>
