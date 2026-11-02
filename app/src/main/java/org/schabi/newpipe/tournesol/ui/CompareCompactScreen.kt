@@ -96,6 +96,7 @@ import androidx.core.view.WindowCompat
 import coil3.imageLoader
 import coil3.request.ImageRequest
 import kotlin.math.roundToInt
+import kotlin.random.Random
 import org.schabi.newpipe.R
 import org.schabi.newpipe.tournesol.COMPACT_MAIN_CRITERION_ID
 import org.schabi.newpipe.tournesol.ComparePairSelection
@@ -220,6 +221,7 @@ internal fun CompareCompactScreen(
     var leftHistoryIndex by rememberSaveable { mutableIntStateOf(0) }
     var rightHistoryIndex by rememberSaveable { mutableIntStateOf(0) }
     var initialPairSeeded by rememberSaveable { mutableStateOf(false) }
+    val historyPicker = remember { CompareHistoryPicker(Random.Default) }
     var historyOverlayIndex by rememberSaveable { mutableIntStateOf(0) }
     var historyOverlayPage by rememberSaveable { mutableIntStateOf(0) }
     var activeOverlayTarget by remember { mutableStateOf(OverlayTarget.LEFT) }
@@ -880,9 +882,8 @@ internal fun CompareCompactScreen(
                                         } else {
                                             leftEntries.indices.filter { it != leftHistoryIndex }
                                         }
-                                        if (pool.isNotEmpty()) {
-                                            leftHistoryIndex = pool[(Math.random() * pool.size).toInt()]
-                                        }
+                                        historyPicker.pickIndex(pool.map { leftEntries[it] })
+                                            ?.let { leftHistoryIndex = pool[it] }
                                     }
                                 }
                                 val randomizeRightFallback: () -> Unit = {
@@ -901,9 +902,8 @@ internal fun CompareCompactScreen(
                                         } else {
                                             rightEntries.indices.filter { it != rightHistoryIndex }
                                         }
-                                        if (pool.isNotEmpty()) {
-                                            rightHistoryIndex = pool[(Math.random() * pool.size).toInt()]
-                                        }
+                                        historyPicker.pickIndex(pool.map { rightEntries[it] })
+                                            ?.let { rightHistoryIndex = pool[it] }
                                     }
                                 }
                                 Surface(

@@ -16,6 +16,7 @@ internal class CompareSuggestionPool(
 ) {
     private enum class Source { API, HISTORY, HISTORY_AWAITING_PAIR }
 
+    private val historyPicker = CompareHistoryPicker(random)
     private val pool = mutableListOf<CompareComparisonVideo>()
     private val picks = EnumMap<SuggestionSlot, CompareComparisonVideo>(SuggestionSlot::class.java)
     private var source = Source.API
@@ -101,12 +102,11 @@ internal class CompareSuggestionPool(
 
     private fun pickFromHistory(slot: SuggestionSlot, history: List<StreamHistoryEntry>) {
         val excludedKeys = picks.values.mapNotNull { videoKey(it) }
-        val picked = history
+        val candidates = history
             .distinctBy { entryKey(it) }
             .filter { entryKey(it) !in excludedKeys }
-            .randomOrNull(random)
-            ?: return
-        picks[slot] = toVideo(picked)
+        val picked = historyPicker.pickIndex(candidates) ?: return
+        picks[slot] = toVideo(candidates[picked])
     }
 
     private fun loadHistoryPair(history: List<StreamHistoryEntry>): Boolean {
@@ -117,8 +117,10 @@ internal class CompareSuggestionPool(
         if (candidates.size < 2) {
             return false
         }
-        picks[SuggestionSlot.LEFT] = toVideo(candidates.removeAt(random.nextInt(candidates.size)))
-        picks[SuggestionSlot.RIGHT] = toVideo(candidates.removeAt(random.nextInt(candidates.size)))
+        val left = candidates.removeAt(historyPicker.pickIndex(candidates) ?: return false)
+        val right = candidates.removeAt(historyPicker.pickIndex(candidates) ?: return false)
+        picks[SuggestionSlot.LEFT] = toVideo(left)
+        picks[SuggestionSlot.RIGHT] = toVideo(right)
         return true
     }
 
