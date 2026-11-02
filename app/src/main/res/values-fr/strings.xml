@@ -1023,6 +1023,7 @@
 
     <!-- Manifesto screen -->
     <string name="manifesto_tab_description">Manifeste</string>
+    <string name="manifesto_disclaimer">Ufonirpt n\’est affilié ni à NewPipe ni à tournesol.app.</string>
     <string name="manifesto_hero_title">Tournesol : pourquoi ? comment ?</string>
     <string name="manifesto_hero_body">Aujourd\’hui, les contenus que nous consommons sur les grandes plateformes sont choisis par des mécanismes appelés « algorithmes de recommandation » ou « IA de recommandation ».</string>
 
@@ -1073,7 +1074,6 @@
     <string name="manifesto_help_more_prefix">Découvrez-en plus sur\u0020</string>
 
     <string name="manifesto_further_title">Pour aller plus loin</string>
-    <string name="manifesto_further_link">[lien]</string>
 
     <string name="manifesto_notes_title">Notes</string>
     <string name="manifesto_note1">Selon les Facebook Files, une étude interne de Facebook/Meta montre qu\’Instagram contribue à dégrader la santé mentale des adolescentes. Aux États-Unis, 57 % des adolescentes déclarent éprouver une tristesse ou un désespoir persistants, contre 36 % en 2011, et 30 % révèlent avoir envisagé le suicide, contre 19 % en 2011. Selon les psychologues, l\’hypothèse d\’un accès constant aux réseaux sociaux explique le mieux cette crise de santé mentale.</string>

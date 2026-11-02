@@ -1082,6 +1082,7 @@
     <string name="unsupported_content_in_country">This content is not available for the currently selected content country.\n\nChange your selection from \"Settings > Content > Default content country\".</string>
 
     <!-- Manifesto screen -->
+    <string name="manifesto_disclaimer">Ufonirpt is not affiliated with NewPipe nor tournesol.app.</string>
     <string name="manifesto_hero_title">Tournesol: why? how?</string>
     <string name="manifesto_hero_body">Today, the content we consume on major platforms is chosen by mechanisms called \'recommendation algorithms\' or \'recommendation AIs\'.</string>
 
@@ -1116,7 +1117,7 @@
 
     <string name="manifesto_tournesol_title">The Tournesol project</string>
     <string name="manifesto_tournesol_body_prefix">The Tournesol project develops alternative and more democratic recommendation AIs, which rely on your judgments and your interests. Come try the platform on\u0020</string>
-    <string name="manifesto_tournesol_body_suffix"> !</string>
+    <string name="manifesto_tournesol_body_suffix">!</string>
     <string name="manifesto_tournesol_body2">Beyond that, the Tournesol association brings together volunteer citizens, researchers, content creators, developers. Its purpose is to defend the three principles proposed in this manifesto.</string>
 
     <string name="manifesto_help_title">This manifesto speaks to you and you want to help us?</string>
@@ -1132,7 +1133,6 @@
     <string name="manifesto_help_more_prefix">Find out more on\u0020</string>
 
     <string name="manifesto_further_title">To go further</string>
-    <string name="manifesto_further_link">[link]</string>
 
     <string name="manifesto_notes_title">Notes</string>
     <string name="manifesto_note1">According to the Facebook Files, an internal Facebook/Meta study shows that Instagram contributes to degrading teenage girls\' mental health. In the United States, 57% of teenage girls report experiencing persistent sadness or despair, compared to 36% in 2011, and 30% reveal they have considered suicide, compared to 19% in 2011. According to psychologists, the hypothesis of constant access to social networks best explains this mental health crisis.</string>
