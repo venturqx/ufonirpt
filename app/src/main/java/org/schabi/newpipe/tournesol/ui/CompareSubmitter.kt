@@ -1,7 +1,6 @@
 package org.schabi.newpipe.tournesol.ui
 
 import android.widget.Toast
-import androidx.annotation.StringRes
 import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.disposables.CompositeDisposable
 import io.reactivex.rxjava3.disposables.Disposable
@@ -66,7 +65,6 @@ internal class CompareSubmitter(
                     host.incrementComparisonCount()
                     userInfo.refresh()
                 }
-                showLongToast(saveResultMessageRes(result))
                 if (tracker.key == key) {
                     onSuccess()
                 }
@@ -89,7 +87,6 @@ internal class CompareSubmitter(
             },
             onResult = {
                 tracker.recordExtras(key, criteriaScores)
-                showLongToast(R.string.compare_more_submitted)
                 if (tracker.key == key) {
                     onSuccess()
                 }
@@ -160,10 +157,6 @@ internal class CompareSubmitter(
         }
     }
 
-    private fun showLongToast(@StringRes messageRes: Int) {
-        host.showToast(CompareToast(CompareMessage(messageRes), Toast.LENGTH_LONG))
-    }
-
     private fun requestRemoteCheck() {
         val key = tracker.key ?: return
         remoteCheck?.dispose()
@@ -174,10 +167,5 @@ internal class CompareSubmitter(
                 { /* ignore auto-check errors */ },
                 { /* no token, keep local state */ }
             )
-    }
-
-    private fun saveResultMessageRes(result: SaveResult): Int = when (result) {
-        SaveResult.CREATED -> R.string.compare_submitted
-        SaveResult.UPDATED -> R.string.compare_score_updated
     }
 }

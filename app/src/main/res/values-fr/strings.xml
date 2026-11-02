@@ -976,8 +976,10 @@
     <string name="compare_slide_up_to_cancel">Glissez vers le haut pour %1$s.</string>
     <string name="compare_goal_daily">Votre objectif du jour</string>
     <string name="compare_goal_weekly">Collectif hebdomadaire</string>
-    <string name="compare_all_criteria_scored">Vous avez noté tous les critères ! Bravo. Les envoyer maintenant ?</string>
-    <string name="compare_submit_extras">Envoyer</string>
+    <string name="compare_submit_extras">TOUT ENVOYER</string>
+    <string name="compare_resubmit_extras">RENVOYER</string>
+    <string name="compare_submitting_extras">ENVOI…</string>
+    <string name="compare_submitted_extras">ENVOYÉ</string>
     <string name="compare_status_please_rate">Veuillez noter</string>
     <string name="compare_status_submitting_main">Envoi du principal</string>
     <string name="compare_status_submitted_main">Envoyé</string>

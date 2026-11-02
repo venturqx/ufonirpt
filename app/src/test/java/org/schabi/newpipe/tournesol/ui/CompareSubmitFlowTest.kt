@@ -69,7 +69,7 @@ class CompareSubmitFlowTest {
         assertEquals(ComparisonScores(mainScore = 30), rig.store.scoresFor(KEY_AB))
         assertEquals(5, rig.comparisonCount)
         assertEquals(5, state.comparisonCount)
-        assertEquals(listOf(longToast(message(R.string.compare_submitted))), rig.toasts)
+        assertEquals(emptyList<String>(), rig.toasts)
         assertEquals(1, successes)
     }
 
@@ -84,7 +84,7 @@ class CompareSubmitFlowTest {
 
         assertEquals(listOf(SAVE, PATCH_AB), rig.server.calls)
         assertEquals(4, rig.comparisonCount)
-        assertEquals(listOf(longToast(message(R.string.compare_score_updated))), rig.toasts)
+        assertEquals(emptyList<String>(), rig.toasts)
         assertEquals(1, successes)
     }
 
@@ -96,7 +96,7 @@ class CompareSubmitFlowTest {
         rig.deliver()
 
         assertEquals(listOf(PATCH_AB), rig.server.calls)
-        assertEquals(listOf(longToast(message(R.string.compare_score_updated))), rig.toasts)
+        assertEquals(emptyList<String>(), rig.toasts)
     }
 
     @Test
@@ -193,7 +193,7 @@ class CompareSubmitFlowTest {
         assertTrue(state.submitted)
         assertEquals(30, rig.store.scoresFor(KEY_AB)?.mainScore)
         assertEquals(
-            listOf(shortToast(message(R.string.tournesol_login_success)), longToast(message(R.string.compare_submitted))),
+            listOf(shortToast(message(R.string.tournesol_login_success))),
             rig.toasts
         )
         assertEquals(1, successes)
@@ -381,7 +381,7 @@ class CompareSubmitFlowTest {
             ComparisonScores(12, mapOf("reliability" to 1, "pedagogy" to 9, "importance" to 4)),
             rig.store.scoresFor(KEY_AB)
         )
-        assertEquals(listOf(longToast(message(R.string.compare_more_submitted))), rig.toasts)
+        assertEquals(emptyList<String>(), rig.toasts)
         assertEquals(1, successes)
     }
 

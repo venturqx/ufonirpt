@@ -15,7 +15,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -32,15 +31,17 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Check
+import androidx.compose.material.icons.rounded.ChevronLeft
+import androidx.compose.material.icons.rounded.ChevronRight
+import androidx.compose.material.icons.rounded.FirstPage
 import androidx.compose.material.icons.rounded.KeyboardArrowDown
-import androidx.compose.material.icons.rounded.KeyboardArrowUp
 import androidx.compose.material.icons.rounded.PlayArrow
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -56,6 +57,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Rect
@@ -115,10 +117,10 @@ private val COMPACT_DIMENSIONS = listOf(
 @Composable
 private fun HistoryStepButtons(
     tint: Color,
-    canStepUp: Boolean,
     canStepDown: Boolean,
     playing: Boolean,
-    onStepUp: () -> Unit,
+    randomizeDescription: String,
+    onRandomize: () -> Unit,
     onStepDown: () -> Unit
 ) {
     Box(contentAlignment = Alignment.Center) {
@@ -127,14 +129,14 @@ private fun HistoryStepButtons(
                 modifier = Modifier
                     .size(width = 32.dp, height = 40.dp)
                     .clip(RoundedCornerShape(50))
-                    .clickable(enabled = canStepUp, onClick = onStepUp),
+                    .clickable(onClick = onRandomize),
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
-                    imageVector = Icons.Rounded.KeyboardArrowUp,
-                    contentDescription = stringResource(R.string.compare_history_previous),
-                    tint = tint.copy(alpha = if (canStepUp) 0.85f else 0.25f),
-                    modifier = Modifier.size(26.dp)
+                    painter = painterResource(R.drawable.ic_casino),
+                    contentDescription = randomizeDescription,
+                    tint = tint.copy(alpha = 0.85f),
+                    modifier = Modifier.size(20.dp)
                 )
             }
             Box(
@@ -430,6 +432,46 @@ internal fun CompareCompactScreen(
                                 )
                             }
                         }
+                        val randomizeLeftFallback: () -> Unit = {
+                            if (hasSuggestedLeft || hasSuggestedRight) {
+                                onRandomizeLeft()
+                            } else if (leftEntries.size >= 2) {
+                                val excluded = rightHistoryIndex
+                                    .takeIf { rightEntries.isNotEmpty() }
+                                    ?.let { rightEntries.getOrNull(it)?.streamId }
+                                val candidates = leftEntries.indices.filter { idx ->
+                                    idx != leftHistoryIndex &&
+                                        (excluded == null || leftEntries[idx].streamId != excluded)
+                                }
+                                val pool = if (candidates.isNotEmpty()) {
+                                    candidates
+                                } else {
+                                    leftEntries.indices.filter { it != leftHistoryIndex }
+                                }
+                                historyPicker.pickIndex(pool.map { leftEntries[it] })
+                                    ?.let { leftHistoryIndex = pool[it] }
+                            }
+                        }
+                        val randomizeRightFallback: () -> Unit = {
+                            if (hasSuggestedLeft || hasSuggestedRight) {
+                                onRandomizeRight()
+                            } else if (rightEntries.size >= 2) {
+                                val excluded = leftHistoryIndex
+                                    .takeIf { leftEntries.isNotEmpty() }
+                                    ?.let { leftEntries.getOrNull(it)?.streamId }
+                                val candidates = rightEntries.indices.filter { idx ->
+                                    idx != rightHistoryIndex &&
+                                        (excluded == null || rightEntries[idx].streamId != excluded)
+                                }
+                                val pool = if (candidates.isNotEmpty()) {
+                                    candidates
+                                } else {
+                                    rightEntries.indices.filter { it != rightHistoryIndex }
+                                }
+                                historyPicker.pickIndex(pool.map { rightEntries[it] })
+                                    ?.let { rightHistoryIndex = pool[it] }
+                            }
+                        }
                         val pairSection: @Composable () -> Unit = {
                             val showLeftContent = hasSuggestedLeft || selectedHistoryEntryLeft != null
                             val showRightContent = hasSuggestedRight || selectedHistoryEntryRight != null
@@ -471,15 +513,11 @@ internal fun CompareCompactScreen(
                                                 if (showLeftContent) {
                                                     HistoryStepButtons(
                                                         tint = Color(0xFF42A5F5),
-                                                        canStepUp = !hasSuggestedLeft &&
-                                                            stepHistoryIndex(leftEntries, leftHistoryIndex, -1, leftAvoid) != null,
                                                         canStepDown = !hasSuggestedLeft &&
                                                             stepHistoryIndex(leftEntries, leftHistoryIndex, 1, leftAvoid) != null,
                                                         playing = isLeftCurrent,
-                                                        onStepUp = {
-                                                            stepHistoryIndex(leftEntries, leftHistoryIndex, -1, leftAvoid)
-                                                                ?.let { leftHistoryIndex = it }
-                                                        },
+                                                        randomizeDescription = stringResource(R.string.compare_randomize_left),
+                                                        onRandomize = randomizeLeftFallback,
                                                         onStepDown = {
                                                             stepHistoryIndex(leftEntries, leftHistoryIndex, 1, leftAvoid)
                                                                 ?.let { leftHistoryIndex = it }
@@ -636,15 +674,11 @@ internal fun CompareCompactScreen(
                                                     }
                                                     HistoryStepButtons(
                                                         tint = Color(0xFFE57373),
-                                                        canStepUp = !hasSuggestedRight &&
-                                                            stepHistoryIndex(rightEntries, rightHistoryIndex, -1, rightAvoid) != null,
                                                         canStepDown = !hasSuggestedRight &&
                                                             stepHistoryIndex(rightEntries, rightHistoryIndex, 1, rightAvoid) != null,
                                                         playing = isRightCurrent,
-                                                        onStepUp = {
-                                                            stepHistoryIndex(rightEntries, rightHistoryIndex, -1, rightAvoid)
-                                                                ?.let { rightHistoryIndex = it }
-                                                        },
+                                                        randomizeDescription = stringResource(R.string.compare_randomize_right),
+                                                        onRandomize = randomizeRightFallback,
                                                         onStepDown = {
                                                             stepHistoryIndex(rightEntries, rightHistoryIndex, 1, rightAvoid)
                                                                 ?.let { rightHistoryIndex = it }
@@ -783,166 +817,31 @@ internal fun CompareCompactScreen(
                                 }
                             }
 
-                            // Status line: "{text A} {text B}"
                             Row(
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .padding(top = 8.dp, bottom = 4.dp),
+                                    .padding(top = 8.dp, bottom = 4.dp)
+                                    .alpha(if (isDragging) 1f else 0f),
                                 horizontalArrangement = Arrangement.Center,
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
-                                val touchedExtras = touchedExtraCount(state.picker.touchedCriteria.value)
                                 val statusColor = colorResource(R.color.tournesol_content).copy(alpha = 0.55f)
-                                if (isDragging) {
-                                    val cancelColor = shadedAccent(Color(0xFFE57373))
-                                    val cancelParts = stringResource(R.string.compare_slide_up_to_cancel)
-                                        .split("%1\$s", limit = 2)
-                                    val cancelLabel = stringResource(R.string.compare_cancel)
-                                    val cancelText = buildAnnotatedString {
-                                        withStyle(SpanStyle(color = statusColor)) {
-                                            append(cancelParts.getOrNull(0).orEmpty())
-                                        }
-                                        withStyle(SpanStyle(color = cancelColor)) {
-                                            append(cancelLabel)
-                                        }
-                                        withStyle(SpanStyle(color = statusColor)) {
-                                            append(cancelParts.getOrNull(1).orEmpty())
-                                        }
+                                val cancelColor = shadedAccent(Color(0xFFE57373))
+                                val cancelParts = stringResource(R.string.compare_slide_up_to_cancel)
+                                    .split("%1\$s", limit = 2)
+                                val cancelLabel = stringResource(R.string.compare_cancel)
+                                val cancelText = buildAnnotatedString {
+                                    withStyle(SpanStyle(color = statusColor)) {
+                                        append(cancelParts.getOrNull(0).orEmpty())
                                     }
-                                    Text(text = cancelText, style = MaterialTheme.typography.labelSmall)
-                                } else {
-                                    // Text A — main criterion
-                                    val textA = when {
-                                        state.submitInProgress && !state.submitted ->
-                                            stringResource(R.string.compare_status_submitting_main)
-
-                                        state.submitted -> stringResource(R.string.compare_status_submitted_main)
-
-                                        else -> stringResource(R.string.compare_status_please_rate)
+                                    withStyle(SpanStyle(color = cancelColor)) {
+                                        append(cancelLabel)
                                     }
-                                    Text(
-                                        text = "$textA ",
-                                        color = statusColor,
-                                        style = MaterialTheme.typography.labelSmall
-                                    )
-                                    Image(
-                                        painter = painterResource(R.drawable.logo_small),
-                                        contentDescription = null,
-                                        modifier = Modifier.size(14.dp)
-                                    )
-                                    // Text B — extra criteria
-                                    val textB = when {
-                                        state.extraSubmitted -> stringResource(
-                                            R.string.compare_status_submitted_extra,
-                                            touchedExtras,
-                                            EXTRA_CRITERIA.size
-                                        )
-
-                                        else -> stringResource(
-                                            R.string.compare_status_rating_extra,
-                                            touchedExtras,
-                                            EXTRA_CRITERIA.size
-                                        )
-                                    }
-                                    Text(
-                                        text = " · $textB",
-                                        color = statusColor,
-                                        style = MaterialTheme.typography.labelSmall
-                                    )
-                                    if (state.extraSubmitted) {
-                                        Icon(
-                                            imageVector = Icons.Rounded.Check,
-                                            contentDescription = null,
-                                            tint = shadedAccent(Color(0xFF81C784)),
-                                            modifier = Modifier.padding(start = 2.dp).size(14.dp)
-                                        )
+                                    withStyle(SpanStyle(color = statusColor)) {
+                                        append(cancelParts.getOrNull(1).orEmpty())
                                     }
                                 }
-                            }
-
-                            Row(
-                                modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.Center,
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                val diceEnabled = !state.suggestionsLoading
-                                val randomizeLeftFallback: () -> Unit = {
-                                    if (hasSuggestedLeft || hasSuggestedRight) {
-                                        onRandomizeLeft()
-                                    } else if (leftEntries.size >= 2) {
-                                        val excluded = rightHistoryIndex
-                                            .takeIf { rightEntries.isNotEmpty() }
-                                            ?.let { rightEntries.getOrNull(it)?.streamId }
-                                        val candidates = leftEntries.indices.filter { idx ->
-                                            idx != leftHistoryIndex &&
-                                                (excluded == null || leftEntries[idx].streamId != excluded)
-                                        }
-                                        val pool = if (candidates.isNotEmpty()) {
-                                            candidates
-                                        } else {
-                                            leftEntries.indices.filter { it != leftHistoryIndex }
-                                        }
-                                        historyPicker.pickIndex(pool.map { leftEntries[it] })
-                                            ?.let { leftHistoryIndex = pool[it] }
-                                    }
-                                }
-                                val randomizeRightFallback: () -> Unit = {
-                                    if (hasSuggestedLeft || hasSuggestedRight) {
-                                        onRandomizeRight()
-                                    } else if (rightEntries.size >= 2) {
-                                        val excluded = leftHistoryIndex
-                                            .takeIf { leftEntries.isNotEmpty() }
-                                            ?.let { leftEntries.getOrNull(it)?.streamId }
-                                        val candidates = rightEntries.indices.filter { idx ->
-                                            idx != rightHistoryIndex &&
-                                                (excluded == null || rightEntries[idx].streamId != excluded)
-                                        }
-                                        val pool = if (candidates.isNotEmpty()) {
-                                            candidates
-                                        } else {
-                                            rightEntries.indices.filter { it != rightHistoryIndex }
-                                        }
-                                        historyPicker.pickIndex(pool.map { rightEntries[it] })
-                                            ?.let { rightHistoryIndex = pool[it] }
-                                    }
-                                }
-                                Surface(
-                                    onClick = { randomizeLeftFallback() },
-                                    enabled = diceEnabled,
-                                    modifier = Modifier.size(width = 56.dp, height = 40.dp),
-                                    shape = RoundedCornerShape(12.dp),
-                                    color = Color(0xFF42A5F5).copy(alpha = if (diceEnabled) 0.15f else 0.08f)
-                                ) {
-                                    Box(contentAlignment = Alignment.Center) {
-                                        Image(
-                                            painter = painterResource(R.drawable.ic_casino),
-                                            contentDescription = stringResource(R.string.compare_randomize_left),
-                                            colorFilter = ColorFilter.tint(
-                                                Color(0xFF42A5F5).copy(alpha = if (diceEnabled) 1f else 0.38f)
-                                            ),
-                                            modifier = Modifier.size(22.dp)
-                                        )
-                                    }
-                                }
-                                Spacer(modifier = Modifier.width(12.dp))
-                                Surface(
-                                    onClick = { randomizeRightFallback() },
-                                    enabled = diceEnabled,
-                                    modifier = Modifier.size(width = 56.dp, height = 40.dp),
-                                    shape = RoundedCornerShape(12.dp),
-                                    color = Color(0xFFE57373).copy(alpha = if (diceEnabled) 0.15f else 0.08f)
-                                ) {
-                                    Box(contentAlignment = Alignment.Center) {
-                                        Image(
-                                            painter = painterResource(R.drawable.ic_casino),
-                                            contentDescription = stringResource(R.string.compare_randomize_right),
-                                            colorFilter = ColorFilter.tint(
-                                                Color(0xFFE57373).copy(alpha = if (diceEnabled) 1f else 0.38f)
-                                            ),
-                                            modifier = Modifier.size(22.dp)
-                                        )
-                                    }
-                                }
+                                Text(text = cancelText, style = MaterialTheme.typography.labelSmall)
                             }
                         }
                         if (wideLayout) {
@@ -1267,58 +1166,61 @@ internal fun CompareCompactScreen(
                                     }
                                 }
                                 if (pageCount > 1) {
+                                    val goToPage: (Int) -> Unit = { targetPage ->
+                                        val targetStart = targetPage * visiblePageSize
+                                        val targetPageCount = kotlin.math.min(
+                                            visiblePageSize,
+                                            visibleIndices.size - targetStart
+                                        ).coerceAtLeast(1)
+                                        val targetOffset = selectedOffsetInPage.coerceIn(
+                                            0,
+                                            targetPageCount - 1
+                                        )
+                                        historyOverlayPage = targetPage
+                                        historyOverlayIndex = visibleIndices[targetStart + targetOffset]
+                                    }
+                                    val pagerTint = colorResource(R.color.tournesol_on_overlay)
+                                    val pagerColors = IconButtonDefaults.iconButtonColors(
+                                        contentColor = pagerTint,
+                                        disabledContentColor = pagerTint.copy(alpha = 0.3f)
+                                    )
                                     Row(
                                         modifier = Modifier.fillMaxWidth(),
                                         horizontalArrangement = Arrangement.Center,
                                         verticalAlignment = Alignment.CenterVertically
                                     ) {
-                                        OutlinedButton(
-                                            onClick = {
-                                                val targetPage = (currentPage - 1).coerceAtLeast(0)
-                                                val targetStart = targetPage * visiblePageSize
-                                                val targetPageCount = kotlin.math.min(
-                                                    visiblePageSize,
-                                                    visibleIndices.size - targetStart
-                                                ).coerceAtLeast(1)
-                                                val targetOffset = selectedOffsetInPage.coerceIn(
-                                                    0,
-                                                    targetPageCount - 1
-                                                )
-                                                historyOverlayPage = targetPage
-                                                historyOverlayIndex = visibleIndices[targetStart + targetOffset]
-                                            },
+                                        IconButton(
+                                            onClick = { goToPage(0) },
                                             enabled = currentPage > 0,
-                                            contentPadding = PaddingValues(
-                                                horizontal = 14.dp,
-                                                vertical = 4.dp
-                                            )
+                                            colors = pagerColors
                                         ) {
-                                            Text("<<")
+                                            Icon(
+                                                Icons.Rounded.FirstPage,
+                                                contentDescription = stringResource(R.string.tournesol_page_first)
+                                            )
                                         }
-                                        Spacer(modifier = Modifier.width(10.dp))
-                                        OutlinedButton(
-                                            onClick = {
-                                                val targetPage = (currentPage + 1).coerceAtMost(pageCount - 1)
-                                                val targetStart = targetPage * visiblePageSize
-                                                val targetPageCount = kotlin.math.min(
-                                                    visiblePageSize,
-                                                    visibleIndices.size - targetStart
-                                                ).coerceAtLeast(1)
-                                                val targetOffset = selectedOffsetInPage.coerceIn(
-                                                    0,
-                                                    targetPageCount - 1
-                                                )
-                                                historyOverlayPage = targetPage
-                                                historyOverlayIndex = visibleIndices[targetStart + targetOffset]
-                                            },
+                                        Spacer(modifier = Modifier.width(16.dp))
+                                        IconButton(
+                                            onClick = { goToPage((currentPage - 1).coerceAtLeast(0)) },
+                                            enabled = currentPage > 0,
+                                            colors = pagerColors
+                                        ) {
+                                            Icon(
+                                                Icons.Rounded.ChevronLeft,
+                                                contentDescription = stringResource(R.string.tournesol_page_previous)
+                                            )
+                                        }
+                                        IconButton(
+                                            onClick = { goToPage((currentPage + 1).coerceAtMost(pageCount - 1)) },
                                             enabled = currentPage < pageCount - 1,
-                                            contentPadding = PaddingValues(
-                                                horizontal = 14.dp,
-                                                vertical = 4.dp
-                                            )
+                                            colors = pagerColors
                                         ) {
-                                            Text(">>")
+                                            Icon(
+                                                Icons.Rounded.ChevronRight,
+                                                contentDescription = stringResource(R.string.tournesol_page_next)
+                                            )
                                         }
+                                        Spacer(modifier = Modifier.width(16.dp + 48.dp))
                                     }
                                 }
                             }

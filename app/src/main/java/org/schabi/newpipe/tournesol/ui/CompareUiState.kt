@@ -86,6 +86,7 @@ internal class ComparePickerProgress {
     val touchedCriteria = mutableStateOf(setOf<String>())
     val allExtrasDone = mutableStateOf(false)
     val submittedCriteria = mutableStateOf(setOf<String>())
+    val submittedExtraScores = mutableStateOf(mapOf<String, Int>())
     val mainUnsaved = mutableStateOf(false)
 }
 

@@ -491,6 +491,9 @@
     <string name="tournesol_criteria_diversity_inclusion">Diversity &amp; inclusion</string>
     <string name="tournesol_criteria_backfire_risk">Resilient to backfire risks</string>
     <string name="tournesol_criteria_better_habits">Encourages better habits</string>
+    <string name="tournesol_page_first">First page</string>
+    <string name="tournesol_page_previous">Previous page</string>
+    <string name="tournesol_page_next">Next page</string>
     <string name="export_complete_toast">Exported</string>
     <string name="import_complete_toast">Imported</string>
     <string name="no_valid_zip_file">No valid ZIP file</string>
@@ -553,8 +556,10 @@
     <string name="compare_slide_up_to_cancel">Slide up to %1$s.</string>
     <string name="compare_goal_daily">Your daily</string>
     <string name="compare_goal_weekly">Weekly collective</string>
-    <string name="compare_all_criteria_scored">You scored every criterion! Good job. Submit it now?</string>
-    <string name="compare_submit_extras">Submit</string>
+    <string name="compare_submit_extras">SUBMIT ALL</string>
+    <string name="compare_resubmit_extras">RESUBMIT</string>
+    <string name="compare_submitting_extras">SUBMITTING…</string>
+    <string name="compare_submitted_extras">SUBMITTED</string>
     <string name="compare_status_please_rate">Please rate</string>
     <string name="compare_status_submitting_main">Submitting main</string>
     <string name="compare_status_submitted_main">Sent</string>

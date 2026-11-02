@@ -44,7 +44,9 @@ import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.graphics.StrokeJoin
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.clipRect
@@ -274,6 +276,7 @@ internal fun LollipopPickerWithIntro(
     val touchedCriteria = progress.touchedCriteria
     val allExtrasDone = progress.allExtrasDone
     val submittedCriteria = progress.submittedCriteria
+    val submittedExtraScores = progress.submittedExtraScores
     val mainUnsaved = progress.mainUnsaved
     LaunchedEffect(pairKey) {
         if (progress.pairKey != pairKey) {
@@ -283,6 +286,7 @@ internal fun LollipopPickerWithIntro(
             touchedCriteria.value = emptySet()
             allExtrasDone.value = false
             submittedCriteria.value = emptySet()
+            submittedExtraScores.value = emptyMap()
             mainUnsaved.value = false
         }
     }
@@ -311,9 +315,12 @@ internal fun LollipopPickerWithIntro(
                 onSubmitExtrasBatch?.invoke(batch) {
                     submittedCriteria.value =
                         submittedCriteria.value + batch.map { it.criteria }
+                    submittedExtraScores.value =
+                        submittedExtraScores.value + batch.associate { it.criteria to it.score }
                 }
             },
             submittedCriteria = submittedCriteria,
+            submittedExtraScores = submittedExtraScores.value,
             hoistedDragScore = hoistedDragScore,
             modifier = modifier
         )
@@ -349,6 +356,7 @@ private fun LargelyRecommendedSlider(
     isMainSaved: Boolean,
     onSubmitExtrasBatch: (List<CriteriaScore>) -> Unit,
     submittedCriteria: MutableState<Set<String>>,
+    submittedExtraScores: Map<String, Int>,
     hoistedDragScore: MutableState<Int?>? = null,
     modifier: Modifier = Modifier
 ) {
@@ -373,9 +381,12 @@ private fun LargelyRecommendedSlider(
 
     Column(modifier = modifier.fillMaxWidth().padding(bottom = 8.dp)) {
         if (allExtrasDone.value) {
-            AllCriteriaScoredMessage()
+            val batch = touchedExtraScores(touchedCriteria.value, scores)
             SubmitExtrasChip(
-                onClick = { onSubmitExtrasBatch(touchedExtraScores(touchedCriteria.value, scores)) }
+                submitting = submitInProgress,
+                submitted = batch.isNotEmpty() && batch.all { submittedExtraScores[it.criteria] == it.score },
+                everSubmitted = submittedExtraScores.isNotEmpty(),
+                onClick = { onSubmitExtrasBatch(batch) }
             )
             LollipopHeadsRow(
                 scores = scores,
@@ -438,34 +449,29 @@ private fun LargelyRecommendedSlider(
 }
 
 @Composable
-private fun AllCriteriaScoredMessage() {
+private fun SubmitExtrasChip(
+    submitting: Boolean,
+    submitted: Boolean,
+    everSubmitted: Boolean,
+    onClick: () -> Unit
+) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(top = 16.dp, start = 16.dp, end = 16.dp),
+            .padding(top = 16.dp, bottom = 8.dp),
         horizontalArrangement = Arrangement.Center
     ) {
-        Text(
-            text = stringResource(R.string.compare_all_criteria_scored),
-            color = colorResource(R.color.tournesol_content).copy(alpha = 0.9f),
-            fontSize = 13.sp,
-            textAlign = TextAlign.Center
-        )
-    }
-}
-
-@Composable
-private fun SubmitExtrasChip(onClick: () -> Unit) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(top = 8.dp, bottom = 8.dp),
-        horizontalArrangement = Arrangement.Center
-    ) {
+        val label = when {
+            submitted -> stringResource(R.string.compare_submitted_extras)
+            submitting -> stringResource(R.string.compare_submitting_extras)
+            everSubmitted -> stringResource(R.string.compare_resubmit_extras)
+            else -> stringResource(R.string.compare_submit_extras)
+        }
         FilterChip(
-            selected = true,
+            selected = !submitted,
             onClick = onClick,
-            label = { Text(text = stringResource(R.string.compare_submit_extras)) },
+            enabled = !submitting && !submitted,
+            label = { Text(text = label) },
             colors = FilterChipDefaults.filterChipColors(),
             shape = RoundedCornerShape(8.dp),
             border = null
@@ -720,6 +726,7 @@ private fun DrawScope.drawLollipopHead(
     touched: Boolean = true,
     iconHighlighted: Boolean = false,
     belowLabelShift: Float = 0f,
+    labelAlwaysBelow: Boolean = false,
     scale: Float = 1f
 ) {
     val cx = center.x
@@ -777,13 +784,32 @@ private fun DrawScope.drawLollipopHead(
 
     labelPaint.color = color.copy(alpha = ringAlpha).toArgb()
     val txt = score.toString()
-    val labelY = if (score >= 0) {
+    val labelY = if (score >= 0 && !labelAlwaysBelow) {
         cy - circleRadius - textGap
     } else {
         cy + circleRadius + textSizePx + textGap * 0.3f + belowLabelShift
     }
     drawContext.canvas.nativeCanvas.drawText(txt, cx, labelY, labelPaint)
+
+    if (submitted) {
+        val badgeRadius = (5.dp * scale).toPx()
+        val badgeCenter = Offset(cx + circleRadius * 0.72f, cy - circleRadius * 0.72f)
+        drawCircle(color = fillColor, radius = badgeRadius + (1.5.dp * scale).toPx(), center = badgeCenter)
+        drawCircle(color = SUBMITTED_BADGE_GREEN, radius = badgeRadius, center = badgeCenter)
+        val check = Path().apply {
+            moveTo(badgeCenter.x - badgeRadius * 0.5f, badgeCenter.y + badgeRadius * 0.02f)
+            lineTo(badgeCenter.x - badgeRadius * 0.12f, badgeCenter.y + badgeRadius * 0.4f)
+            lineTo(badgeCenter.x + badgeRadius * 0.52f, badgeCenter.y - badgeRadius * 0.35f)
+        }
+        drawPath(
+            path = check,
+            color = Color.White,
+            style = Stroke(width = (1.5.dp * scale).toPx(), cap = StrokeCap.Round, join = StrokeJoin.Round)
+        )
+    }
 }
+
+private val SUBMITTED_BADGE_GREEN = Color(0xFF2EA043)
 
 @Composable
 private fun LollipopHead(
@@ -822,7 +848,7 @@ private fun LollipopHead(
     val interactionSource = remember { MutableInteractionSource() }
     Canvas(
         modifier = modifier
-            .size(width = 36.dp * scale, height = 34.dp * scale + textHeight * 2 + indicatorSpace)
+            .size(width = 36.dp * scale, height = 34.dp * scale + textHeight + indicatorSpace)
             .selectable(
                 selected = selected,
                 interactionSource = interactionSource,
@@ -835,7 +861,7 @@ private fun LollipopHead(
                 stateDescription = score.toString()
             }
     ) {
-        val center = Offset(size.width / 2f, (size.height - indicatorSpacePx) / 2f)
+        val center = Offset(size.width / 2f, (size.height - indicatorSpacePx - textSizePx) / 2f)
         drawLollipopHead(
             center = center,
             color = color,
@@ -854,6 +880,7 @@ private fun LollipopHead(
             touched = touched,
             iconHighlighted = selected,
             belowLabelShift = indicatorSpacePx,
+            labelAlwaysBelow = true,
             scale = scale
         )
         if (selected) {

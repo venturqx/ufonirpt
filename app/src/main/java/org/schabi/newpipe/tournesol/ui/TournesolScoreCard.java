@@ -4,10 +4,6 @@ import android.content.Context;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
-import android.graphics.drawable.GradientDrawable;
-import android.text.SpannableString;
-import android.text.Spanned;
-import android.text.style.StyleSpan;
 import android.util.AttributeSet;
 import android.util.TypedValue;
 import android.view.Gravity;
@@ -37,7 +33,6 @@ import org.schabi.newpipe.views.DistributionCurve;
 import org.schabi.newpipe.views.DistributionCurveView;
 import org.schabi.newpipe.views.ScoreCacheUrls;
 import org.schabi.newpipe.views.ScoreCardLoad;
-import org.schabi.newpipe.views.TitledDescription;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -56,21 +51,20 @@ public class TournesolScoreCard extends LinearLayout {
 
     private static final class DescriptionRow {
         private final LinearLayout root;
-        private final ImageView icon;
+        private final TextView title;
         private final TextView text;
         private final LinearLayout miniChart;
 
-        DescriptionRow(final LinearLayout root, final ImageView icon, final TextView text,
+        DescriptionRow(final LinearLayout root, final TextView title, final TextView text,
                        final LinearLayout miniChart) {
             this.root = root;
-            this.icon = icon;
+            this.title = title;
             this.text = text;
             this.miniChart = miniChart;
         }
     }
 
     private static final int CHART_HEIGHT_DP = 28;
-    private static final int DESCRIPTION_SURFACE_ALPHA = 0x10;
 
     private final Map<String, CriterionDistribution> criteriaDistributions = new LinkedHashMap<>();
     private final CompositeDisposable disposables = new CompositeDisposable();
@@ -329,61 +323,57 @@ public class TournesolScoreCard extends LinearLayout {
 
     private DescriptionRow createDescriptionRow() {
         final LinearLayout root = new LinearLayout(getContext());
-        root.setOrientation(LinearLayout.HORIZONTAL);
-        root.setGravity(Gravity.CENTER_VERTICAL);
-        root.setPadding(dpToPx(12), dpToPx(12), dpToPx(12), dpToPx(12));
-        root.setBackground(createDescriptionBackground());
+        root.setOrientation(LinearLayout.VERTICAL);
         final LinearLayout.LayoutParams rootParams = new LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
                 LinearLayout.LayoutParams.WRAP_CONTENT);
-        rootParams.topMargin = dpToPx(4);
+        rootParams.topMargin = dpToPx(12);
         root.setLayoutParams(rootParams);
         root.setVisibility(GONE);
 
-        final ImageView icon = createDescriptionIcon();
-        final TextView text = createDescriptionText();
+        final LinearLayout titleRow = new LinearLayout(getContext());
+        titleRow.setOrientation(LinearLayout.HORIZONTAL);
+        titleRow.setGravity(Gravity.CENTER_VERTICAL);
+
+        final TextView title = createDescriptionTitle();
         final LinearLayout miniChart = createMiniChartContainer();
+        final TextView text = createDescriptionText();
 
-        root.addView(icon);
+        titleRow.addView(title);
+        titleRow.addView(miniChart);
+        root.addView(titleRow);
         root.addView(text);
-        root.addView(miniChart);
-        return new DescriptionRow(root, icon, text, miniChart);
+        return new DescriptionRow(root, title, text, miniChart);
     }
 
-    private GradientDrawable createDescriptionBackground() {
-        final GradientDrawable background = new GradientDrawable();
-        background.setColor(ColorUtils.setAlphaComponent(
-                ContextCompat.getColor(getContext(), R.color.tournesol_content),
-                DESCRIPTION_SURFACE_ALPHA));
-        background.setCornerRadius(dpToPx(12));
-        return background;
-    }
-
-    private ImageView createDescriptionIcon() {
-        final ImageView icon = new ImageView(getContext());
-        final int iconSize = dpToPx(28);
-        icon.setLayoutParams(new LinearLayout.LayoutParams(iconSize, iconSize));
-        return icon;
+    private TextView createDescriptionTitle() {
+        final TextView title = new TextView(getContext());
+        title.setLayoutParams(new LinearLayout.LayoutParams(
+                0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f));
+        title.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14);
+        title.setTypeface(Typeface.DEFAULT_BOLD);
+        title.setTextColor(ContextCompat.getColor(getContext(), R.color.tournesol_content));
+        title.setMaxLines(1);
+        return title;
     }
 
     private TextView createDescriptionText() {
         final TextView text = new TextView(getContext());
         final LinearLayout.LayoutParams textParams = new LinearLayout.LayoutParams(
-                0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f);
-        textParams.setMarginStart(dpToPx(12));
+                LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+        textParams.topMargin = dpToPx(4);
         text.setLayoutParams(textParams);
         text.setTextSize(TypedValue.COMPLEX_UNIT_SP, 13);
         text.setLineSpacing(dpToPx(2), 1f);
         text.setTextColor(ContextCompat.getColor(getContext(), R.color.tournesol_content_muted));
-        text.setMaxLines(4);
         return text;
     }
 
     private LinearLayout createMiniChartContainer() {
         final LinearLayout miniChart = new LinearLayout(getContext());
         final LinearLayout.LayoutParams miniParams = new LinearLayout.LayoutParams(
-                dpToPx(72), LinearLayout.LayoutParams.WRAP_CONTENT);
-        miniParams.setMarginStart(dpToPx(12));
+                dpToPx(64), LinearLayout.LayoutParams.WRAP_CONTENT);
+        miniParams.setMarginStart(dpToPx(16));
         miniChart.setLayoutParams(miniParams);
         return miniChart;
     }
@@ -399,21 +389,11 @@ public class TournesolScoreCard extends LinearLayout {
         final TournesolCriterionStyle style =
                 TournesolCriterionStyle.find(entry.getCriteria());
         if (style != null) {
-            descRow.icon.setImageResource(style.getIconRes());
-            descRow.text.setText(descriptionText(style));
+            descRow.title.setText(style.getLabelRes());
+            descRow.text.setText(style.getDescriptionRes());
             descRow.root.setVisibility(VISIBLE);
             showMiniChart(descRow.miniChart, entry.getCriteria());
         }
-    }
-
-    private SpannableString descriptionText(final TournesolCriterionStyle style) {
-        final TitledDescription description = TitledDescription.of(
-                getContext().getString(style.getLabelRes()),
-                getContext().getString(style.getDescriptionRes()));
-        final SpannableString spannable = new SpannableString(description.getText());
-        spannable.setSpan(new StyleSpan(Typeface.BOLD),
-                0, description.getTitleEnd(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-        return spannable;
     }
 
     private void showMiniChart(final LinearLayout miniChart, final String criteria) {
