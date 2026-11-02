@@ -57,6 +57,11 @@ internal fun stepHistoryIndex(
     .takeWhile { it in entries.indices }
     .firstOrNull { !isSameVideo(entries[it], avoid) }
 
+internal fun visibleHistoryIndices(
+    entries: List<StreamHistoryEntry>,
+    avoid: StreamHistoryEntry?
+): List<Int> = entries.indices.filter { !isSameVideo(entries[it], avoid) }
+
 internal fun distinctHistoryIndex(
     entries: List<StreamHistoryEntry>,
     from: Int,

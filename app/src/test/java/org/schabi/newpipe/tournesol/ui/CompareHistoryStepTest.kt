@@ -50,4 +50,10 @@ class CompareHistoryStepTest {
     fun `distinct index is null when the only entry collides`() {
         assertNull(distinctHistoryIndex(listOf(historyEntry("a")), 0, historyEntry("a")))
     }
+
+    @Test
+    fun `visible indices skip the avoided video and keep absolute positions`() {
+        assertEquals(listOf(0, 2, 3), visibleHistoryIndices(entries, historyEntry("b")))
+        assertEquals(listOf(0, 1, 2, 3), visibleHistoryIndices(entries, null))
+    }
 }

@@ -87,7 +87,6 @@ import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.TextUnitType
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import androidx.compose.ui.window.DialogWindowProvider
@@ -116,62 +115,49 @@ private fun HistoryStepButtons(
     tint: Color,
     canStepUp: Boolean,
     canStepDown: Boolean,
+    playing: Boolean,
     onStepUp: () -> Unit,
     onStepDown: () -> Unit
 ) {
-    Column {
-        Box(
-            modifier = Modifier
-                .size(width = 32.dp, height = 40.dp)
-                .clip(RoundedCornerShape(50))
-                .clickable(enabled = canStepUp, onClick = onStepUp),
-            contentAlignment = Alignment.Center
-        ) {
+    Box(contentAlignment = Alignment.Center) {
+        Column {
+            Box(
+                modifier = Modifier
+                    .size(width = 32.dp, height = 40.dp)
+                    .clip(RoundedCornerShape(50))
+                    .clickable(enabled = canStepUp, onClick = onStepUp),
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    imageVector = Icons.Rounded.KeyboardArrowUp,
+                    contentDescription = stringResource(R.string.compare_history_previous),
+                    tint = tint.copy(alpha = if (canStepUp) 0.85f else 0.25f),
+                    modifier = Modifier.size(26.dp)
+                )
+            }
+            Box(
+                modifier = Modifier
+                    .size(width = 32.dp, height = 40.dp)
+                    .clip(RoundedCornerShape(50))
+                    .clickable(enabled = canStepDown, onClick = onStepDown),
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    imageVector = Icons.Rounded.KeyboardArrowDown,
+                    contentDescription = stringResource(R.string.compare_history_next),
+                    tint = tint.copy(alpha = if (canStepDown) 0.85f else 0.25f),
+                    modifier = Modifier.size(26.dp)
+                )
+            }
+        }
+        if (playing) {
             Icon(
-                imageVector = Icons.Rounded.KeyboardArrowUp,
-                contentDescription = stringResource(R.string.compare_history_previous),
-                tint = tint.copy(alpha = if (canStepUp) 0.85f else 0.25f),
-                modifier = Modifier.size(26.dp)
+                imageVector = Icons.Rounded.PlayArrow,
+                contentDescription = stringResource(R.string.compare_playing),
+                tint = tint,
+                modifier = Modifier.size(18.dp)
             )
         }
-        Box(
-            modifier = Modifier
-                .size(width = 32.dp, height = 40.dp)
-                .clip(RoundedCornerShape(50))
-                .clickable(enabled = canStepDown, onClick = onStepDown),
-            contentAlignment = Alignment.Center
-        ) {
-            Icon(
-                imageVector = Icons.Rounded.KeyboardArrowDown,
-                contentDescription = stringResource(R.string.compare_history_next),
-                tint = tint.copy(alpha = if (canStepDown) 0.85f else 0.25f),
-                modifier = Modifier.size(26.dp)
-            )
-        }
-    }
-}
-
-@Composable
-private fun PlayingBadge(accent: Color, modifier: Modifier = Modifier) {
-    Row(
-        modifier = modifier
-            .padding(4.dp)
-            .clip(RoundedCornerShape(4.dp))
-            .background(Color.Black.copy(alpha = 0.72f))
-            .padding(start = 2.dp, end = 5.dp, top = 1.dp, bottom = 1.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Icon(
-            imageVector = Icons.Rounded.PlayArrow,
-            contentDescription = null,
-            tint = accent,
-            modifier = Modifier.size(14.dp)
-        )
-        Text(
-            text = stringResource(R.string.compare_playing),
-            style = MaterialTheme.typography.labelSmall.copy(fontSize = 10.sp),
-            color = Color.White
-        )
     }
 }
 
@@ -486,6 +472,7 @@ internal fun CompareCompactScreen(
                                                             stepHistoryIndex(leftEntries, leftHistoryIndex, -1, leftAvoid) != null,
                                                         canStepDown = !hasSuggestedLeft &&
                                                             stepHistoryIndex(leftEntries, leftHistoryIndex, 1, leftAvoid) != null,
+                                                        playing = isLeftCurrent,
                                                         onStepUp = {
                                                             stepHistoryIndex(leftEntries, leftHistoryIndex, -1, leftAvoid)
                                                                 ?.let { leftHistoryIndex = it }
@@ -557,12 +544,6 @@ internal fun CompareCompactScreen(
                                                                         thumbnailHeight = 52.dp * scale,
                                                                         showMeta = false,
                                                                         contentScale = ContentScale.Fit
-                                                                    )
-                                                                }
-                                                                if (isLeftCurrent) {
-                                                                    PlayingBadge(
-                                                                        accent = Color(0xFF42A5F5),
-                                                                        modifier = Modifier.align(Alignment.TopStart)
                                                                     )
                                                                 }
                                                             }
@@ -647,12 +628,6 @@ internal fun CompareCompactScreen(
                                                                         contentScale = ContentScale.Fit
                                                                     )
                                                                 }
-                                                                if (isRightCurrent) {
-                                                                    PlayingBadge(
-                                                                        accent = Color(0xFFE57373),
-                                                                        modifier = Modifier.align(Alignment.TopStart)
-                                                                    )
-                                                                }
                                                             }
                                                         }
                                                     }
@@ -662,6 +637,7 @@ internal fun CompareCompactScreen(
                                                             stepHistoryIndex(rightEntries, rightHistoryIndex, -1, rightAvoid) != null,
                                                         canStepDown = !hasSuggestedRight &&
                                                             stepHistoryIndex(rightEntries, rightHistoryIndex, 1, rightAvoid) != null,
+                                                        playing = isRightCurrent,
                                                         onStepUp = {
                                                             stepHistoryIndex(rightEntries, rightHistoryIndex, -1, rightAvoid)
                                                                 ?.let { rightHistoryIndex = it }
@@ -993,9 +969,9 @@ internal fun CompareCompactScreen(
                     }
                     val overlayAvoid = if (activeOverlayTarget == OverlayTarget.RIGHT) rightAvoid else leftAvoid
                     val overlayBackground = colorResource(R.color.tournesol_overlay_surface)
-                    val overlayRowSpacing = 8.dp
+                    val overlayRowSpacing = 0.dp
                     val overlayColumnSpacing = 6.dp
-                    val overlayCardHeight = 54.dp
+                    val overlayCardHeight = 62.dp
                     val overlayRowSpacingPx = with(density) { overlayRowSpacing.roundToPx() }
                     val overlayColumnSpacingPx = with(density) { overlayColumnSpacing.roundToPx() }
                     val overlayCardHeightPx = with(density) { overlayCardHeight.roundToPx() }
@@ -1022,10 +998,18 @@ internal fun CompareCompactScreen(
                                     overlayRowsPerPage = visibleRowsPerPage
                                 }
                             }
+                            val visibleIndices = remember(overlayEntries, overlayAvoid) {
+                                visibleHistoryIndices(overlayEntries, overlayAvoid)
+                            }
+                            val positionOf: (Int) -> Int = { index ->
+                                visibleIndices.indexOfFirst { it >= index }
+                                    .let { if (it < 0) visibleIndices.lastIndex else it }
+                                    .coerceAtLeast(0)
+                            }
                             val visiblePageSize = overlayGridColumns * visibleRowsPerPage
-                            val pageCount = ((overlayEntries.size + visiblePageSize - 1) / visiblePageSize)
+                            val pageCount = ((visibleIndices.size + visiblePageSize - 1) / visiblePageSize)
                                 .coerceAtLeast(1)
-                            val currentPage = (historyOverlayIndex / visiblePageSize)
+                            val currentPage = (positionOf(historyOverlayIndex) / visiblePageSize)
                                 .coerceIn(0, pageCount - 1)
                             LaunchedEffect(currentPage) {
                                 if (historyOverlayPage != currentPage) {
@@ -1033,11 +1017,11 @@ internal fun CompareCompactScreen(
                                 }
                             }
                             val pageStart = currentPage * visiblePageSize
-                            val pageEnd = kotlin.math.min(pageStart + visiblePageSize, overlayEntries.size)
-                            val pageEntries = overlayEntries.subList(pageStart, pageEnd)
-                            val selectedAbsoluteIndex = (overlayDragPreviewIndex ?: historyOverlayIndex)
+                            val pageEnd = kotlin.math.min(pageStart + visiblePageSize, visibleIndices.size)
+                            val pageEntries = visibleIndices.subList(pageStart, pageEnd).map { overlayEntries[it] }
+                            val selectedPosition = positionOf(overlayDragPreviewIndex ?: historyOverlayIndex)
                                 .coerceIn(pageStart, (pageEnd - 1).coerceAtLeast(pageStart))
-                            val selectedOffsetInPage = (selectedAbsoluteIndex - pageStart)
+                            val selectedOffsetInPage = (selectedPosition - pageStart)
                                 .coerceIn(0, (pageEntries.size - 1).coerceAtLeast(0))
                             val pageRows = ((pageEntries.size + overlayGridColumns - 1) / overlayGridColumns)
                                 .coerceAtLeast(1)
@@ -1046,7 +1030,7 @@ internal fun CompareCompactScreen(
                                 activeOverlayTarget,
                                 currentPage,
                                 visiblePageSize,
-                                overlayEntries.size
+                                visibleIndices
                             ) {
                                 if (!showHistoryOverlay || overlayEntries.isEmpty()) {
                                     return@LaunchedEffect
@@ -1061,9 +1045,9 @@ internal fun CompareCompactScreen(
                                 val urlsToPrefetch = LinkedHashSet<String>()
                                 pagesToPrefetch.forEach { page ->
                                     val start = page * visiblePageSize
-                                    val end = kotlin.math.min(start + visiblePageSize, overlayEntries.size)
+                                    val end = kotlin.math.min(start + visiblePageSize, visibleIndices.size)
                                     for (index in start until end) {
-                                        val url = overlayEntries[index].streamEntity.thumbnailUrl
+                                        val url = overlayEntries[visibleIndices[index]].streamEntity.thumbnailUrl
                                         if (!url.isNullOrBlank()) {
                                             urlsToPrefetch.add(url)
                                         }
@@ -1121,7 +1105,7 @@ internal fun CompareCompactScreen(
                                                     if (offsetInPage < 0 || offsetInPage >= pageEntries.size) {
                                                         null
                                                     } else {
-                                                        pageStart + offsetInPage
+                                                        visibleIndices[pageStart + offsetInPage]
                                                     }
                                                 }
                                             }
@@ -1214,9 +1198,7 @@ internal fun CompareCompactScreen(
                                                     }
                                                     overlayDragPreviewIndex = previewIndex
                                                     if (!change.pressed) {
-                                                        releasedOnIndex = hoveredIndex?.takeIf {
-                                                            !isSameVideo(overlayEntries[it], overlayAvoid)
-                                                        }
+                                                        releasedOnIndex = hoveredIndex
                                                         break
                                                     }
                                                 }
@@ -1242,12 +1224,12 @@ internal fun CompareCompactScreen(
                                             for (column in 0 until overlayGridColumns) {
                                                 val offsetInPage = row * overlayGridColumns + column
                                                 if (offsetInPage < pageEntries.size) {
-                                                    val absoluteIndex = pageStart + offsetInPage
+                                                    val absoluteIndex = visibleIndices[pageStart + offsetInPage]
                                                     CompareHistoryOverlayGridCard(
                                                         entry = pageEntries[offsetInPage],
                                                         selected = offsetInPage == selectedOffsetInPage,
                                                         accentColor = accentColor,
-                                                        enabled = !isSameVideo(pageEntries[offsetInPage], overlayAvoid),
+                                                        alternate = row % 2 == 1,
                                                         onClick = {
                                                             when (activeOverlayTarget) {
                                                                 OverlayTarget.LEFT -> leftHistoryIndex = absoluteIndex
@@ -1283,14 +1265,14 @@ internal fun CompareCompactScreen(
                                                 val targetStart = targetPage * visiblePageSize
                                                 val targetPageCount = kotlin.math.min(
                                                     visiblePageSize,
-                                                    overlayEntries.size - targetStart
+                                                    visibleIndices.size - targetStart
                                                 ).coerceAtLeast(1)
                                                 val targetOffset = selectedOffsetInPage.coerceIn(
                                                     0,
                                                     targetPageCount - 1
                                                 )
                                                 historyOverlayPage = targetPage
-                                                historyOverlayIndex = targetStart + targetOffset
+                                                historyOverlayIndex = visibleIndices[targetStart + targetOffset]
                                             },
                                             enabled = currentPage > 0,
                                             contentPadding = PaddingValues(
@@ -1307,14 +1289,14 @@ internal fun CompareCompactScreen(
                                                 val targetStart = targetPage * visiblePageSize
                                                 val targetPageCount = kotlin.math.min(
                                                     visiblePageSize,
-                                                    overlayEntries.size - targetStart
+                                                    visibleIndices.size - targetStart
                                                 ).coerceAtLeast(1)
                                                 val targetOffset = selectedOffsetInPage.coerceIn(
                                                     0,
                                                     targetPageCount - 1
                                                 )
                                                 historyOverlayPage = targetPage
-                                                historyOverlayIndex = targetStart + targetOffset
+                                                historyOverlayIndex = visibleIndices[targetStart + targetOffset]
                                             },
                                             enabled = currentPage < pageCount - 1,
                                             contentPadding = PaddingValues(

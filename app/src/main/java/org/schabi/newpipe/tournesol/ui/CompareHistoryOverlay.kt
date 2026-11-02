@@ -1,25 +1,24 @@
 package org.schabi.newpipe.tournesol.ui
 
-import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.compositeOver
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.font.FontWeight
@@ -38,74 +37,69 @@ internal fun CompareHistoryOverlayGridCard(
     accentColor: Color,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
-    enabled: Boolean = true
+    alternate: Boolean = false
 ) {
     val scale = LocalCompareScale.current
     val stream = remember(entry) { Stream(entry.toStreamInfoItem()) }
     val titleColor = compareMetaTitleColor()
     val uploaderColor = compareMetaUploaderColor()
-    val cardBackground = colorResource(R.color.tournesol_overlay_card).let {
-        if (selected) accentColor.copy(alpha = 0.1f).compositeOver(it) else it
+    val rowBackground = when {
+        selected -> accentColor.copy(alpha = 0.14f)
+        alternate -> colorResource(R.color.tournesol_on_overlay).copy(alpha = 0.025f)
+        else -> Color.Transparent
     }
-    val borderColor = if (selected) {
-        accentColor
-    } else {
-        colorResource(R.color.tournesol_overlay_outline)
-    }
-    Surface(
+    Row(
         modifier = Modifier
             .then(modifier)
-            .alpha(if (enabled) 1f else 0.35f)
-            .clickable(enabled = enabled, onClick = onClick),
-        shape = RoundedCornerShape(12.dp),
-        color = cardBackground,
-        border = BorderStroke(if (selected) 2.dp else 1.dp, borderColor)
+            .background(rowBackground)
+            .drawBehind {
+                if (selected) {
+                    drawRect(accentColor, size = Size(3.dp.toPx(), size.height))
+                }
+            }
+            .clickable(onClick = onClick)
+            .padding(horizontal = 8.dp * scale, vertical = 6.dp * scale),
+        verticalAlignment = Alignment.CenterVertically
     ) {
-        Row(
+        StreamThumbnail(
+            stream = stream,
+            showProgress = false,
+            showDuration = true,
+            durationTextStyle = MaterialTheme.typography.labelSmall.copy(fontSize = 8.sp),
+            contentScale = ContentScale.Crop,
             modifier = Modifier
-                .fillMaxSize()
-                .padding(horizontal = 8.dp * scale, vertical = 3.dp * scale),
-            verticalAlignment = Alignment.CenterVertically
+                .fillMaxHeight()
+                .aspectRatio(16f / 9f)
+                .clip(RoundedCornerShape(6.dp * scale))
+        )
+        Column(
+            modifier = Modifier
+                .weight(1f)
+                .padding(start = 12.dp * scale),
+            verticalArrangement = Arrangement.spacedBy(2.dp)
         ) {
-            StreamThumbnail(
-                stream = stream,
-                showProgress = false,
-                showDuration = true,
-                durationTextStyle = MaterialTheme.typography.labelSmall.copy(fontSize = 8.sp),
-                contentScale = ContentScale.Crop,
-                modifier = Modifier
-                    .size(width = 84.dp * scale, height = 48.dp * scale)
-                    .clip(RoundedCornerShape(6.dp * scale))
+            Text(
+                text = entry.streamEntity.title,
+                style = MaterialTheme.typography.labelSmall.copy(
+                    fontSize = 10.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    lineHeight = 12.sp
+                ),
+                color = titleColor,
+                maxLines = 3,
+                overflow = TextOverflow.Ellipsis
             )
-            Column(
-                modifier = Modifier
-                    .weight(1f)
-                    .padding(start = 12.dp * scale),
-                verticalArrangement = Arrangement.spacedBy(2.dp)
-            ) {
+            if (entry.streamEntity.uploader.isNotBlank()) {
                 Text(
-                    text = entry.streamEntity.title,
+                    text = entry.streamEntity.uploader,
                     style = MaterialTheme.typography.labelSmall.copy(
-                        fontSize = 10.sp,
-                        fontWeight = FontWeight.SemiBold,
-                        lineHeight = 12.sp
+                        fontSize = 9.sp,
+                        fontWeight = FontWeight.Medium
                     ),
-                    color = titleColor,
-                    maxLines = 3,
+                    color = uploaderColor,
+                    maxLines = 2,
                     overflow = TextOverflow.Ellipsis
                 )
-                if (entry.streamEntity.uploader.isNotBlank()) {
-                    Text(
-                        text = entry.streamEntity.uploader,
-                        style = MaterialTheme.typography.labelSmall.copy(
-                            fontSize = 9.sp,
-                            fontWeight = FontWeight.Medium
-                        ),
-                        color = uploaderColor,
-                        maxLines = 2,
-                        overflow = TextOverflow.Ellipsis
-                    )
-                }
             }
         }
     }
