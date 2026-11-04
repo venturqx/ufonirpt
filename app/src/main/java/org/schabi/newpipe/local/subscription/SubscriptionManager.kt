@@ -78,14 +78,14 @@ class SubscriptionManager(context: Context) {
     fun updateNotificationMode(serviceId: Int, url: String, @NotificationMode mode: Int): Completable {
         return subscriptionTable().getSubscription(serviceId, url)
             .flatMapCompletable { entity: SubscriptionEntity ->
-                Completable.fromAction {
-                    entity.notificationMode = mode
-                    subscriptionTable().update(entity)
-                }.apply {
-                    if (mode != NotificationMode.DISABLED) {
-                        // notifications have just been enabled, mark all streams as "old"
-                        andThen(rememberAllStreams(entity))
+                notificationModeUpdate(
+                    mode,
+                    Completable.fromAction {
+                        entity.notificationMode = mode
+                        subscriptionTable().update(entity)
                     }
+                ) {
+                    rememberAllStreams(entity)
                 }
             }
     }
@@ -135,5 +135,18 @@ class SubscriptionManager(context: Context) {
                     database.streamDAO().upsertAll(entities)
                 }
             }.onErrorComplete()
+    }
+}
+
+internal fun notificationModeUpdate(
+    @NotificationMode mode: Int,
+    persist: Completable,
+    rememberStreams: () -> Completable
+): Completable {
+    return if (mode != NotificationMode.DISABLED) {
+        // notifications have just been enabled, mark all streams as "old"
+        persist.andThen(Completable.defer { rememberStreams() })
+    } else {
+        persist
     }
 }

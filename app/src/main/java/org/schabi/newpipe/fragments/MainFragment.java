@@ -38,10 +38,11 @@ import org.schabi.newpipe.databinding.FragmentMainBinding;
 import org.schabi.newpipe.error.ErrorInfo;
 import org.schabi.newpipe.error.ErrorUtil;
 import org.schabi.newpipe.error.UserAction;
-import org.schabi.newpipe.fragments.detail.CompareFragment;
 import org.schabi.newpipe.local.playlist.LocalPlaylistFragment;
 import org.schabi.newpipe.settings.tabs.Tab;
+import org.schabi.newpipe.settings.tabs.TabsJsonHelper;
 import org.schabi.newpipe.settings.tabs.TabsManager;
+import org.schabi.newpipe.tournesol.ui.CompareFragment;
 import org.schabi.newpipe.util.NavigationHelper;
 import org.schabi.newpipe.util.ServiceHelper;
 import org.schabi.newpipe.util.ThemeHelper;
@@ -228,31 +229,8 @@ public class MainFragment extends BaseFragment implements TabLayout.OnTabSelecte
             return;
         }
 
-        final String selectedType = prefs.getString(defaultTabKey, "LIVE");
-        Tab.Type type = null;
-        if ("DEFAULT_KIOSK".equals(selectedType)) {
-            type = Tab.Type.DEFAULT_KIOSK;
-        } else if ("FEED".equals(selectedType)) {
-            type = Tab.Type.FEED;
-        } else if ("SUBSCRIPTIONS".equals(selectedType)) {
-            type = Tab.Type.SUBSCRIPTIONS;
-        } else if ("BOOKMARKS".equals(selectedType)) {
-            type = Tab.Type.BOOKMARKS;
-        } else if ("TRENDING_PODCASTS".equals(selectedType)) {
-            type = Tab.Type.TRENDING_PODCASTS;
-        } else if ("TRENDING_GAMING".equals(selectedType)) {
-            type = Tab.Type.TRENDING_GAMING;
-        } else if ("TRENDING_MUSIC".equals(selectedType)) {
-            type = Tab.Type.TRENDING_MUSIC;
-        } else if ("TRENDING_MOVIES".equals(selectedType)) {
-            type = Tab.Type.TRENDING_MOVIES;
-        } else if ("TOURNESOL".equals(selectedType)) {
-            type = Tab.Type.TOURNESOL;
-        } else if ("LIVE".equals(selectedType)) {
-            type = Tab.Type.LIVE;
-        } else if ("COMPARE".equals(selectedType)) {
-            type = Tab.Type.COMPARE;
-        }
+        final Tab.Type type = TabsJsonHelper.selectableTypeFrom(
+                prefs.getString(defaultTabKey, TabsJsonHelper.DEFAULT_TAB_VALUE));
 
         if (type == null) {
             updateTitleForTab(binding.pager.getCurrentItem());
@@ -275,24 +253,6 @@ public class MainFragment extends BaseFragment implements TabLayout.OnTabSelecte
             updateTitleForTab(defaultTabIndex);
         } else {
             updateTitleForTab(binding.pager.getCurrentItem());
-        }
-    }
-
-    public void selectTabById(final int tabId) {
-        for (int i = 0; i < tabsList.size(); i++) {
-            if (tabsList.get(i).getTabId() == tabId) {
-                if (binding.pager.getCurrentItem() == i) {
-                    // Already on this tab — notify fragment directly
-                    final Fragment f = (Fragment) pagerAdapter.instantiateItem(binding.pager, i);
-                    if (f instanceof CompareFragment) {
-                        ((CompareFragment) f).consumePendingOpenComparisons();
-                    }
-                } else {
-                    binding.pager.setCurrentItem(i, true);
-                }
-                updateTitleForTab(i);
-                return;
-            }
         }
     }
 

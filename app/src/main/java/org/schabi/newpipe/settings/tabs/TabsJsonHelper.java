@@ -1,8 +1,10 @@
 package org.schabi.newpipe.settings.tabs;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 
 import androidx.annotation.Nullable;
+import androidx.preference.PreferenceManager;
 
 import com.grack.nanojson.JsonArray;
 import com.grack.nanojson.JsonObject;
@@ -11,14 +13,21 @@ import com.grack.nanojson.JsonParserException;
 import com.grack.nanojson.JsonStringWriter;
 import com.grack.nanojson.JsonWriter;
 
+import org.schabi.newpipe.R;
+
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * Class to get a JSON representation of a list of tabs, and the other way around.
  */
 public final class TabsJsonHelper {
+    public static final String DEFAULT_TAB_VALUE = Tab.Type.TOURNESOL.name();
+
     private static final String JSON_TABS_ARRAY_KEY = "tabs";
 
     private static final List<Tab> FALLBACK_INITIAL_TABS_LIST = List.of(
@@ -27,6 +36,22 @@ public final class TabsJsonHelper {
             Tab.Type.SUBSCRIPTIONS.getTab(),
             Tab.Type.BOOKMARKS.getTab(),
             Tab.Type.MANIFESTO.getTab());
+
+    private static final List<Tab> TABS_AFTER_FIRST =
+            FALLBACK_INITIAL_TABS_LIST.subList(1, FALLBACK_INITIAL_TABS_LIST.size());
+
+    private static final Set<Tab.Type> SELECTABLE_FIRST_TYPES = EnumSet.of(
+            Tab.Type.DEFAULT_KIOSK,
+            Tab.Type.FEED,
+            Tab.Type.SUBSCRIPTIONS,
+            Tab.Type.BOOKMARKS,
+            Tab.Type.TRENDING_PODCASTS,
+            Tab.Type.TRENDING_GAMING,
+            Tab.Type.TRENDING_MUSIC,
+            Tab.Type.TRENDING_MOVIES,
+            Tab.Type.TOURNESOL,
+            Tab.Type.LIVE,
+            Tab.Type.COMPARE);
 
     private TabsJsonHelper() { }
 
@@ -60,15 +85,25 @@ public final class TabsJsonHelper {
 
             final JsonArray tabsArray = outerJsonObject.getArray(JSON_TABS_ARRAY_KEY, null);
 
-            final var returnTabs = tabsArray.streamAsJsonObjects()
+            final var returnTabs = dropRepeatedSelectableTabs(tabsArray.streamAsJsonObjects()
                     .map(Tab::from)
                     .filter(Objects::nonNull)
-                    .collect(Collectors.toUnmodifiableList());
+                    .collect(Collectors.toUnmodifiableList()));
 
             return returnTabs.isEmpty() ? getDefaultTabs(context) : returnTabs;
         } catch (final JsonParserException e) {
             throw new InvalidJsonException(e);
         }
+    }
+
+    private static List<Tab> dropRepeatedSelectableTabs(final List<Tab> tabs) {
+        final Set<Tab.Type> seen = EnumSet.noneOf(Tab.Type.class);
+        return tabs.stream()
+                .filter(tab -> {
+                    final Tab.Type type = Tab.typeFrom(tab.getTabId());
+                    return !SELECTABLE_FIRST_TYPES.contains(type) || seen.add(type);
+                })
+                .collect(Collectors.toUnmodifiableList());
     }
 
     /**
@@ -98,42 +133,26 @@ public final class TabsJsonHelper {
             return FALLBACK_INITIAL_TABS_LIST;
         }
 
-        final android.content.SharedPreferences prefs =
-                androidx.preference.PreferenceManager.getDefaultSharedPreferences(context);
-        final String defaultTabKey = context.getString(org.schabi.newpipe.R.string.default_tab_key);
-        final String selectedType = prefs.getString(defaultTabKey, "LIVE");
+        final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        final String defaultTabKey = context.getString(R.string.default_tab_key);
+        return getDefaultTabsFor(prefs.getString(defaultTabKey, DEFAULT_TAB_VALUE));
+    }
 
-        final Tab firstTab;
-        if ("DEFAULT_KIOSK".equals(selectedType)) {
-            firstTab = Tab.Type.DEFAULT_KIOSK.getTab();
-        } else if ("FEED".equals(selectedType)) {
-            firstTab = Tab.Type.FEED.getTab();
-        } else if ("SUBSCRIPTIONS".equals(selectedType)) {
-            firstTab = Tab.Type.SUBSCRIPTIONS.getTab();
-        } else if ("BOOKMARKS".equals(selectedType)) {
-            firstTab = Tab.Type.BOOKMARKS.getTab();
-        } else if ("TRENDING_PODCASTS".equals(selectedType)) {
-            firstTab = Tab.Type.TRENDING_PODCASTS.getTab();
-        } else if ("TRENDING_GAMING".equals(selectedType)) {
-            firstTab = Tab.Type.TRENDING_GAMING.getTab();
-        } else if ("TRENDING_MUSIC".equals(selectedType)) {
-            firstTab = Tab.Type.TRENDING_MUSIC.getTab();
-        } else if ("TRENDING_MOVIES".equals(selectedType)) {
-            firstTab = Tab.Type.TRENDING_MOVIES.getTab();
-        } else if ("TOURNESOL".equals(selectedType)) {
-            firstTab = Tab.Type.TOURNESOL.getTab();
-        } else if ("COMPARE".equals(selectedType)) {
-            firstTab = Tab.Type.COMPARE.getTab();
-        } else {
-            firstTab = Tab.Type.LIVE.getTab();
-        }
+    @Nullable
+    public static Tab.Type selectableTypeFrom(@Nullable final String selectedType) {
+        return SELECTABLE_FIRST_TYPES.stream()
+                .filter(type -> type.name().equals(selectedType))
+                .findFirst()
+                .orElse(null);
+    }
 
-        return List.of(
-                firstTab,
-                Tab.Type.COMPARE.getTab(),
-                Tab.Type.SUBSCRIPTIONS.getTab(),
-                Tab.Type.BOOKMARKS.getTab(),
-                Tab.Type.MANIFESTO.getTab());
+    static List<Tab> getDefaultTabsFor(@Nullable final String selectedType) {
+        final Tab.Type selectable = selectableTypeFrom(selectedType);
+        final Tab firstTab = (selectable == null ? Tab.Type.LIVE : selectable).getTab();
+
+        return Stream.concat(Stream.of(firstTab), TABS_AFTER_FIRST.stream())
+                .distinct()
+                .collect(Collectors.toUnmodifiableList());
     }
 
     public static List<Tab> getDefaultTabs() {

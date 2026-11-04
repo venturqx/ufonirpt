@@ -16,6 +16,7 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.PluralsRes;
+import androidx.annotation.RequiresApi;
 import androidx.annotation.StringRes;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.core.content.ContextCompat;
@@ -68,7 +69,13 @@ import java.util.stream.Collectors;
 public final class Localization {
     private static final String TAG = Localization.class.toString();
     public static final String DOT_SEPARATOR = " • ";
-    private static PrettyTime prettyTime;
+    private static final LocaleKeyedCache<NumberFormat> NUMBER_FORMATS =
+            new LocaleKeyedCache<>(NumberFormat::getInstance);
+    @RequiresApi(Build.VERSION_CODES.N)
+    private static final LocaleKeyedCache<CompactDecimalFormat> COMPACT_FORMATS =
+            new LocaleKeyedCache<>(locale -> CompactDecimalFormat.getInstance(locale,
+                    CompactDecimalFormat.CompactStyle.SHORT));
+    private static volatile PrettyTime prettyTime;
 
     private Localization() { }
 
@@ -159,6 +166,9 @@ public final class Localization {
     }
 
     public static Locale getAppLocale() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            return Locale.getDefault();
+        }
         final Locale customLocale = AppCompatDelegate.getApplicationLocales().get(0);
         return customLocale != null ? customLocale : Locale.getDefault();
     }
@@ -168,7 +178,7 @@ public final class Localization {
     }
 
     public static String localizeNumber(final double number) {
-        return NumberFormat.getInstance(getAppLocale()).format(number);
+        return NUMBER_FORMATS.get(getAppLocale()).format(number);
     }
 
     public static String formatDate(@NonNull final OffsetDateTime offsetDateTime) {
@@ -225,8 +235,7 @@ public final class Localization {
 
     public static String shortCount(@NonNull final Context context, final long count) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            return CompactDecimalFormat.getInstance(getAppLocale(),
-                    CompactDecimalFormat.CompactStyle.SHORT).format(count);
+            return COMPACT_FORMATS.get(getAppLocale()).format(count);
         }
 
         final double value = (double) count;
@@ -406,9 +415,9 @@ public final class Localization {
     //////////////////////////////////////////////////////////////////////////*/
 
     public static void initPrettyTime(@NonNull final PrettyTime time) {
-        prettyTime = time;
         // Do not use decades as YouTube doesn't either.
-        prettyTime.removeUnit(Decade.class);
+        time.removeUnit(Decade.class);
+        prettyTime = time;
     }
 
     public static PrettyTime resolvePrettyTime() {
