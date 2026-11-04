@@ -20,7 +20,7 @@ class CommentsFragment : Fragment() {
     ) = content {
         AppTheme {
             Surface {
-                CommentSection()
+                CommentSection(url = arguments?.getString(KEY_URL))
             }
         }
     }

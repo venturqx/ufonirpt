@@ -12,6 +12,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -43,15 +44,22 @@ import org.schabi.newpipe.viewmodels.CommentsViewModel
 import org.schabi.newpipe.viewmodels.util.Resource
 
 @Composable
-fun CommentSection(commentsViewModel: CommentsViewModel = viewModel()) {
+fun CommentSection(
+    url: String? = null,
+    commentsViewModel: CommentsViewModel = viewModel()
+) {
+    LaunchedEffect(url) {
+        commentsViewModel.setUrl(url)
+    }
     val state by commentsViewModel.uiState.collectAsStateWithLifecycle()
-    CommentSection(state, commentsViewModel.comments)
+    CommentSection(state, commentsViewModel.comments, commentsViewModel::retry)
 }
 
 @Composable
 private fun CommentSection(
     uiState: Resource<CommentInfo>,
-    commentsFlow: Flow<PagingData<CommentsInfoItem>>
+    commentsFlow: Flow<PagingData<CommentsInfoItem>>,
+    onRetry: () -> Unit = {}
 ) {
     val comments = commentsFlow.collectAsLazyPagingItems()
     val nestedScrollInterop = rememberNestedScrollInteropConnection()
@@ -189,7 +197,7 @@ private fun CommentSection(
                         ) {
                             ErrorPanel(
                                 errorInfo = errorInfo,
-                                onRetry = { comments.retry() },
+                                onRetry = onRetry,
                                 modifier = Modifier.align(Alignment.Center)
                             )
                         }
