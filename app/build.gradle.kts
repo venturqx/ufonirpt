@@ -4,6 +4,7 @@
  */
 import com.android.build.api.dsl.ApplicationExtension
 import com.mikepenz.aboutlibraries.plugin.DuplicateMode
+import dev.detekt.gradle.Detekt
 import java.util.regex.Pattern
 
 plugins {
@@ -16,6 +17,7 @@ plugins {
     alias(libs.plugins.sonarqube)
     alias(libs.plugins.hilt)
     alias(libs.plugins.about.libraries)
+    alias(libs.plugins.detekt)
     checkstyle
 }
 
@@ -130,6 +132,8 @@ configure<ApplicationExtension> {
             initWith(getByName("release"))
             signingConfig = signingConfigs.getByName("debug")
             isDefault = true
+            // Plain library modules such as :tournesol only have debug and release
+            matchingFallbacks += "release"
 
             // suffix the app id and the app name with git branch name
             if (normalizedWorkingBranch.isEmpty() || workingBranch in defaultBranches) {
@@ -140,12 +144,32 @@ configure<ApplicationExtension> {
                 resValue("string", "app_name", "NewPipe $workingBranch")
             }
         }
+
+        register("diagnostic") {
+            initWith(getByName("continuous"))
+            isDefault = false
+            proguardFile("proguard-diagnostic.pro")
+            matchingFallbacks += "release"
+        }
     }
 
     lint {
         lintConfig = file("lint.xml")
         // Continue the debug build even when errors are found
         abortOnError = false
+        textReport = true
+        textOutput = layout.buildDirectory.file("reports/lint/lint.txt").get().asFile
+        sarifReport = true
+        sarifOutput = layout.buildDirectory.file("reports/lint/lint.sarif").get().asFile
+        val robustnessChecks = setOf(
+            "UnusedResources",
+            "CheckResult",
+            "FragmentBackPressedCallback",
+            "UseRequireInsteadOfGet",
+            "CommitTransaction"
+        )
+        enable += robustnessChecks
+        error += robustnessChecks
     }
 
     compileOptions {
@@ -186,6 +210,26 @@ configure<ApplicationExtension> {
 
 ksp {
     arg("room.schemaLocation", "$projectDir/schemas")
+}
+
+composeCompiler {
+    reportsDestination = layout.buildDirectory.dir("compose_compiler")
+    metricsDestination = layout.buildDirectory.dir("compose_compiler")
+}
+
+detekt {
+    config.setFrom(rootProject.file("config/detekt/detekt.yml"))
+    basePath = rootProject.layout.projectDirectory
+    ignoreFailures = true
+}
+
+tasks.withType<Detekt>().configureEach {
+    reports {
+        checkstyle.required = false
+        html.required = false
+        markdown.required = false
+        sarif.required = true
+    }
 }
 
 
@@ -278,6 +322,7 @@ dependencies {
 
     // NewPipe libraries
     implementation(projects.shared)
+    implementation(projects.tournesol)
     implementation(libs.newpipe.nanojson)
     implementation(libs.newpipe.extractor)
     implementation(libs.newpipe.filepicker)
@@ -285,6 +330,7 @@ dependencies {
     // Checkstyle
     checkstyle(libs.puppycrawl.checkstyle)
     ktlint(libs.pinterest.ktlint)
+    detektPlugins(libs.nlopez.compose.rules.detekt)
 
     /** Kotlin **/
     implementation(libs.kotlin.stdlib)

@@ -20,10 +20,12 @@ checkstyle = "13.4.2"
 coil = "3.4.0"
 compose = "1.11.2"
 compose-bom = "2026.04.01"
+compose-rules = "0.6.8"
 constraintlayout = "2.2.1"
 core = "1.18.0"
 coroutines = "1.11.0"
 desugar = "2.1.5"
+detekt = "2.0.0-alpha.6"
 documentfile = "1.1.0"
 espresso = "3.7.0"
 exoplayer = "2.19.1"
@@ -179,6 +181,7 @@ mockito-core = { module = "org.mockito:mockito-core", version.ref = "mockitoCore
 newpipe-extractor = { module = "com.github.TeamNewPipe:NewPipeExtractor", version.ref = "teamnewpipe-newpipe-extractor" }
 newpipe-filepicker = { module = "com.github.TeamNewPipe:NoNonsense-FilePicker", version.ref = "teamnewpipe-filepicker" }
 newpipe-nanojson = { module = "com.github.TeamNewPipe:nanojson", version.ref = "teamnewpipe-nanojson" }
+nlopez-compose-rules-detekt = { module = "io.nlopez.compose.rules:detekt", version.ref = "compose-rules" }
 noties-markwon-core = { module = "io.noties.markwon:core", version.ref = "markwon" }
 noties-markwon-linkify = { module = "io.noties.markwon:linkify", version.ref = "markwon" }
 ocpsoft-prettytime = { module = "org.ocpsoft.prettytime:prettytime", version.ref = "prettytime" }
@@ -200,6 +203,8 @@ about-libraries = { id = "com.mikepenz.aboutlibraries.plugin", version.ref = "ab
 android-application = { id = "com.android.application", version.ref = "agp" }
 android-legacy-kapt = { id = "com.android.legacy-kapt", version.ref = "agp" } # Needed for statesaver
 android-library = { id = "com.android.kotlin.multiplatform.library", version.ref = "agp" }
+android-plain-library = { id = "com.android.library", version.ref = "agp" }
+detekt = { id = "dev.detekt", version.ref = "detekt" }
 google-ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 hilt = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
 jetbrains-compose-multiplatform = { id = "org.jetbrains.compose", version.ref = "multiplatform" }

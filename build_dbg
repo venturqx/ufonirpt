@@ -1,0 +1,123 @@
+#!/usr/bin/env bash
+set -eo pipefail
+
+# ==============================================================================
+# build_dbg: Robust Build and Debug Launcher
+# Handles:
+# 1. Android user home directory fallback for sandboxed/container environments
+# 2. Dynamic Java & JDK 21 discovery (/opt/android-studio/jbr -> JAVA_HOME -> system JVM)
+# 3. Dynamic Android SDK platform-tools PATH resolution for adb
+# 4. Proactive device detection and execution branching:
+#    - With connected ADB device: :app:installDebug and launch MainActivity
+#    - Headless / device-free: :app:assembleDebug with APK artifact verification
+# 5. Strict error propagation: Non-zero exit code immediately upon Gradle failure
+# ==============================================================================
+
+# Android User Home fallback for read-only sandbox environments
+if [ ! -w "${HOME}/.android" ] 2>/dev/null; then
+    export ANDROID_USER_HOME="${PWD}/build/.android"
+    mkdir -p "$ANDROID_USER_HOME" 2>/dev/null || true
+fi
+
+# 1. Java Environment Discovery
+# Prioritize JDK 21 (required by app/build.gradle.kts jvmToolchain(21))
+if [ -d "/opt/android-studio/jbr" ]; then
+    export JAVA_HOME="/opt/android-studio/jbr"
+    export PATH="/opt/android-studio/jbr/bin:$PATH"
+elif [ -n "$JAVA_HOME" ] && [ -d "$JAVA_HOME" ]; then
+    export PATH="$JAVA_HOME/bin:$PATH"
+elif [ -d "/usr/lib/jvm/java-21-openjdk" ]; then
+    export JAVA_HOME="/usr/lib/jvm/java-21-openjdk"
+    export PATH="$JAVA_HOME/bin:$PATH"
+elif [ -d "/usr/lib/jvm/default" ]; then
+    export JAVA_HOME="/usr/lib/jvm/default"
+    export PATH="$JAVA_HOME/bin:$PATH"
+else
+    unset JAVA_HOME
+fi
+
+# Configure Gradle to detect the discovered Java toolchain
+if [ -n "$JAVA_HOME" ]; then
+    export GRADLE_OPTS="${GRADLE_OPTS:-} -Dorg.gradle.java.installations.paths=$JAVA_HOME"
+fi
+
+# 2. Android SDK Platform Tools (adb) Discovery
+if [ -d "/opt/android-sdk/platform-tools" ]; then
+    export PATH="/opt/android-sdk/platform-tools:$PATH"
+elif [ -d "/home/iridium/Android/Sdk/platform-tools" ]; then
+    export PATH="/home/iridium/Android/Sdk/platform-tools:$PATH"
+fi
+
+# 3. Target APK Path & Preemptive Cleanup of Stale Binaries
+APK_PATH="app/build/outputs/apk/debug/app-debug.apk"
+rm -f "$APK_PATH"
+
+# 4. Device Connectivity Probe
+has_device=false
+if command -v adb >/dev/null 2>&1; then
+    if adb get-state >/dev/null 2>&1; then
+        has_device=true
+    elif [ -n "$(adb devices 2>/dev/null | awk 'NR>1 && $2=="device" {print $1; exit}')" ]; then
+        has_device=true
+    fi
+fi
+
+# 5. Execution Pipeline
+if [ "$has_device" = true ]; then
+    echo "Notice: Connected ADB device detected. Building and installing via :app:installDebug..."
+    ./gradlew :app:installDebug "$@" || {
+        err=$?
+        echo "Error: Gradle :app:installDebug failed with exit code $err." >&2
+        exit "$err"
+    }
+
+    echo "Notice: Querying installed package name on device..."
+    pkg=$(adb shell pm list packages 2>/dev/null | grep -o 'dev\.ufonirpt\.ufonirpt[^[:space:]]*' | head -1 || true)
+    if [ -n "$pkg" ]; then
+        echo "Notice: Starting package $pkg on connected device..."
+        adb shell am start -n "$pkg/org.schabi.newpipe.MainActivity" || true
+    else
+        echo "Notice: Package dev.ufonirpt.ufonirpt not found on device; skipping activity launch."
+    fi
+else
+    echo "Notice: No connected ADB device detected. Building APK via :app:assembleDebug..."
+    BUILD_START_TS=$(date +%s)
+
+    ./gradlew :app:assembleDebug "$@" || {
+        err=$?
+        echo "Error: Gradle :app:assembleDebug failed with exit code $err." >&2
+        exit "$err"
+    }
+
+    # Verify that the freshly built APK exists and is non-empty
+    if [ ! -f "$APK_PATH" ]; then
+        echo "Error: Gradle succeeded but output APK was not found at $APK_PATH." >&2
+        exit 1
+    fi
+
+    if [ ! -s "$APK_PATH" ]; then
+        echo "Error: Output APK at $APK_PATH is empty (0 bytes)." >&2
+        exit 1
+    fi
+
+    # Verify archive integrity if unzip is available
+    if command -v unzip >/dev/null 2>&1; then
+        if ! unzip -tq "$APK_PATH" >/dev/null 2>&1; then
+            echo "Error: Output APK at $APK_PATH failed archive integrity check." >&2
+            exit 1
+        fi
+    fi
+
+    # Verify freshness: modification time must not be older than build start time
+    APK_MTIME=$(stat -c %Y "$APK_PATH" 2>/dev/null || stat -f %m "$APK_PATH" 2>/dev/null || echo 0)
+    if [ "$APK_MTIME" -gt 0 ] && [ "$APK_MTIME" -lt $((BUILD_START_TS - 5)) ]; then
+        echo "Error: Output APK modification time ($APK_MTIME) is older than build start time ($BUILD_START_TS). Stale binary detected!" >&2
+        exit 1
+    fi
+
+    APK_SIZE=$(du -h "$APK_PATH" 2>/dev/null | cut -f1 || ls -lh "$APK_PATH" | awk '{print $5}')
+    echo "Notice: Fresh debug APK verified at $APK_PATH ($APK_SIZE)."
+fi
+
+echo "Build script completed successfully."
+exit 0
