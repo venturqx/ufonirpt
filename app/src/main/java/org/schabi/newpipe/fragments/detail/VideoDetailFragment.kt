@@ -1099,7 +1099,7 @@ class VideoDetailFragment :
                 return@post
             }
             (pageAdapter.getFragment(TOURNESOL_TAB_TAG) as? TournesolFragment)
-                ?.ensureCompareAttached()
+                ?.onCompareTabSelected()
         }
     }
 

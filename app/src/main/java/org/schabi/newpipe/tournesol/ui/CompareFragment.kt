@@ -26,6 +26,7 @@ class CompareFragment : Fragment() {
     private var currentVideo: TournesolVideoRef? = null
     private var embedInDetail = false
     private var externalScroll = false
+    private var startRequested = false
     private lateinit var viewModel: CompareViewModel
     private val uiState get() = viewModel.state
     private val controller get() = viewModel.controller
@@ -35,6 +36,9 @@ class CompareFragment : Fragment() {
         currentVideo = arguments?.serializable<TournesolVideoRef>(KEY_VIDEO)
         embedInDetail = arguments?.getBoolean(KEY_EMBED_IN_DETAIL) == true
         externalScroll = arguments?.getBoolean(KEY_EXTERNAL_SCROLL) == true
+        if (!embedInDetail || savedInstanceState?.getBoolean(KEY_START_REQUESTED) == true) {
+            startRequested = true
+        }
         viewModel = ViewModelProvider(this, CompareViewModel.factory(currentVideo))[CompareViewModel::class.java]
     }
 
@@ -43,11 +47,9 @@ class CompareFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        val historyRecordManager = HistoryRecordManager(requireContext())
-        controller.start(
-            signedOut = TournesolAuthManager.signedOut(),
-            history = if (isHistoryEnabled()) historyRecordManager.getStreamHistorySortedById() else null
-        )
+        if (startRequested) {
+            startController()
+        }
         return ComposeView(requireContext()).apply {
             layoutParams = ViewGroup.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
@@ -103,6 +105,26 @@ class CompareFragment : Fragment() {
         }
     }
 
+    fun requestStart() {
+        startRequested = true
+        if (view != null) {
+            startController()
+        }
+    }
+
+    private fun startController() {
+        val historyRecordManager = HistoryRecordManager(requireContext())
+        controller.start(
+            signedOut = TournesolAuthManager.signedOut(),
+            history = if (isHistoryEnabled()) historyRecordManager.getStreamHistorySortedById() else null
+        )
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putBoolean(KEY_START_REQUESTED, startRequested)
+    }
+
     override fun onDestroyView() {
         if (!requireActivity().isChangingConfigurations) {
             controller.onViewDestroyed()
@@ -133,8 +155,10 @@ class CompareFragment : Fragment() {
 
     override fun onResume() {
         super.onResume()
-        refreshUserInfo()
-        consumePendingOpenComparisons()
+        if (startRequested) {
+            refreshUserInfo()
+            consumePendingOpenComparisons()
+        }
     }
 
     fun consumePendingOpenComparisons() {
@@ -157,6 +181,7 @@ class CompareFragment : Fragment() {
         private const val KEY_VIDEO = "compare_video"
         private const val KEY_EMBED_IN_DETAIL = "compare_embed_in_detail"
         private const val KEY_EXTERNAL_SCROLL = "compare_external_scroll"
+        private const val KEY_START_REQUESTED = "compare_start_requested"
 
         @JvmStatic
         @JvmOverloads

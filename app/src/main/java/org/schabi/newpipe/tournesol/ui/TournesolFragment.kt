@@ -11,7 +11,8 @@ import org.schabi.newpipe.extractor.stream.StreamInfo
 import org.schabi.newpipe.ktx.serializable
 
 class TournesolFragment : Fragment() {
-    private var compareRequested = false
+    private var compareSelected = false
+    private var compareFragment: CompareFragment? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -23,36 +24,26 @@ class TournesolFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        attachCompareIfRequested()
+        attachCompare()
     }
 
-    override fun onResume() {
-        super.onResume()
-        attachCompareIfRequested()
+    fun onCompareTabSelected() {
+        compareSelected = true
+        compareFragment?.requestStart()
     }
 
-    fun ensureCompareAttached() {
-        compareRequested = true
-        attachCompareIfRequested()
-    }
-
-    private fun attachCompareIfRequested() {
-        if (!compareRequested || view == null || childFragmentManager.isStateSaved) {
-            return
-        }
-        if (childFragmentManager.findFragmentByTag(TAG_COMPARE) != null) {
-            return
-        }
-
+    private fun attachCompare() {
         val video = arguments?.serializable<TournesolVideoRef>(KEY_VIDEO) ?: return
-        val compareFragment = CompareFragment.getInstance(
-            video,
-            embedInDetail = true,
-            externalScroll = true
-        )
-        childFragmentManager.beginTransaction()
-            .replace(R.id.compare_container, compareFragment, TAG_COMPARE)
-            .commitAllowingStateLoss()
+        val fragment = childFragmentManager.findFragmentByTag(TAG_COMPARE) as? CompareFragment
+            ?: CompareFragment.getInstance(video, embedInDetail = true, externalScroll = true).also {
+                childFragmentManager.beginTransaction()
+                    .replace(R.id.compare_container, it, TAG_COMPARE)
+                    .commitAllowingStateLoss()
+            }
+        compareFragment = fragment
+        if (compareSelected) {
+            fragment.requestStart()
+        }
     }
 
     companion object {
