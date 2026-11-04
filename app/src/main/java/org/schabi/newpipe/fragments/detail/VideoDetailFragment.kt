@@ -9,7 +9,6 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener
 import android.content.pm.ActivityInfo
-import android.content.res.Configuration
 import android.database.ContentObserver
 import android.graphics.Color
 import android.graphics.Rect
@@ -43,6 +42,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.content.edit
 import androidx.core.net.toUri
 import androidx.core.os.postDelayed
+import androidx.core.view.children
 import androidx.core.view.isGone
 import androidx.core.view.isVisible
 import androidx.preference.PreferenceManager
@@ -106,6 +106,11 @@ import org.schabi.newpipe.player.playqueue.PlayQueue
 import org.schabi.newpipe.player.playqueue.SinglePlayQueue
 import org.schabi.newpipe.player.ui.MainPlayerUi
 import org.schabi.newpipe.player.ui.VideoPlayerUi
+import org.schabi.newpipe.settings.tabs.TabsJsonHelper
+import org.schabi.newpipe.tournesol.TournesolHelper
+import org.schabi.newpipe.tournesol.TournesolScoreCache
+import org.schabi.newpipe.tournesol.ui.TournesolFragment
+import org.schabi.newpipe.tournesol.ui.TournesolScoresFragment
 import org.schabi.newpipe.util.DependentPreferenceHelper
 import org.schabi.newpipe.util.DeviceUtils
 import org.schabi.newpipe.util.ExtractorHelper
@@ -118,8 +123,6 @@ import org.schabi.newpipe.util.PermissionHelper
 import org.schabi.newpipe.util.PermissionHelper.checkStoragePermissions
 import org.schabi.newpipe.util.PlayButtonHelper
 import org.schabi.newpipe.util.StreamTypeUtil
-import org.schabi.newpipe.util.TournesolHelper
-import org.schabi.newpipe.util.TournesolScoreCache
 import org.schabi.newpipe.util.external_communication.KoreUtils
 import org.schabi.newpipe.util.external_communication.ShareUtils
 import org.schabi.newpipe.util.image.CoilHelper
@@ -164,7 +167,7 @@ class VideoDetailFragment :
     private var nullableBinding: FragmentVideoDetailBinding? = null
     private val binding: FragmentVideoDetailBinding get() = nullableBinding!!
     private lateinit var pageAdapter: StateSavingTabAdapter
-    private var settingsContentObserver: ContentObserver? = null
+    private lateinit var settingsContentObserver: ContentObserver
 
     // tabs
     private var showComments = false
@@ -179,10 +182,6 @@ class VideoDetailFragment :
     private var tabSettingsChanged = false
     private var lastAppBarVerticalOffset = Int.Companion.MAX_VALUE // prevents useless updates
     private var pageChangeListener: ViewPager.OnPageChangeListener? = null
-    private var pendingFullscreenOrientationChange = false
-    private val clearPendingOrientationChange = Runnable {
-        pendingFullscreenOrientationChange = false
-    }
 
     private val preferenceChangeListener =
         OnSharedPreferenceChangeListener { sharedPreferences, key ->
@@ -196,7 +195,10 @@ class VideoDetailFragment :
                 showDescription = sharedPreferences.getBoolean(key, true)
                 tabSettingsChanged = true
             } else if (getString(R.string.default_tab_key) == key) {
-                val defaultTabValue = sharedPreferences.getString(key, "LIVE")
+                val defaultTabValue = sharedPreferences.getString(
+                    key,
+                    TabsJsonHelper.DEFAULT_TAB_VALUE
+                )
                 isTournesolTab = "TOURNESOL" == defaultTabValue
                 tabSettingsChanged = true
             }
@@ -259,11 +261,12 @@ class VideoDetailFragment :
     }
 
     private fun syncMainPlayerFullscreenWithOrientation() {
-        val mainUi = player?.UIs()?.get(MainPlayerUi::class) ?: return
+        val connectedPlayer = player ?: return
+        val mainUi = connectedPlayer.UIs().get(MainPlayerUi::class) ?: return
         if (DeviceUtils.isLandscape(requireContext())) {
             // If the video is playing but orientation changed
             // let's make the video in fullscreen again
-            checkLandscape()
+            checkLandscape(connectedPlayer)
         } else if (mainUi.isFullscreen && !mainUi.isVerticalVideo &&
             // Tablet UI has orientation-independent fullscreen
             !DeviceUtils.isTablet(activity)
@@ -271,38 +274,6 @@ class VideoDetailFragment :
             // Device is in portrait orientation after rotation but UI is in fullscreen.
             // Return back to non-fullscreen state
             mainUi.toggleFullscreen()
-        }
-    }
-
-    fun shouldHandleOrientationChangeInPlace(): Boolean {
-        if (DeviceUtils.isTablet(activity) || DeviceUtils.isTv(activity)) {
-            return false
-        }
-        if (player?.videoPlayerSelected() != true) {
-            return false
-        }
-        val mainUi = player?.UIs()?.get(MainPlayerUi::class) ?: return pendingFullscreenOrientationChange
-        return pendingFullscreenOrientationChange || mainUi.isFullscreen
-    }
-
-    override fun onConfigurationChanged(newConfig: Configuration) {
-        super.onConfigurationChanged(newConfig)
-
-        if (!shouldHandleOrientationChangeInPlace() || nullableBinding == null) {
-            return
-        }
-
-        binding.root.removeCallbacks(clearPendingOrientationChange)
-        pendingFullscreenOrientationChange = false
-
-        setupBrightness()
-        syncMainPlayerFullscreenWithOrientation()
-        binding.root.post {
-            if (nullableBinding == null) {
-                return@post
-            }
-            tryAddVideoPlayerView()
-            hideSystemUiIfNeeded()
         }
     }
 
@@ -316,12 +287,13 @@ class VideoDetailFragment :
         showComments = prefs.getBoolean(getString(R.string.show_comments_key), true)
         showRelatedItems = prefs.getBoolean(getString(R.string.show_next_video_key), true)
         showDescription = prefs.getBoolean(getString(R.string.show_description_key), true)
-        val defaultTabValue = prefs.getString(getString(R.string.default_tab_key), "LIVE")
+        val defaultTabValue = prefs.getString(
+            getString(R.string.default_tab_key),
+            TabsJsonHelper.DEFAULT_TAB_VALUE
+        )
         isTournesolTab = "TOURNESOL" == defaultTabValue
-        selectedTabTag = prefs.getString(
-            getString(R.string.stream_info_selected_tab_key),
-            COMMENTS_TAB_TAG
-        )!!
+        selectedTabTag = prefs.getString(getString(R.string.stream_info_selected_tab_key), null)
+            ?: COMMENTS_TAB_TAG
         prefs.registerOnSharedPreferenceChangeListener(preferenceChangeListener)
 
         setupBroadcastReceiver()
@@ -336,7 +308,7 @@ class VideoDetailFragment :
         activity.contentResolver.registerContentObserver(
             Settings.System.getUriFor(Settings.System.ACCELEROMETER_ROTATION),
             false,
-            settingsContentObserver!!
+            settingsContentObserver
         )
     }
 
@@ -408,7 +380,7 @@ class VideoDetailFragment :
         PreferenceManager.getDefaultSharedPreferences(activity)
             .unregisterOnSharedPreferenceChangeListener(preferenceChangeListener)
         activity.unregisterReceiver(broadcastReceiver)
-        activity.contentResolver.unregisterContentObserver(settingsContentObserver!!)
+        activity.contentResolver.unregisterContentObserver(settingsContentObserver)
 
         positionSubscriber?.dispose()
         currentWorker?.dispose()
@@ -426,10 +398,8 @@ class VideoDetailFragment :
 
     override fun onDestroyView() {
         view?.viewTreeObserver?.removeOnPreDrawListener(preDrawListener)
-        view?.removeCallbacks(clearPendingOrientationChange)
         pageChangeListener?.let { binding.viewPager.removeOnPageChangeListener(it) }
         pageChangeListener = null
-        pendingFullscreenOrientationChange = false
         super.onDestroyView()
         nullableBinding = null
     }
@@ -542,9 +512,10 @@ class VideoDetailFragment :
             NavigationHelper.openPlayQueue(requireContext())
         }
         binding.overlayPlayPauseButton.setOnClickListener {
-            if (!playerIsStopped) {
-                player!!.playPause()
-                player!!.UIs().get(VideoPlayerUi::class)?.hideControls(0, 0)
+            val runningPlayer = player?.takeUnless { it.isStopped }
+            if (runningPlayer != null) {
+                runningPlayer.playPause()
+                runningPlayer.UIs().get(VideoPlayerUi::class)?.hideControls(0, 0)
                 showSystemUi()
             } else {
                 autoPlayEnabled = true // forcefully start playing
@@ -642,7 +613,7 @@ class VideoDetailFragment :
 
         pageAdapter = StateSavingTabAdapter(getChildFragmentManager())
         binding.viewPager.setAdapter(pageAdapter)
-        binding.viewPager.offscreenPageLimit = 1
+        binding.viewPager.offscreenPageLimit = 4
         binding.tabLayout.setupWithViewPager(binding.viewPager)
 
         binding.detailThumbnailRootLayout.requestFocus()
@@ -709,8 +680,7 @@ class VideoDetailFragment :
             }
 
             override fun onPageScrollStateChanged(state: Int) = Unit
-        }
-        binding.viewPager.addOnPageChangeListener(pageChangeListener!!)
+        }.also { binding.viewPager.addOnPageChangeListener(it) }
 
         setupBottomPlayer()
         if (!PlayerHolder.isBound) {
@@ -730,9 +700,10 @@ class VideoDetailFragment :
         }
 
         // If we are in fullscreen mode just exit from it via first back press
-        if (this.isFullscreen) {
+        val fullscreenPlayer = player?.takeIf { this.isFullscreen }
+        if (fullscreenPlayer != null) {
             if (!DeviceUtils.isTablet(activity)) {
-                player!!.pause()
+                fullscreenPlayer.pause()
             }
             restoreDefaultOrientation()
             setAutoPlay(false)
@@ -753,7 +724,7 @@ class VideoDetailFragment :
         // Remove top
         stack.pop()
         // Get stack item from the new top
-        setupFromHistoryItem(stack.peek()!!)
+        setupFromHistoryItem(stack.first())
 
         return true
     }
@@ -903,11 +874,12 @@ class VideoDetailFragment :
             ?.let { tag -> selectedTabTag = tag }
 
         pageAdapter.clearAllItems()
+        compareContentHeightPx = 0
         tabIcons.clear()
         tabContentDescriptions.clear()
 
         if (shouldShowComments()) {
-            pageAdapter.addFragment(getInstance(serviceId, url), COMMENTS_TAB_TAG)
+            pageAdapter.addFragment(EmptyFragment.newInstance(false), COMMENTS_TAB_TAG)
             tabIcons.add(R.drawable.ic_comment)
             tabContentDescriptions.add(R.string.comments_tab_description)
         }
@@ -922,6 +894,10 @@ class VideoDetailFragment :
         pageAdapter.addFragment(TournesolFragment(), TOURNESOL_TAB_TAG)
         tabIcons.add(R.drawable.logo_small)
         tabContentDescriptions.add(R.string.tournesol_tab_description)
+
+        pageAdapter.addFragment(TournesolScoresFragment(), TOURNESOL_SCORES_TAB_TAG)
+        tabIcons.add(R.drawable.ic_trending_up)
+        tabContentDescriptions.add(R.string.tournesol_detail_scores_header)
 
         if (showDescription) {
             // temp empty fragment. will be updated in handleResult
@@ -971,32 +947,49 @@ class VideoDetailFragment :
     /**
      * Adjust the AppBar's collapse range when the compare tab is active.
      * The allowed collapse equals the content overflow (content height minus
-     * the visible area when the AppBar is fully expanded). Each AppBar child
-     * is given [AppBarLayout.LayoutParams.SCROLL_FLAG_EXIT_UNTIL_COLLAPSED]
-     * with a `minHeight` that limits how far it can collapse, consuming the
-     * overflow budget in order. If there is no overflow the child is pinned.
+     * the visible area when the AppBar is fully expanded). AppBarLayout ends
+     * its scroll range at the first child with
+     * [AppBarLayout.LayoutParams.SCROLL_FLAG_EXIT_UNTIL_COLLAPSED], so only the
+     * child where the overflow budget runs out gets that flag, with a
+     * `minHeight` that limits how far it can collapse. If there is no overflow
+     * the child is pinned.
      */
     private fun applyCompareAppBarLimits() {
         val appBar = binding.appBarLayout
-        val coordinator = binding.detailMainContent
-        val visibleHeight = coordinator.height - appBar.height
-        if (visibleHeight <= 0) return
+        val children = appBar.children.filter { it.layoutParams is AppBarLayout.LayoutParams }.toList()
+        val limits = compareAppBarLimits(
+            contentHeight = compareContentHeightPx,
+            visibleHeight = binding.detailMainContent.height - appBar.height,
+            childHeights = children.map { it.height }
+        ) ?: return
 
-        var remainingOverflow = max(0, compareContentHeightPx - visibleHeight)
-        for (i in 0 until appBar.childCount) {
-            val child = appBar.getChildAt(i)
-            val lp = child.layoutParams as? AppBarLayout.LayoutParams ?: continue
-            val childHeight = child.height
-            if (remainingOverflow <= 0 || childHeight <= 0) {
-                lp.scrollFlags = 0
-                child.minimumHeight = 0
-            } else {
-                val collapse = min(remainingOverflow, childHeight)
-                lp.scrollFlags = AppBarLayout.LayoutParams.SCROLL_FLAG_SCROLL or
-                    AppBarLayout.LayoutParams.SCROLL_FLAG_EXIT_UNTIL_COLLAPSED
-                child.minimumHeight = childHeight - collapse
-                remainingOverflow -= collapse
+        children.zip(limits).forEach { (child, limit) ->
+            when (limit) {
+                AppBarChildLimit.Pinned -> setAppBarChildScroll(child, 0, 0)
+
+                AppBarChildLimit.ScrollsAway -> setAppBarChildScroll(
+                    child,
+                    AppBarLayout.LayoutParams.SCROLL_FLAG_SCROLL,
+                    0
+                )
+
+                is AppBarChildLimit.Collapsible -> setAppBarChildScroll(
+                    child,
+                    AppBarLayout.LayoutParams.SCROLL_FLAG_SCROLL or
+                        AppBarLayout.LayoutParams.SCROLL_FLAG_EXIT_UNTIL_COLLAPSED,
+                    limit.minimumHeight
+                )
             }
+        }
+    }
+
+    private fun setAppBarChildScroll(child: View, scrollFlags: Int, minimumHeight: Int) {
+        val lp = child.layoutParams as? AppBarLayout.LayoutParams ?: return
+        if (child.minimumHeight != minimumHeight) {
+            child.minimumHeight = minimumHeight
+        }
+        if (lp.scrollFlags != scrollFlags) {
+            lp.scrollFlags = scrollFlags
             child.layoutParams = lp
         }
     }
@@ -1006,12 +999,8 @@ class VideoDetailFragment :
      * leaving the compare tab).
      */
     private fun restoreAppBarScrollFlags() {
-        for (i in 0 until binding.appBarLayout.childCount) {
-            val child = binding.appBarLayout.getChildAt(i)
-            val lp = child.layoutParams as? AppBarLayout.LayoutParams ?: continue
-            lp.scrollFlags = AppBarLayout.LayoutParams.SCROLL_FLAG_SCROLL
-            child.minimumHeight = 0
-            child.layoutParams = lp
+        for (child in binding.appBarLayout.children) {
+            setAppBarChildScroll(child, AppBarLayout.LayoutParams.SCROLL_FLAG_SCROLL, 0)
         }
     }
 
@@ -1059,6 +1048,10 @@ class VideoDetailFragment :
     }
 
     private fun updateTabs(info: StreamInfo) {
+        if (shouldShowComments()) {
+            pageAdapter.updateItem(COMMENTS_TAB_TAG, getInstance(info.serviceId, info.url))
+        }
+
         if (showRelatedItems && !isTournesolTab) {
             when (val relatedItemsLayout = binding.relatedItemsLayout) {
                 // phone
@@ -1071,9 +1064,12 @@ class VideoDetailFragment :
                     relatedItemsLayout.isVisible = !this.isFullscreen
                 }
             }
+        } else {
+            binding.relatedItemsLayout?.isVisible = false
         }
 
         pageAdapter.updateItem(TOURNESOL_TAB_TAG, TournesolFragment.getInstance(info))
+        pageAdapter.updateItem(TOURNESOL_SCORES_TAB_TAG, TournesolScoresFragment.getInstance(info))
 
         if (showDescription) {
             pageAdapter.updateItem(DESCRIPTION_TAB_TAG, DescriptionFragment(info))
@@ -1588,7 +1584,7 @@ class VideoDetailFragment :
         super.showLoading()
 
         // if data is already cached, transition from VISIBLE -> INVISIBLE -> VISIBLE is not required
-        if (!ExtractorHelper.isCached(serviceId, url!!, InfoCache.Type.STREAM)) {
+        if (url?.let { ExtractorHelper.isCached(serviceId, it, InfoCache.Type.STREAM) } != true) {
             binding.detailContentRootHiding.visibility = View.INVISIBLE
         }
 
@@ -1605,7 +1601,7 @@ class VideoDetailFragment :
         binding.detailTitleRootLayout.isClickable = false
         binding.detailSecondaryControlPanel.visibility = View.GONE
 
-        binding.relatedItemsLayout?.isVisible = showRelatedItems && !this.isFullscreen
+        binding.relatedItemsLayout?.isVisible = showRelatedItems && !isTournesolTab && !this.isFullscreen
 
         CoilUtils.dispose(binding.detailThumbnailImageView)
         CoilUtils.dispose(binding.detailSubChannelThumbnailView)
@@ -2007,18 +2003,11 @@ class VideoDetailFragment :
             showSystemUi()
         }
 
-        binding.relatedItemsLayout?.isVisible = if (showRelatedItems) !fullscreen else false
+        binding.relatedItemsLayout?.isVisible = if (showRelatedItems && !isTournesolTab) !fullscreen else false
         scrollToTop()
 
         tryAddVideoPlayerView()
         binding.root.post { scrollToTop() }
-    }
-
-    private fun requestOrientationChangeInPlace(requestedOrientation: Int) {
-        pendingFullscreenOrientationChange = true
-        binding.root.removeCallbacks(clearPendingOrientationChange)
-        activity.setRequestedOrientation(requestedOrientation)
-        binding.root.postDelayed(clearPendingOrientationChange, 1000)
     }
 
     override fun onFullscreenToggleButtonClicked() {
@@ -2033,12 +2022,12 @@ class VideoDetailFragment :
         if (playerUi.isFullscreen) {
             // EXITING FULLSCREEN
             playerUi.toggleFullscreen()
-            requestOrientationChangeInPlace(originalOrientation)
+            activity.setRequestedOrientation(originalOrientation)
         } else {
             // ENTERING FULLSCREEN
             originalOrientation = activity.getRequestedOrientation()
             playerUi.toggleFullscreen()
-            requestOrientationChangeInPlace(ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE)
+            activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE)
         }
     }
 
@@ -2079,7 +2068,7 @@ class VideoDetailFragment :
         activity.window.clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN)
         activity.window.statusBarColor = androidx.core.content.ContextCompat.getColor(
             requireContext(),
-            R.color.tournesol_chip_group_bg
+            R.color.dark_background_color
         )
     }
 
@@ -2204,17 +2193,17 @@ class VideoDetailFragment :
         }
     }
 
-    private fun checkLandscape() {
-        if ((!player!!.isPlaying && player!!.playQueue !== playQueue) ||
-            player!!.playQueue == null
+    private fun checkLandscape(connectedPlayer: Player) {
+        if ((!connectedPlayer.isPlaying && connectedPlayer.playQueue !== playQueue) ||
+            connectedPlayer.playQueue == null
         ) {
             setAutoPlay(true)
         }
 
-        player!!.UIs().get(MainPlayerUi::class)?.checkLandscape()
+        connectedPlayer.UIs().get(MainPlayerUi::class)?.checkLandscape()
         // Let's give a user time to look at video information page if video is not playing
-        if (PlayerHelper.globalScreenOrientationLocked(activity) && !player!!.isPlaying) {
-            player!!.play()
+        if (PlayerHelper.globalScreenOrientationLocked(activity) && !connectedPlayer.isPlaying) {
+            connectedPlayer.play()
         }
     }
 
@@ -2586,6 +2575,7 @@ class VideoDetailFragment :
         private const val COMMENTS_TAB_TAG = "COMMENTS"
         private const val RELATED_TAB_TAG = "NEXT VIDEO"
         private const val TOURNESOL_TAB_TAG = "TOURNESOL TAB"
+        private const val TOURNESOL_SCORES_TAB_TAG = "TOURNESOL SCORES TAB"
         private const val DESCRIPTION_TAB_TAG = "DESCRIPTION TAB"
         private const val EMPTY_TAB_TAG = "EMPTY TAB"
 

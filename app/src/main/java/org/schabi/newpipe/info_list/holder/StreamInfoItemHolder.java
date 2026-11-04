@@ -6,7 +6,6 @@ import android.graphics.Paint;
 import android.graphics.drawable.Drawable;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
-import android.text.TextUtils;
 import android.graphics.Typeface;
 import android.text.style.ForegroundColorSpan;
 import android.text.style.ImageSpan;
@@ -27,8 +26,11 @@ import org.schabi.newpipe.extractor.stream.StreamInfoItem;
 import org.schabi.newpipe.extractor.stream.StreamType;
 import org.schabi.newpipe.info_list.InfoItemBuilder;
 import org.schabi.newpipe.local.history.HistoryRecordManager;
+import org.schabi.newpipe.tournesol.TournesolHelper;
+import org.schabi.newpipe.tournesol.ui.TournesolCriterionStyle;
 import org.schabi.newpipe.util.Localization;
-import org.schabi.newpipe.util.TournesolHelper;
+
+import java.util.List;
 
 /*
  * Created by Christian Schabesberger on 01.08.16.
@@ -60,6 +62,9 @@ public class StreamInfoItemHolder extends StreamMiniInfoItemHolder {
     private final ImageView itemInlineBestIcon;
     private final TextView itemInlineWorstArrow;
     private final ImageView itemInlineWorstIcon;
+    private final int tournesolScoreColor;
+    @Nullable
+    private Drawable tournesolLogo;
 
     public StreamInfoItemHolder(final InfoItemBuilder infoItemBuilder, final ViewGroup parent) {
         this(infoItemBuilder, R.layout.list_stream_item, parent);
@@ -73,6 +78,8 @@ public class StreamInfoItemHolder extends StreamMiniInfoItemHolder {
         itemInlineBestIcon = itemView.findViewById(R.id.itemInlineBestIcon);
         itemInlineWorstArrow = itemView.findViewById(R.id.itemInlineWorstArrow);
         itemInlineWorstIcon = itemView.findViewById(R.id.itemInlineWorstIcon);
+        tournesolScoreColor = ContextCompat.getColor(
+                itemBuilder.getContext(), R.color.tournesol_score);
     }
 
     @Override
@@ -98,110 +105,87 @@ public class StreamInfoItemHolder extends StreamMiniInfoItemHolder {
     }
 
     private SpannableStringBuilder buildCompactDetailLine(final StreamInfoItem item) {
-        final Context context = itemBuilder.getContext();
         final int iconSize = (int) itemAdditionalDetails.getTextSize();
         final int textColor = itemAdditionalDetails.getCurrentTextColor();
-        final int tournesolScoreColor = ContextCompat.getColor(
-                context, R.color.dark_settings_accent_color);
         final SpannableStringBuilder sb = new SpannableStringBuilder();
 
-        // Tournesol score: logo icon (or plant emoji if insufficient) + score (accent yellow)
-        final Long tournesolScore = item.getTournesolScore();
-        if (tournesolScore != null) {
-            final boolean hasInsufficientReason = TournesolHelper.hasInsufficientReason(
-                    item.getTournesolUnsafeReasons());
-            final int textStart;
-            if (hasInsufficientReason) {
-                sb.append("\uD83C\uDF31\u2009");
-                textStart = sb.length();
-                sb.append(Long.toString(tournesolScore));
-                sb.setSpan(new ForegroundColorSpan(tournesolScoreColor),
-                        textStart, sb.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-            } else {
-                appendIconAndText(sb, context, R.drawable.logo_small, iconSize,
-                        Long.toString(tournesolScore), null, tournesolScoreColor);
-                textStart = sb.length() - Long.toString(tournesolScore).length();
-            }
-            sb.setSpan(new StyleSpan(Typeface.BOLD),
-                    textStart, sb.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-            sb.setSpan(new RelativeSizeSpan(1.15f),
-                    textStart, sb.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-        }
+        final List<DetailSegment> segments = DetailSegmentKt.detailSegments(
+                item.getTournesolScore(),
+                TournesolHelper.hasInsufficientReason(item.getTournesolUnsafeReasons()),
+                Localization.compactRelativeTimeOrTextual(
+                        item.getUploadDate(), item.getTextualUploadDate()),
+                formatViewCount(item),
+                item.getTournesolNComparisons());
 
-        // Date: clock emoji + compact relative time (natural color)
-        final String uploadDate = Localization.compactRelativeTimeOrTextual(
-                item.getUploadDate(), item.getTextualUploadDate());
-        if (!TextUtils.isEmpty(uploadDate)) {
+        for (final DetailSegment segment : segments) {
             if (sb.length() > 0) {
                 sb.append("  ");
             }
-            sb.append("\uD83D\uDD52\uFE0F\u2009");
-            sb.append(uploadDate);
-        }
-
-        // Views: eye emoji + compact count (natural color)
-        if (item.getViewCount() >= 0) {
-            final String viewText;
-            if (item.getStreamType().equals(StreamType.AUDIO_LIVE_STREAM)) {
-                viewText = Localization.listeningCount(context, item.getViewCount());
-            } else if (item.getStreamType().equals(StreamType.LIVE_STREAM)) {
-                viewText = Localization.shortWatchingCount(context, item.getViewCount());
-            } else {
-                viewText = Localization.shortCount(context, item.getViewCount());
+            if (segment instanceof DetailSegment.Score score) {
+                appendScore(sb, score, iconSize);
+            } else if (segment instanceof DetailSegment.Date date) {
+                // Date: clock emoji + compact relative time (natural color)
+                sb.append("\uD83D\uDD52\uFE0F\u2009");
+                sb.append(date.getText());
+            } else if (segment instanceof DetailSegment.Views views) {
+                // Views: eye emoji + compact count (natural color)
+                sb.append("\uD83D\uDC41\uFE0F\u2009");
+                sb.append(views.getText());
+            } else if (segment instanceof DetailSegment.Comparisons comparisons) {
+                // Votes: balance scale emoji + count
+                sb.append("\u2696\uFE0F\u2009");
+                sb.append(String.valueOf(comparisons.getCount()));
             }
-            if (sb.length() > 0) {
-                sb.append("  ");
-            }
-            sb.append("\uD83D\uDC41\uFE0F\u2009");
-            sb.append(viewText);
-        }
-
-        // Votes: balance scale emoji + count
-        final int nComparisons = item.getTournesolNComparisons();
-        if (nComparisons >= 0) {
-            if (sb.length() > 0) {
-                sb.append("  ");
-            }
-            sb.append("\u2696\uFE0F\u2009");
-            sb.append(String.valueOf(nComparisons));
         }
 
         return sb;
     }
 
-    private static void appendIconAndText(final SpannableStringBuilder sb,
-                                          final Context context,
-                                          @DrawableRes final int iconRes,
-                                          final int iconSize,
-                                          final String text,
-                                          final int tintColor) {
-        appendIconAndText(sb, context, iconRes, iconSize, text, (Integer) tintColor, null);
+    @Nullable
+    private String formatViewCount(final StreamInfoItem item) {
+        if (item.getViewCount() < 0) {
+            return null;
+        }
+        final Context context = itemBuilder.getContext();
+        if (item.getStreamType().equals(StreamType.AUDIO_LIVE_STREAM)) {
+            return Localization.listeningCount(context, item.getViewCount());
+        } else if (item.getStreamType().equals(StreamType.LIVE_STREAM)) {
+            return Localization.shortWatchingCount(context, item.getViewCount());
+        } else {
+            return Localization.shortCount(context, item.getViewCount());
+        }
     }
 
-    private static void appendIconAndText(final SpannableStringBuilder sb,
-                                          final Context context,
-                                          @DrawableRes final int iconRes,
-                                          final int iconSize,
-                                          final String text,
-                                          @Nullable final Integer iconTint,
-                                          @Nullable final Integer textColor) {
-        final Drawable icon = ContextCompat.getDrawable(context, iconRes);
-        if (icon != null) {
-            icon.mutate();
-            if (iconTint != null) {
-                icon.setTint(iconTint);
-            }
-            icon.setBounds(0, 0, iconSize, iconSize);
-            sb.append(" ");
-            sb.setSpan(new CenteredImageSpan(icon),
-                    sb.length() - 1, sb.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-            sb.append("\u2009");
+    // Tournesol score: logo icon (or plant emoji if insufficient) + score (accent yellow)
+    private void appendScore(final SpannableStringBuilder sb,
+                             final DetailSegment.Score score,
+                             final int iconSize) {
+        if (score.getInsufficient()) {
+            sb.append("\uD83C\uDF31\u2009");
+        } else {
+            appendLogo(sb, iconSize);
         }
         final int textStart = sb.length();
-        sb.append(text);
-        if (textColor != null) {
-            sb.setSpan(new ForegroundColorSpan(textColor),
-                    textStart, sb.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        sb.append(Long.toString(score.getValue()));
+        sb.setSpan(new ForegroundColorSpan(tournesolScoreColor),
+                textStart, sb.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        sb.setSpan(new StyleSpan(Typeface.BOLD),
+                textStart, sb.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        sb.setSpan(new RelativeSizeSpan(1.15f),
+                textStart, sb.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+    }
+
+    private void appendLogo(final SpannableStringBuilder sb, final int iconSize) {
+        if (tournesolLogo == null) {
+            tournesolLogo = ContextCompat.getDrawable(
+                    itemBuilder.getContext(), R.drawable.logo_small);
+        }
+        if (tournesolLogo != null) {
+            tournesolLogo.setBounds(0, 0, iconSize, iconSize);
+            sb.append(" ");
+            sb.setSpan(new CenteredImageSpan(tournesolLogo),
+                    sb.length() - 1, sb.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+            sb.append("\u2009");
         }
     }
 
@@ -227,33 +211,28 @@ public class StreamInfoItemHolder extends StreamMiniInfoItemHolder {
     }
 
     private void bindInlineCriteria(final StreamInfoItem item) {
-        final String bestCriteria = item.getTournesolBestCriteria();
-        final String worstCriteria = item.getTournesolWorstCriteria();
-        final Integer bestIconRes = getCriteriaIcon(bestCriteria);
-        final Integer worstIconRes = getCriteriaIcon(worstCriteria);
-
         // Inline best criteria (right of uploader line)
-        if (itemInlineBestArrow != null && itemInlineBestIcon != null) {
-            if (bestIconRes != null) {
-                itemInlineBestArrow.setVisibility(View.VISIBLE);
-                itemInlineBestIcon.setImageResource(bestIconRes);
-                itemInlineBestIcon.setVisibility(View.VISIBLE);
-            } else {
-                itemInlineBestArrow.setVisibility(View.GONE);
-                itemInlineBestIcon.setVisibility(View.GONE);
-            }
-        }
+        bindCriterion(itemInlineBestArrow, itemInlineBestIcon,
+                getCriteriaIcon(item.getTournesolBestCriteria()));
 
         // Inline worst criteria (right of additional details line)
-        if (itemInlineWorstArrow != null && itemInlineWorstIcon != null) {
-            if (worstIconRes != null) {
-                itemInlineWorstArrow.setVisibility(View.VISIBLE);
-                itemInlineWorstIcon.setImageResource(worstIconRes);
-                itemInlineWorstIcon.setVisibility(View.VISIBLE);
-            } else {
-                itemInlineWorstArrow.setVisibility(View.GONE);
-                itemInlineWorstIcon.setVisibility(View.GONE);
-            }
+        bindCriterion(itemInlineWorstArrow, itemInlineWorstIcon,
+                getCriteriaIcon(item.getTournesolWorstCriteria()));
+    }
+
+    private static void bindCriterion(@Nullable final TextView arrow,
+                                      @Nullable final ImageView icon,
+                                      @Nullable @DrawableRes final Integer iconRes) {
+        if (arrow == null || icon == null) {
+            return;
+        }
+        if (iconRes != null) {
+            arrow.setVisibility(View.VISIBLE);
+            icon.setImageResource(iconRes);
+            icon.setVisibility(View.VISIBLE);
+        } else {
+            arrow.setVisibility(View.GONE);
+            icon.setVisibility(View.GONE);
         }
     }
 
@@ -263,17 +242,7 @@ public class StreamInfoItemHolder extends StreamMiniInfoItemHolder {
         if (criteria == null) {
             return null;
         }
-        switch (criteria) {
-            case "reliability": return R.drawable.reliability;
-            case "pedagogy": return R.drawable.pedagogy;
-            case "importance": return R.drawable.importance;
-            case "layman_friendly": return R.drawable.layman_friendly;
-            case "entertaining_relaxing": return R.drawable.entertaining_relaxing;
-            case "engaging": return R.drawable.engaging;
-            case "diversity_inclusion": return R.drawable.diversity_inclusion;
-            case "better_habits": return R.drawable.better_habits;
-            case "backfire_risk": return R.drawable.backfire_risk;
-            default: return null;
-        }
+        final TournesolCriterionStyle style = TournesolCriterionStyle.find(criteria);
+        return style != null ? style.getIconRes() : null;
     }
 }

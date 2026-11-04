@@ -33,7 +33,7 @@
         android:layout_height="match_parent"
         android:layout_marginTop="@dimen/playlist_ctrl_separator_margin"
         android:layout_marginBottom="@dimen/playlist_ctrl_separator_margin"
-        android:background="@color/tournesol_action_separator"
+        android:background="@color/tournesol_outline"
         android:clickable="false" />
 
     <LinearLayout
@@ -63,7 +63,7 @@
         android:layout_height="match_parent"
         android:layout_marginTop="@dimen/playlist_ctrl_separator_margin"
         android:layout_marginBottom="@dimen/playlist_ctrl_separator_margin"
-        android:background="@color/tournesol_action_separator"
+        android:background="@color/tournesol_outline"
         android:clickable="false" />
 
     <LinearLayout

@@ -21,6 +21,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
@@ -30,9 +31,9 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import org.schabi.newpipe.R
+import org.schabi.newpipe.tournesol.TournesolHelper
 import org.schabi.newpipe.ui.components.items.Stream
 import org.schabi.newpipe.ui.theme.AppTheme
-import org.schabi.newpipe.util.TournesolHelper
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -104,7 +105,7 @@ fun StreamCardItem(
                                 fontSize = 15.sp,
                                 fontFamily = FontFamily.SansSerif,
                                 fontWeight = FontWeight.Bold,
-                                color = Color(0xFFD1B65C)
+                                color = colorResource(R.color.tournesol_score)
                             )
                         }
                     }

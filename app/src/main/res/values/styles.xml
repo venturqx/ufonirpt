@@ -19,9 +19,9 @@
         <item name="floatingActionButtonStyle">@style/FloatingActionButtonTheme</item>
         <item name="toolbarSearchColor">#FFCA1D</item>
         <item name="colorControlActivated">#FFCA1D</item>
-        <item name="android:textColorLink">#FFCA1D</item>
+        <item name="android:textColorLink">@color/tournesol_score</item>
         <item name="android:windowLightStatusBar">false</item>
-        <item name="android:statusBarColor">@color/tournesol_chip_group_bg</item>
+        <item name="android:statusBarColor">@color/dark_background_color</item>
     </style>
     <style name="Base" parent="Base.V21"/>
 

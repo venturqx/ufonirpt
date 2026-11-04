@@ -12,7 +12,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:animateLayoutChanges="true"
-        android:background="#0F0F0F">
+        android:background="@color/tournesol_surface">
 
         <org.schabi.newpipe.views.NewPipeTextView
             android:id="@+id/detail_upload_date_view"
@@ -63,7 +63,7 @@
             android:layout_marginTop="16dp"
             android:text="DESCRIPTION"
             android:textAllCaps="true"
-            android:textColor="#DBB222"
+            android:textColor="@color/tournesol_section_header"
             android:textSize="11sp"
             android:textStyle="bold"
             app:layout_constraintStart_toStartOf="parent"

@@ -629,8 +629,8 @@
                 app:elevation="16dp"
                 app:tabBackground="?attr/windowBackground"
                 app:tabGravity="fill"
-                app:tabIconTint="#FFCA1D"
-                app:tabIndicatorColor="#FFCA1D"
+                app:tabIconTint="@color/tournesol_score"
+                app:tabIndicatorColor="@color/tournesol_score"
                 app:tabIndicatorGravity="top" />
 
         </org.schabi.newpipe.views.FocusAwareCoordinator>

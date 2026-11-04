@@ -27,7 +27,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.content.res.Configuration;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -70,7 +69,6 @@ import org.schabi.newpipe.extractor.exceptions.ExtractionException;
 import org.schabi.newpipe.extractor.services.peertube.PeertubeInstance;
 import org.schabi.newpipe.fragments.BackPressable;
 import org.schabi.newpipe.fragments.MainFragment;
-import org.schabi.newpipe.fragments.detail.CompareHistoryActivity;
 import org.schabi.newpipe.fragments.detail.VideoDetailFragment;
 import org.schabi.newpipe.fragments.list.search.SearchFragment;
 import org.schabi.newpipe.local.feed.notifications.NotificationWorker;
@@ -80,6 +78,11 @@ import org.schabi.newpipe.player.helper.PlayerHolder;
 import org.schabi.newpipe.player.playqueue.PlayQueue;
 import org.schabi.newpipe.settings.UpdateSettingsFragment;
 import org.schabi.newpipe.settings.migration.MigrationManager;
+import org.schabi.newpipe.tournesol.CompareConstantsKt;
+import org.schabi.newpipe.tournesol.TournesolAuthManager;
+import org.schabi.newpipe.tournesol.TournesolProfile;
+import org.schabi.newpipe.tournesol.ui.CompareHistoryActivity;
+import org.schabi.newpipe.tournesol.ui.TournesolLoginDialog;
 import org.schabi.newpipe.util.Constants;
 import org.schabi.newpipe.util.DeviceUtils;
 import org.schabi.newpipe.util.KioskTranslator;
@@ -92,8 +95,6 @@ import org.schabi.newpipe.util.SerializedCache;
 import org.schabi.newpipe.util.ServiceHelper;
 import org.schabi.newpipe.util.StateSaver;
 import org.schabi.newpipe.util.ThemeHelper;
-import org.schabi.newpipe.util.TournesolAuthManager;
-import org.schabi.newpipe.util.TournesolLoginDialog;
 import org.schabi.newpipe.util.external_communication.ShareUtils;
 import org.schabi.newpipe.views.FocusOverlayView;
 
@@ -103,6 +104,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
+import io.reactivex.rxjava3.disposables.Disposable;
+
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = "MainActivity";
     @SuppressWarnings("ConstantConditions")
@@ -110,6 +114,7 @@ public class MainActivity extends AppCompatActivity {
 
     private ActivityMainBinding mainBinding;
     private DrawerHeaderBinding drawerHeaderBinding;
+    private Disposable profileHeaderDisposable;
     private DrawerLayoutBinding drawerLayoutBinding;
     private ToolbarLayoutBinding toolbarLayoutBinding;
 
@@ -399,15 +404,18 @@ public class MainActivity extends AppCompatActivity {
     private void setupDrawerHeader() {
         drawerHeaderBinding.drawerHeaderActionButton.setOnClickListener(view -> toggleServices());
 
+        getSupportFragmentManager().setFragmentResultListener(
+                TournesolLoginDialog.REQUEST_KEY, this, (requestKey, result) -> {
+                    updateProfileHeader();
+                    notifyCompareAuthChanged();
+                });
+
         drawerHeaderBinding.drawerHeaderLoginButton.setOnClickListener(view -> {
-            TournesolLoginDialog.create(() -> {
-                updateProfileHeader();
-                notifyCompareAuthChanged();
-            }).show(getSupportFragmentManager(), null);
+            new TournesolLoginDialog().show(getSupportFragmentManager(), null);
         });
 
         drawerHeaderBinding.drawerHeaderRegisterButton.setOnClickListener(view -> {
-            ShareUtils.openUrlInBrowser(this, "https://tournesol.app/signup");
+            ShareUtils.openUrlInBrowser(this, CompareConstantsKt.REGISTER_URL);
         });
 
         drawerHeaderBinding.drawerHeaderSeeHistoryButton.setOnClickListener(view -> {
@@ -424,7 +432,17 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void updateProfileHeader() {
-        final String username = TournesolAuthManager.INSTANCE.getUsername(this);
+        if (profileHeaderDisposable != null) {
+            profileHeaderDisposable.dispose();
+        }
+        profileHeaderDisposable = TournesolAuthManager.INSTANCE.loadProfile(this)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(this::renderProfileHeader,
+                        throwable -> Log.e(TAG, "Could not load Tournesol profile", throwable));
+    }
+
+    private void renderProfileHeader(final TournesolProfile profile) {
+        final String username = profile.getUsername();
         if (username != null) {
             final String greeting = getString(R.string.tournesol_hi_greeting) + " ";
             final android.text.SpannableStringBuilder ssb =
@@ -449,8 +467,7 @@ public class MainActivity extends AppCompatActivity {
                 ssb.setSpan(logoSpan, iconPos, ssb.length(),
                         android.text.Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
             }
-            final Integer comparisonCount =
-                    TournesolAuthManager.INSTANCE.getComparisonCount(this);
+            final Integer comparisonCount = profile.getComparisonCount();
             if (comparisonCount != null) {
                 ssb.append(" ");
                 final int countStart = ssb.length();
@@ -574,26 +591,15 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        if (profileHeaderDisposable != null) {
+            profileHeaderDisposable.dispose();
+        }
         if (!isChangingConfigurations()) {
             StateSaver.clearStateFiles();
         }
         if (broadcastReceiver != null) {
             unregisterReceiver(broadcastReceiver);
         }
-    }
-
-    @Override
-    public void onConfigurationChanged(@NonNull final Configuration newConfig) {
-        super.onConfigurationChanged(newConfig);
-
-        final Fragment fragment = getSupportFragmentManager()
-                .findFragmentById(R.id.fragment_holder);
-        if (fragment instanceof VideoDetailFragment
-                && ((VideoDetailFragment) fragment).shouldHandleOrientationChangeInPlace()) {
-            return;
-        }
-
-        ActivityCompat.recreate(this);
     }
 
     @Override

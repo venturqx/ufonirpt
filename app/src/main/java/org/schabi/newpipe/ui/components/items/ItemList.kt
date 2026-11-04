@@ -31,6 +31,7 @@ import my.nanihadesuka.compose.LazyVerticalGridScrollbar
 import org.schabi.newpipe.R
 import org.schabi.newpipe.info_list.ItemViewMode
 import org.schabi.newpipe.ktx.findFragmentActivity
+import org.schabi.newpipe.tournesol.TournesolScoreCache
 import org.schabi.newpipe.ui.components.common.LazyColumnThemedScrollbar
 import org.schabi.newpipe.ui.components.common.LoadingIndicator
 import org.schabi.newpipe.ui.components.common.defaultThemedScrollbarSettings
@@ -42,7 +43,6 @@ import org.schabi.newpipe.ui.emptystate.EmptyStateComposable
 import org.schabi.newpipe.ui.emptystate.EmptyStateSpec
 import org.schabi.newpipe.util.DependentPreferenceHelper
 import org.schabi.newpipe.util.NavigationHelper
-import org.schabi.newpipe.util.TournesolScoreCache
 
 @Composable
 fun ItemList(

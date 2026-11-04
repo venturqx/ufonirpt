@@ -457,7 +457,7 @@
                             android:clickable="true"
                             android:contentDescription="@string/play_audio"
                             android:drawableTop="@drawable/ic_headset"
-                            android:drawableTint="@color/tournesol_soft_white"
+                            android:drawableTint="@color/tournesol_on_surface"
                             android:focusable="true"
                             android:gravity="center"
                             android:drawablePadding="4dp"
@@ -473,7 +473,7 @@
                             android:clickable="true"
                             android:contentDescription="@string/open_in_popup_mode"
                             android:drawableTop="@drawable/ic_picture_in_picture"
-                            android:drawableTint="@color/tournesol_soft_white"
+                            android:drawableTint="@color/tournesol_on_surface"
                             android:focusable="true"
                             android:gravity="center"
                             android:drawablePadding="4dp"
@@ -613,8 +613,8 @@
             android:background="@drawable/bg_detail_tab_bar"
             app:elevation="16dp"
             app:tabGravity="fill"
-            app:tabIconTint="#FFCA1D"
-            app:tabIndicatorColor="#FFCA1D"
+            app:tabIconTint="@color/tournesol_score"
+            app:tabIndicatorColor="@color/tournesol_score"
             app:tabIndicatorGravity="top" />
 
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
