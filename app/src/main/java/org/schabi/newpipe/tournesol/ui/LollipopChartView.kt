@@ -1,0 +1,186 @@
+package org.schabi.newpipe.tournesol.ui
+
+import android.content.Context
+import android.graphics.Canvas
+import android.graphics.Color
+import android.graphics.Paint
+import android.graphics.Typeface
+import android.graphics.drawable.Drawable
+import android.util.TypedValue
+import android.view.MotionEvent
+import android.view.View
+import android.view.View.MeasureSpec
+import androidx.core.content.ContextCompat
+import java.util.Locale
+import kotlin.math.ceil
+import org.schabi.newpipe.R
+import org.schabi.newpipe.tournesol.CriterionScore
+
+private const val MAX_WIDTH_DP = 400f
+private const val BAR_WIDTH_DP = 12f
+private const val SCORE_TEXT_SIZE_DP = 10f
+private const val ZERO_LINE_WIDTH_DP = 1f
+private const val ZERO_LINE_ALPHA = 0x40
+private const val SELECTED_GLOW_GAP_DP = 3f
+private const val SELECTED_GLOW_WIDTH_DP = 4f
+private const val SELECTED_GLOW_ALPHA = 160
+
+fun formatScore(score: Double, decimals: Int): String {
+    val text = "%.${decimals}f".format(Locale.US, score)
+    return if (text.all { it == '-' || it == '0' || it == '.' }) text.removePrefix("-") else text
+}
+
+class LollipopChartView(
+    context: Context,
+    private val criteria: List<CriterionScore>,
+    private val icons: List<Drawable?>,
+    private val colors: IntArray,
+    iconSizePx: Int
+) : View(context) {
+    fun interface OnSelectionChangedListener {
+        fun onSelectionChanged(index: Int?)
+    }
+
+    var onSelectionChangedListener: OnSelectionChangedListener? = null
+
+    private val scores = DoubleArray(criteria.size) { criteria[it].score }
+    private val scoreLabels = Array(criteria.size) { formatScore(scores[it], 0) }
+    private val metrics = LollipopChartMetrics.of(iconSizePx, ::dp)
+    private val selectedGlowRadius = (metrics.circleRadius + dp(SELECTED_GLOW_GAP_DP)).toFloat()
+
+    private val barPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        style = Paint.Style.FILL
+        strokeCap = Paint.Cap.BUTT
+        strokeWidth = dp(BAR_WIDTH_DP).toFloat()
+    }
+    private val circlePaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        style = Paint.Style.FILL
+        color = ContextCompat.getColor(context, R.color.tournesol_surface_section)
+    }
+    private val circleStrokePaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        style = Paint.Style.STROKE
+        strokeWidth = metrics.circleStrokeWidth.toFloat()
+    }
+    private val scorePaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        textSize = dp(SCORE_TEXT_SIZE_DP).toFloat()
+        typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
+        textAlign = Paint.Align.CENTER
+        color = Color.WHITE
+    }
+    private val zeroLinePaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        style = Paint.Style.STROKE
+        color = ContextCompat.getColor(context, R.color.tournesol_content)
+        alpha = ZERO_LINE_ALPHA
+        strokeWidth = dp(ZERO_LINE_WIDTH_DP).toFloat()
+    }
+    private val selectedGlowPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        style = Paint.Style.STROKE
+        strokeWidth = dp(SELECTED_GLOW_WIDTH_DP).toFloat()
+    }
+
+    private var geometry: LollipopChartGeometry? = null
+    private var selectedIndex: Int? = null
+    private var bottomTrim = 0
+
+    init {
+        isClickable = true
+    }
+
+    override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
+        val maxWidth = dp(MAX_WIDTH_DP) + paddingLeft + paddingRight
+        val clampedWidthSpec = if (MeasureSpec.getSize(widthMeasureSpec) > maxWidth) {
+            MeasureSpec.makeMeasureSpec(maxWidth, MeasureSpec.getMode(widthMeasureSpec))
+        } else {
+            widthMeasureSpec
+        }
+        super.onMeasure(clampedWidthSpec, heightMeasureSpec)
+
+        val desiredHeight = LollipopChartGeometry.desiredHeight(scores, metrics) +
+            paddingTop + paddingBottom
+        val trimmedHeight = LollipopChartGeometry.of(scores, metrics, measuredWidth, desiredHeight)
+            ?.let { minOf(desiredHeight, ceil(contentBottom(it)).toInt() + paddingBottom) }
+            ?: desiredHeight
+        bottomTrim = desiredHeight - trimmedHeight
+
+        setMeasuredDimension(measuredWidth, trimmedHeight)
+    }
+
+    private fun contentBottom(chart: LollipopChartGeometry): Float {
+        val headExtent = selectedGlowRadius + selectedGlowPaint.strokeWidth / 2f
+        var bottom = chart.zeroY
+        for (i in scores.indices) {
+            bottom = maxOf(bottom, chart.barEndYs[i] + headExtent)
+            if (scores[i] < 0.0) {
+                bottom = maxOf(bottom, chart.labelYs[i] + scorePaint.descent())
+            }
+        }
+        return bottom
+    }
+
+    override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
+        super.onSizeChanged(w, h, oldw, oldh)
+        geometry = LollipopChartGeometry.of(scores, metrics, w, h + bottomTrim)?.also(::placeIcons)
+    }
+
+    private fun placeIcons(chart: LollipopChartGeometry) {
+        for (i in 0 until minOf(criteria.size, icons.size)) {
+            val icon = icons[i] ?: continue
+            val bounds = chart.iconBounds(i, LollipopIconFit.of(criteria[i].criteria))
+            icon.setBounds(bounds.left, bounds.top, bounds.right, bounds.bottom)
+            icon.setTintList(null)
+        }
+    }
+
+    private fun dp(dpVal: Float): Int = TypedValue.applyDimension(
+        TypedValue.COMPLEX_UNIT_DIP,
+        dpVal,
+        resources.displayMetrics
+    ).toInt()
+
+    override fun onTouchEvent(event: MotionEvent): Boolean {
+        if (event.action == MotionEvent.ACTION_UP) {
+            val hit = geometry?.hitTest(event.x, event.y)
+            if (hit != null) {
+                selectedIndex = selectionAfterTap(selectedIndex, hit)
+                invalidate()
+                onSelectionChangedListener?.onSelectionChanged(selectedIndex)
+                return true
+            }
+        }
+        return super.onTouchEvent(event)
+    }
+
+    override fun onDraw(canvas: Canvas) {
+        super.onDraw(canvas)
+        val chart = geometry ?: return
+
+        val zeroY = chart.zeroY
+        val circleRadius = metrics.circleRadius.toFloat()
+
+        canvas.drawLine(chart.zeroLineStartX, zeroY, chart.zeroLineEndX, zeroY, zeroLinePaint)
+
+        for (i in criteria.indices) {
+            val color = colors[i]
+            val cx = chart.centerXs[i]
+            val barEndY = chart.barEndYs[i]
+
+            barPaint.color = color
+            canvas.drawLine(cx, zeroY, cx, barEndY, barPaint)
+
+            if (i == selectedIndex) {
+                selectedGlowPaint.color = color
+                selectedGlowPaint.alpha = SELECTED_GLOW_ALPHA
+                canvas.drawCircle(cx, barEndY, selectedGlowRadius, selectedGlowPaint)
+            }
+
+            canvas.drawCircle(cx, barEndY, circleRadius, circlePaint)
+            circleStrokePaint.color = color
+            canvas.drawCircle(cx, barEndY, circleRadius, circleStrokePaint)
+
+            icons.getOrNull(i)?.draw(canvas)
+
+            scorePaint.color = color
+            canvas.drawText(scoreLabels[i], cx, chart.labelYs[i], scorePaint)
+        }
+    }
+}

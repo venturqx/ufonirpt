@@ -1,0 +1,526 @@
+package org.schabi.newpipe.tournesol.ui;
+
+import android.animation.ValueAnimator;
+import android.content.Context;
+import android.graphics.Color;
+import android.graphics.Typeface;
+import android.graphics.drawable.GradientDrawable;
+import android.graphics.drawable.Drawable;
+import android.util.AttributeSet;
+import android.util.TypedValue;
+import android.view.Gravity;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.widget.FrameLayout;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
+import androidx.core.content.ContextCompat;
+import androidx.core.graphics.ColorUtils;
+
+import org.schabi.newpipe.R;
+import org.schabi.newpipe.tournesol.CriterionDistribution;
+import org.schabi.newpipe.tournesol.CriterionScore;
+import org.schabi.newpipe.tournesol.TournesolEntityApi;
+import org.schabi.newpipe.tournesol.TournesolEntityParser;
+import org.schabi.newpipe.tournesol.TournesolHelper;
+import org.schabi.newpipe.tournesol.TournesolRating;
+import org.schabi.newpipe.tournesol.TournesolScoreCache;
+import org.schabi.newpipe.views.DistributionCurve;
+import org.schabi.newpipe.views.DistributionCurveView;
+import org.schabi.newpipe.views.ScoreCacheUrls;
+import org.schabi.newpipe.views.ScoreCardLoad;
+import org.schabi.newpipe.views.SkeletonPillDrawable;
+
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
+import io.reactivex.rxjava3.disposables.CompositeDisposable;
+
+public class TournesolScoreCard extends LinearLayout {
+
+    public interface RatingListener {
+        void onRatingLoaded(boolean hasInsufficientReason, long score);
+    }
+
+    private static final class DescriptionRow {
+        private final LinearLayout root;
+        private final TextView title;
+        private final TextView text;
+        private final LinearLayout miniChart;
+
+        DescriptionRow(final LinearLayout root, final TextView title, final TextView text,
+                       final LinearLayout miniChart) {
+            this.root = root;
+            this.title = title;
+            this.text = text;
+            this.miniChart = miniChart;
+        }
+    }
+
+    private static final int CHART_HEIGHT_DP = 28;
+
+    private final Map<String, CriterionDistribution> criteriaDistributions = new LinkedHashMap<>();
+    private final CompositeDisposable disposables = new CompositeDisposable();
+    private final ScoreCardLoad load = new ScoreCardLoad();
+
+    private LinearLayout tournesolInfoSection;
+    private LinearLayout tournesolCriteriaSection;
+    private TextView tournesolScoreValue;
+    private ImageView tournesolLogo;
+    private TextView tournesolUnsafeEmoji;
+    private LinearLayout tournesolDistributionContainer;
+    private TextView tournesolContributors;
+    private TextView tournesolComparisons;
+    private FrameLayout tournesolLollipopContainer;
+    private LinearLayout tournesolStatusRow;
+    private LinearLayout tournesolScoreRow;
+    private LinearLayout tournesolScoreSkeleton;
+    private View tournesolCriteriaSkeleton;
+    private TextView tournesolStatusText;
+    private TextView tournesolStatusRetry;
+
+    @Nullable
+    private TournesolVideoRef video;
+    @Nullable
+    private RatingListener ratingListener;
+    private ValueAnimator skeletonPulse;
+
+    public TournesolScoreCard(final Context context) {
+        super(context);
+        init();
+    }
+
+    public TournesolScoreCard(final Context context, @Nullable final AttributeSet attrs) {
+        super(context, attrs);
+        init();
+    }
+
+    public TournesolScoreCard(final Context context, @Nullable final AttributeSet attrs,
+                              final int defStyleAttr) {
+        super(context, attrs, defStyleAttr);
+        init();
+    }
+
+    private void init() {
+        setOrientation(VERTICAL);
+        LayoutInflater.from(getContext()).inflate(R.layout.view_tournesol_score_card, this, true);
+
+        tournesolInfoSection = findViewById(R.id.tournesol_info_section);
+        tournesolCriteriaSection = findViewById(R.id.tournesol_criteria_section);
+        tournesolScoreValue = findViewById(R.id.tournesol_score_value);
+        tournesolLogo = findViewById(R.id.tournesol_logo);
+        tournesolUnsafeEmoji = findViewById(R.id.tournesol_unsafe_emoji);
+        tournesolDistributionContainer = findViewById(R.id.tournesol_distribution_container);
+        tournesolContributors = findViewById(R.id.tournesol_contributors);
+        tournesolComparisons = findViewById(R.id.tournesol_comparisons);
+        tournesolLollipopContainer = findViewById(R.id.tournesol_lollipop_container);
+        tournesolStatusRow = findViewById(R.id.tournesol_status_row);
+        tournesolScoreRow = findViewById(R.id.tournesol_score_row);
+        tournesolScoreSkeleton = findViewById(R.id.tournesol_score_skeleton);
+        tournesolCriteriaSkeleton = findViewById(R.id.tournesol_criteria_skeleton);
+        initSkeleton();
+        tournesolStatusText = findViewById(R.id.tournesol_status_text);
+        tournesolStatusRetry = findViewById(R.id.tournesol_status_retry);
+        tournesolStatusRetry.setOnClickListener(v -> retry());
+    }
+
+    private void retry() {
+        if (video != null && ratingListener != null) {
+            bind(video, ratingListener);
+        }
+    }
+
+    private void showStatus(@StringRes final int messageRes, final boolean retryable) {
+        hideSkeleton();
+        tournesolStatusText.setText(messageRes);
+        tournesolStatusRetry.setVisibility(retryable ? VISIBLE : GONE);
+        tournesolStatusRow.setVisibility(VISIBLE);
+    }
+
+    private void initSkeleton() {
+        final int color = ContextCompat.getColor(getContext(), R.color.tournesol_skeleton);
+        findViewById(R.id.tournesol_skeleton_score)
+                .setBackground(new SkeletonPillDrawable(color, 0.6f));
+        findViewById(R.id.tournesol_skeleton_contributors)
+                .setBackground(new SkeletonPillDrawable(color, 0.5f));
+        findViewById(R.id.tournesol_skeleton_comparisons)
+                .setBackground(new SkeletonPillDrawable(color, 0.5f));
+
+        final GradientDrawable block = new GradientDrawable();
+        block.setColor(color);
+        block.setCornerRadius(dpToPx(12));
+        tournesolCriteriaSkeleton.setBackground(block);
+
+        skeletonPulse = ValueAnimator.ofFloat(0.4f, 1f);
+        skeletonPulse.setDuration(800);
+        skeletonPulse.setRepeatMode(ValueAnimator.REVERSE);
+        skeletonPulse.setRepeatCount(ValueAnimator.INFINITE);
+        skeletonPulse.addUpdateListener(animator -> {
+            final float alpha = (float) animator.getAnimatedValue();
+            tournesolScoreSkeleton.setAlpha(alpha);
+            tournesolCriteriaSkeleton.setAlpha(alpha);
+        });
+    }
+
+    private void showSkeleton() {
+        tournesolStatusRow.setVisibility(GONE);
+        tournesolScoreRow.setVisibility(GONE);
+        tournesolScoreSkeleton.setVisibility(VISIBLE);
+        tournesolInfoSection.setVisibility(VISIBLE);
+        tournesolCriteriaSkeleton.setVisibility(VISIBLE);
+        tournesolCriteriaSection.setVisibility(VISIBLE);
+        skeletonPulse.start();
+    }
+
+    private void hideSkeleton() {
+        skeletonPulse.cancel();
+        tournesolScoreSkeleton.setVisibility(GONE);
+        tournesolScoreRow.setVisibility(VISIBLE);
+        tournesolCriteriaSkeleton.setVisibility(GONE);
+        tournesolInfoSection.setVisibility(GONE);
+        tournesolCriteriaSection.setVisibility(GONE);
+    }
+
+    public void bind(@NonNull final TournesolVideoRef videoRef,
+                     @NonNull final RatingListener listener) {
+        this.video = videoRef;
+        this.ratingListener = listener;
+
+        tournesolInfoSection.setVisibility(GONE);
+        tournesolCriteriaSection.setVisibility(GONE);
+        tournesolLollipopContainer.removeAllViews();
+        tournesolLollipopContainer.setVisibility(GONE);
+        tournesolDistributionContainer.removeAllViews();
+        tournesolDistributionContainer.setVisibility(GONE);
+        tournesolLogo.setVisibility(VISIBLE);
+        tournesolUnsafeEmoji.setVisibility(GONE);
+        criteriaDistributions.clear();
+
+        disposables.clear();
+        startFetches(load.onBind());
+    }
+
+    @Override
+    protected void onAttachedToWindow() {
+        super.onAttachedToWindow();
+        startFetches(load.onAttached());
+    }
+
+    @Override
+    protected void onDetachedFromWindow() {
+        disposables.clear();
+        skeletonPulse.cancel();
+        load.onDetached();
+        super.onDetachedFromWindow();
+    }
+
+    private void startFetches(final Set<ScoreCardLoad.Fetch> fetches) {
+        if (fetches.contains(ScoreCardLoad.Fetch.INFO)) {
+            fetchTournesolInfo();
+        }
+        if (fetches.contains(ScoreCardLoad.Fetch.DISTRIBUTION)) {
+            fetchTournesolDistribution();
+        }
+    }
+
+    private void fetchTournesolInfo() {
+        if (video == null) {
+            return;
+        }
+        final TournesolRating cached =
+                TournesolEntityApi.cachedRating(video.getServiceId(), video.getVideoId());
+        if (cached != null) {
+            load.onFinished(ScoreCardLoad.Fetch.INFO);
+            displayTournesolInfo(cached);
+            return;
+        }
+        showSkeleton();
+        disposables.add(
+                TournesolEntityApi.fetchRating(video.getServiceId(), video.getVideoId())
+                .observeOn(AndroidSchedulers.mainThread())
+                .doOnTerminate(() -> load.onFinished(ScoreCardLoad.Fetch.INFO))
+                .subscribe(
+                        this::displayTournesolInfo,
+                        throwable -> showStatus(R.string.tournesol_detail_load_error, true),
+                        () -> showStatus(R.string.tournesol_detail_not_rated, false)
+                )
+        );
+    }
+
+    private void displayTournesolInfo(final TournesolRating rating) {
+        if (video == null) {
+            return;
+        }
+        hideSkeleton();
+        final double tournesolScore = rating.getScore();
+        final List<String> unsafeReasons = rating.getUnsafeReasons();
+
+        final long roundedScore = Math.round(tournesolScore);
+        cacheScore(video, roundedScore, unsafeReasons);
+
+        final int nComparisons = rating.getComparisonCount();
+        final int nContributors = rating.getContributorCount();
+
+        tournesolScoreValue.setText(LollipopChartViewKt.formatScore(tournesolScore, 1));
+        tournesolContributors.setText(getResources().getQuantityString(
+                R.plurals.tournesol_detail_contributors, nContributors, nContributors));
+        tournesolComparisons.setText(
+                getContext().getString(R.string.tournesol_detail_comparisons, nComparisons));
+
+        final boolean isInsufficient = TournesolHelper.hasInsufficientReason(unsafeReasons);
+        if (isInsufficient) {
+            tournesolLogo.setVisibility(GONE);
+            tournesolUnsafeEmoji.setVisibility(VISIBLE);
+        }
+
+        if (ratingListener != null) {
+            ratingListener.onRatingLoaded(isInsufficient, roundedScore);
+        }
+
+        displayCriteriaScores(rating.getCriterionScores());
+
+        tournesolStatusRow.setVisibility(GONE);
+        tournesolInfoSection.setVisibility(VISIBLE);
+    }
+
+    private static void cacheScore(final TournesolVideoRef videoRef, final long roundedScore,
+                                   final List<String> unsafeReasons) {
+        for (final String url : ScoreCacheUrls.of(videoRef.getOriginalUrl(), videoRef.getUrl())) {
+            TournesolScoreCache.INSTANCE.put(url, roundedScore, unsafeReasons);
+        }
+    }
+
+    private void displayCriteriaScores(final List<CriterionScore> criteriaScores) {
+        final List<CriterionScore> sortedEntries = TournesolCriterionStyle.sortedByCatalogOrder(
+                criteriaScores, CriterionScore::getCriteria);
+
+        if (!sortedEntries.isEmpty()) {
+            createLollipopChart(sortedEntries);
+        }
+    }
+
+    private List<Drawable> loadRadarIcons(final List<CriterionScore> entries) {
+        final List<Drawable> icons = new ArrayList<>();
+        final int iconSizePx = dpToPx(32);
+        for (final CriterionScore entry : entries) {
+            final TournesolCriterionStyle style =
+                    TournesolCriterionStyle.find(entry.getCriteria());
+            if (style != null) {
+                final Drawable d = ContextCompat.getDrawable(getContext(), style.getIconRes());
+                if (d != null) {
+                    d.setBounds(0, 0, iconSizePx, iconSizePx);
+                }
+                icons.add(d);
+            } else {
+                icons.add(null);
+            }
+        }
+        return icons;
+    }
+
+    private int[] criterionColors(final List<CriterionScore> entries) {
+        final int shade = ContextCompat.getColor(getContext(), R.color.tournesol_accent_shade);
+        final int[] colors = new int[entries.size()];
+        for (int i = 0; i < entries.size(); i++) {
+            final TournesolCriterionStyle style =
+                    TournesolCriterionStyle.find(entries.get(i).getCriteria());
+            colors[i] = ColorUtils.compositeColors(
+                    shade, style != null ? style.getColor() : Color.WHITE);
+        }
+        return colors;
+    }
+
+    private void createLollipopChart(final List<CriterionScore> entries) {
+        final LinearLayout wrapper = createChartWrapper();
+        final LollipopChartView lollipopView = createLollipopView(entries);
+        final DescriptionRow descRow = createDescriptionRow();
+
+        wrapper.addView(lollipopView);
+        wrapper.addView(descRow.root);
+
+        lollipopView.setOnSelectionChangedListener(
+                index -> onCriterionSelected(entries, index, descRow));
+
+        tournesolLollipopContainer.removeAllViews();
+        tournesolLollipopContainer.addView(wrapper);
+        tournesolLollipopContainer.setVisibility(VISIBLE);
+        tournesolCriteriaSection.setVisibility(VISIBLE);
+    }
+
+    private LinearLayout createChartWrapper() {
+        final LinearLayout wrapper = new LinearLayout(getContext());
+        wrapper.setOrientation(LinearLayout.VERTICAL);
+        wrapper.setGravity(Gravity.CENTER_HORIZONTAL);
+        wrapper.setClipChildren(false);
+        wrapper.setClipToPadding(false);
+        return wrapper;
+    }
+
+    private LollipopChartView createLollipopView(final List<CriterionScore> entries) {
+        final List<Drawable> icons = loadRadarIcons(entries);
+        final int[] colors = criterionColors(entries);
+        final LollipopChartView lollipopView = new LollipopChartView(
+                getContext(), entries, icons, colors, dpToPx(18));
+
+        final int glowPadding = dpToPx(8);
+        final LinearLayout.LayoutParams chartParams = new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT);
+        lollipopView.setLayoutParams(chartParams);
+        lollipopView.setPadding(glowPadding, glowPadding, glowPadding, glowPadding);
+        return lollipopView;
+    }
+
+    private DescriptionRow createDescriptionRow() {
+        final LinearLayout root = new LinearLayout(getContext());
+        root.setOrientation(LinearLayout.VERTICAL);
+        final LinearLayout.LayoutParams rootParams = new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT);
+        rootParams.topMargin = dpToPx(12);
+        root.setLayoutParams(rootParams);
+        root.setVisibility(GONE);
+
+        final LinearLayout titleRow = new LinearLayout(getContext());
+        titleRow.setOrientation(LinearLayout.HORIZONTAL);
+        titleRow.setGravity(Gravity.CENTER_VERTICAL);
+
+        final TextView title = createDescriptionTitle();
+        final LinearLayout miniChart = createMiniChartContainer();
+        final TextView text = createDescriptionText();
+
+        titleRow.addView(title);
+        titleRow.addView(miniChart);
+        root.addView(titleRow);
+        root.addView(text);
+        return new DescriptionRow(root, title, text, miniChart);
+    }
+
+    private TextView createDescriptionTitle() {
+        final TextView title = new TextView(getContext());
+        title.setLayoutParams(new LinearLayout.LayoutParams(
+                0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f));
+        title.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14);
+        title.setTypeface(Typeface.DEFAULT_BOLD);
+        title.setTextColor(ContextCompat.getColor(getContext(), R.color.tournesol_content));
+        title.setMaxLines(1);
+        return title;
+    }
+
+    private TextView createDescriptionText() {
+        final TextView text = new TextView(getContext());
+        final LinearLayout.LayoutParams textParams = new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+        textParams.topMargin = dpToPx(4);
+        text.setLayoutParams(textParams);
+        text.setTextSize(TypedValue.COMPLEX_UNIT_SP, 13);
+        text.setLineSpacing(dpToPx(2), 1f);
+        text.setTextColor(ContextCompat.getColor(getContext(), R.color.tournesol_content_muted));
+        return text;
+    }
+
+    private LinearLayout createMiniChartContainer() {
+        final LinearLayout miniChart = new LinearLayout(getContext());
+        final LinearLayout.LayoutParams miniParams = new LinearLayout.LayoutParams(
+                dpToPx(64), LinearLayout.LayoutParams.WRAP_CONTENT);
+        miniParams.setMarginStart(dpToPx(16));
+        miniChart.setLayoutParams(miniParams);
+        return miniChart;
+    }
+
+    private void onCriterionSelected(final List<CriterionScore> entries,
+                                     @Nullable final Integer index,
+                                     final DescriptionRow descRow) {
+        if (index == null) {
+            descRow.root.setVisibility(GONE);
+            return;
+        }
+        final CriterionScore entry = entries.get(index);
+        final TournesolCriterionStyle style =
+                TournesolCriterionStyle.find(entry.getCriteria());
+        if (style != null) {
+            descRow.title.setText(style.getLabelRes());
+            descRow.text.setText(style.getDescriptionRes());
+            descRow.root.setVisibility(VISIBLE);
+            showMiniChart(descRow.miniChart, entry.getCriteria());
+        }
+    }
+
+    private void showMiniChart(final LinearLayout miniChart, final String criteria) {
+        miniChart.removeAllViews();
+        final CriterionDistribution data = criteriaDistributions.get(criteria);
+        if (data != null) {
+            final View chart = createDistributionChart(
+                    data.getBins(), data.getDistribution());
+            chart.setLayoutParams(new LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT, dpToPx(CHART_HEIGHT_DP)));
+            miniChart.addView(chart);
+            miniChart.setVisibility(VISIBLE);
+        } else {
+            miniChart.setVisibility(GONE);
+        }
+    }
+
+    private void fetchTournesolDistribution() {
+        if (video == null) {
+            return;
+        }
+        final Map<String, CriterionDistribution> cached =
+                TournesolEntityApi.cachedDistributions(video.getServiceId(), video.getVideoId());
+        if (cached != null) {
+            load.onFinished(ScoreCardLoad.Fetch.DISTRIBUTION);
+            displayDistribution(cached);
+            return;
+        }
+        disposables.add(
+                TournesolEntityApi.fetchDistributions(video.getServiceId(), video.getVideoId())
+                .observeOn(AndroidSchedulers.mainThread())
+                .doOnTerminate(() -> load.onFinished(ScoreCardLoad.Fetch.DISTRIBUTION))
+                .subscribe(
+                        this::displayDistribution,
+                        throwable -> { /* silently ignore */ }
+                )
+        );
+    }
+
+    private void displayDistribution(final Map<String, CriterionDistribution> distributions) {
+        criteriaDistributions.clear();
+        criteriaDistributions.putAll(distributions);
+
+        final CriterionDistribution lr =
+                criteriaDistributions.get(TournesolEntityParser.LARGELY_RECOMMENDED);
+        if (lr == null) {
+            return;
+        }
+        tournesolDistributionContainer.removeAllViews();
+        tournesolDistributionContainer.addView(
+                createDistributionChart(lr.getBins(), lr.getDistribution()));
+        tournesolDistributionContainer.setVisibility(VISIBLE);
+    }
+
+    private View createDistributionChart(final int[] bins, final int[] distribution) {
+        if (!DistributionCurve.isDrawable(bins, distribution)) {
+            return new View(getContext());
+        }
+        final View curveView = new DistributionCurveView(
+                getContext(), bins, distribution, dpToPx(3) / 2f);
+        curveView.setLayoutParams(new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT, dpToPx(CHART_HEIGHT_DP)));
+        return curveView;
+    }
+
+    private int dpToPx(final float dp) {
+        return (int) TypedValue.applyDimension(
+                TypedValue.COMPLEX_UNIT_DIP, dp,
+                getResources().getDisplayMetrics());
+    }
+}
