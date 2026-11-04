@@ -85,4 +85,18 @@ class CompareHistoryStepTest {
     fun `step down without a suggestion steps from the current index`() {
         assertEquals(2, stepDownIndex(entries, 1, null, null))
     }
+
+    @Test
+    fun `step up without a suggestion steps from the current index`() {
+        assertEquals(0, stepUpIndex(entries, 1, null, null))
+        assertEquals(0, stepUpIndex(entries, 2, null, historyEntry("b")))
+        assertNull(stepUpIndex(entries, 0, null, null))
+    }
+
+    @Test
+    fun `step up from a suggestion moves above it or nowhere when missing from history`() {
+        assertEquals(1, stepUpIndex(entries, 0, suggestion("c"), null))
+        assertNull(stepUpIndex(entries, 0, suggestion("a"), null))
+        assertNull(stepUpIndex(entries, 2, suggestion("z"), null))
+    }
 }

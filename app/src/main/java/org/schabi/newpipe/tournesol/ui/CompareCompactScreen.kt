@@ -35,6 +35,7 @@ import androidx.compose.material.icons.rounded.ChevronLeft
 import androidx.compose.material.icons.rounded.ChevronRight
 import androidx.compose.material.icons.rounded.FirstPage
 import androidx.compose.material.icons.rounded.KeyboardArrowDown
+import androidx.compose.material.icons.rounded.KeyboardArrowUp
 import androidx.compose.material.icons.rounded.PlayArrow
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FilterChipDefaults
@@ -117,17 +118,36 @@ private val COMPACT_DIMENSIONS = listOf(
 @Composable
 private fun HistoryStepButtons(
     tint: Color,
+    canStepUp: Boolean,
     canStepDown: Boolean,
     playing: Boolean,
+    playOnEnd: Boolean,
     randomizeDescription: String,
+    onStepUp: () -> Unit,
     onRandomize: () -> Unit,
     onStepDown: () -> Unit
 ) {
-    Box(contentAlignment = Alignment.Center) {
-        Column {
+    Box {
+        Column(modifier = Modifier.height(80.dp)) {
             Box(
                 modifier = Modifier
-                    .size(width = 32.dp, height = 40.dp)
+                    .width(32.dp)
+                    .weight(1f)
+                    .clip(RoundedCornerShape(50))
+                    .clickable(enabled = canStepUp, onClick = onStepUp),
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    imageVector = Icons.Rounded.KeyboardArrowUp,
+                    contentDescription = stringResource(R.string.compare_history_previous),
+                    tint = tint.copy(alpha = if (canStepUp) 0.85f else 0.25f),
+                    modifier = Modifier.size(26.dp)
+                )
+            }
+            Box(
+                modifier = Modifier
+                    .width(32.dp)
+                    .weight(1f)
                     .clip(RoundedCornerShape(50))
                     .clickable(onClick = onRandomize),
                 contentAlignment = Alignment.Center
@@ -141,7 +161,8 @@ private fun HistoryStepButtons(
             }
             Box(
                 modifier = Modifier
-                    .size(width = 32.dp, height = 40.dp)
+                    .width(32.dp)
+                    .weight(1f)
                     .clip(RoundedCornerShape(50))
                     .clickable(enabled = canStepDown, onClick = onStepDown),
                 contentAlignment = Alignment.Center
@@ -159,7 +180,10 @@ private fun HistoryStepButtons(
                 imageVector = Icons.Rounded.PlayArrow,
                 contentDescription = stringResource(R.string.compare_playing),
                 tint = tint,
-                modifier = Modifier.size(18.dp)
+                modifier = Modifier
+                    .align(if (playOnEnd) Alignment.CenterEnd else Alignment.CenterStart)
+                    .offset(x = if (playOnEnd) 5.dp else (-7).dp)
+                    .size(16.dp)
             )
         }
     }
@@ -247,6 +271,8 @@ internal fun CompareCompactScreen(
     val rightStepAvoid = suggestedLeft?.let { rightEntries.getOrNull(historyIndexOf(rightEntries, it)) } ?: rightAvoid
     val leftStepDown = stepDownIndex(leftEntries, leftHistoryIndex, suggestedLeft, leftStepAvoid)
     val rightStepDown = stepDownIndex(rightEntries, rightHistoryIndex, suggestedRight, rightStepAvoid)
+    val leftStepUp = stepUpIndex(leftEntries, leftHistoryIndex, suggestedLeft, leftStepAvoid)
+    val rightStepUp = stepUpIndex(rightEntries, rightHistoryIndex, suggestedRight, rightStepAvoid)
     val suggestedLeftTitle = suggestedLeft?.title.orEmpty()
     val suggestedLeftUploader = suggestedLeft?.uploader.orEmpty()
     val suggestedRightTitle = suggestedRight?.title.orEmpty()
@@ -518,9 +544,17 @@ internal fun CompareCompactScreen(
                                                 if (showLeftContent) {
                                                     HistoryStepButtons(
                                                         tint = Color(0xFF42A5F5),
+                                                        canStepUp = leftStepUp != null,
                                                         canStepDown = leftStepDown != null,
                                                         playing = isLeftCurrent,
+                                                        playOnEnd = true,
                                                         randomizeDescription = stringResource(R.string.compare_randomize_left),
+                                                        onStepUp = {
+                                                            leftStepUp?.let {
+                                                                leftHistoryIndex = it
+                                                                if (hasSuggestedLeft) onDropSuggestion(SuggestionSlot.LEFT)
+                                                            }
+                                                        },
                                                         onRandomize = randomizeLeftFallback,
                                                         onStepDown = {
                                                             leftStepDown?.let {
@@ -680,9 +714,17 @@ internal fun CompareCompactScreen(
                                                     }
                                                     HistoryStepButtons(
                                                         tint = Color(0xFFE57373),
+                                                        canStepUp = rightStepUp != null,
                                                         canStepDown = rightStepDown != null,
                                                         playing = isRightCurrent,
+                                                        playOnEnd = false,
                                                         randomizeDescription = stringResource(R.string.compare_randomize_right),
+                                                        onStepUp = {
+                                                            rightStepUp?.let {
+                                                                rightHistoryIndex = it
+                                                                if (hasSuggestedRight) onDropSuggestion(SuggestionSlot.RIGHT)
+                                                            }
+                                                        },
                                                         onRandomize = randomizeRightFallback,
                                                         onStepDown = {
                                                             rightStepDown?.let {

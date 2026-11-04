@@ -75,6 +75,19 @@ internal fun stepDownIndex(
     return if (shown >= 0) stepHistoryIndex(entries, shown, 1, avoid) else distinctHistoryIndex(entries, 0, avoid)
 }
 
+internal fun stepUpIndex(
+    entries: List<StreamHistoryEntry>,
+    from: Int,
+    suggested: CompareComparisonVideo?,
+    avoid: StreamHistoryEntry?
+): Int? {
+    if (suggested == null) {
+        return stepHistoryIndex(entries, from, -1, avoid)
+    }
+    val shown = historyIndexOf(entries, suggested)
+    return if (shown >= 0) stepHistoryIndex(entries, shown, -1, avoid) else null
+}
+
 internal fun visibleHistoryIndices(
     entries: List<StreamHistoryEntry>,
     avoid: StreamHistoryEntry?
