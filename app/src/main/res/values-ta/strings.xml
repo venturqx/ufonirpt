@@ -152,8 +152,6 @@
     <string name="video_streams_empty">எந்த காணொலியும் இல்லை</string>
     <string name="audio_streams_empty">எந்த ஒலியோடையும் இல்லை</string>
     <string name="invalid_directory">அப்படியொரு அடைவுகள் இல்லை</string>
-    <string name="invalid_source">அப்படியொரு கோப்பு இல்லை</string>
-    <string name="error_occurred_detail">ஒரு பிழை நிகழ்ந்தது: %1$s</string>
     <string name="tracks">காணொளிக் கோப்புகள்</string>
     <string name="tab_choose">பக்கத்தை தேர்வு செய்</string>
     <string name="settings_category_updates_title">புதுப்பித்தல்கள்</string>
@@ -271,7 +269,6 @@
     <string name="player_unrecoverable_failure">மீட்கவியலாத இயக்கி பிழை ஏற்பட்டது</string>
     <string name="error_report_notification_toast">பிழை ஏற்பட்டது, அறிவிப்பைப் பார்</string>
     <string name="player_recoverable_failure">இயக்கி பிழையிலிருந்து மீளப்பெறுகிறது</string>
-    <string name="invalid_file">கோப்பு இல்லை அ அதனை எழுதபடிக்கும் அனுமதி குறைகிறது</string>
     <string name="no_streams_available_download">பதிவிறக்கா எப்பாய்வும் கிடைக்கவில்லை</string>
     <string name="saved_tabs_invalid_json">சேமித்த தாவல்களை வாசிக்க முடியவில்லை, ஆக இயல்பிருப்புகளைப் பயன்படுத்துகிறது</string>
     <string name="error_report_open_issue_button_text">GitHub இல் புகாரளி</string>
@@ -369,7 +366,6 @@
     <string name="delete_downloaded_files_confirm">வட்டில் இருக்கும் பதிவிறக்கம் செய்யப்பட்ட அனைத்து கோப்புகளையும் அழிக்கவா?</string>
     <string name="feed_group_dialog_delete_message">இந்தக் குழுவை நீக்க வேண்டுமா?</string>
     <string name="delete">நீக்கு</string>
-    <string name="one_item_deleted">ஒரு உருப்படி நீக்கப்பட்டது.</string>
     <string name="read_privacy_policy">தனியுரிமைக் கொள்கையைப் படியுங்கள்</string>
     <string name="error_unknown_host">சேவையகத்தைக் கண்டுபிடிக்க முடியவில்லை</string>
     <string name="drawer_header_description">சேவையை மாற்றி, தற்போது தேர்ந்தெடுக்கப்பட்டது:</string>
@@ -398,7 +394,6 @@
     <string name="unknown_audio_track">தெரியவில்லை</string>
     <string name="recaptcha_request_toast">ரெக்காப்ட்சா அறைகூவல் கோரப்பட்டது</string>
     <string name="website_title">வலைத்தளம்</string>
-    <string name="read_full_license">உரிமத்தைப் படியுங்கள்</string>
     <string name="new_and_hot">புதிய மற்றும் சூடான</string>
     <string name="show_error_snackbar">பிழை சிற்றுண்டியைக் காட்டு</string>
     <string name="playback_step">படி</string>
@@ -525,7 +520,6 @@
         <item quantity="other">%d மணிநேரம்</item>
     </plurals>
     <string name="import_subscriptions_hint">3-டாட் மெனுவிலிருந்து சந்தாக்களை இறக்குமதி செய்யுங்கள் அல்லது ஏற்றுமதி செய்யுங்கள்</string>
-    <string name="dismiss">தள்ளுபடி</string>
     <string name="msg_calculating_hash">ஆச் கணக்கிடுதல்</string>
     <string name="msg_wait">தயவுசெய்து காத்திருங்கள்…</string>
     <string name="local">உள்ளக</string>
@@ -589,7 +583,6 @@
     <string name="charset_letters_and_digits">கடிதங்கள் மற்றும் இலக்கங்கள்</string>
     <string name="charset_most_special_characters">மிகவும் சிறப்பு எழுத்துக்கள்</string>
     <string name="title_licenses">மூன்றாம் தரப்பு உரிமங்கள்</string>
-    <string name="copyright">© %1$s %2$s க்கு கீழ் %3$s க்கு கீழ்</string>
     <string name="tab_licenses">உரிமங்கள்</string>
     <string name="app_description">ஆண்ட்ராய்டு இல் லிப்ரே லைட்வெயிட் ச்ட்ரீமிங்.</string>
     <string name="contribution_title">பங்களிப்பு</string>
@@ -747,10 +740,8 @@
     <string name="metadata_subscribers">சந்தாதாரர்கள்</string>
     <string name="detail_pinned_comment_view_description">பின்னப்பட்ட கருத்து</string>
     <string name="detail_heart_img_view_description">படைப்பாளரால் மனம்</string>
-    <string name="open_website_license">திறந்த வலைத்தளம்</string>
     <string name="get_notified">அறிவிக்க</string>
     <string name="you_successfully_subscribed">நீங்கள் இப்போது இந்த சேனலுக்கு குழுசேர்ந்தீர்கள்</string>
-    <string name="enumeration_comma">,</string>
     <string name="toggle_all">அனைத்தையும் மாற்று</string>
     <string name="streams_not_yet_supported_removed">பதிவிறக்கத்தால் இன்னும் ஆதரிக்கப்படாத நீரோடைகள் காட்டப்படவில்லை</string>
     <string name="audio_track_present_in_video">இந்த ச்ட்ரீமில் ஏற்கனவே ஆடியோ டிராக் இருக்க வேண்டும்</string>

@@ -226,7 +226,6 @@
     <string name="delete_item_search_history">Doni ta fshini këtë objekt nga historiku i kërkimeve\?</string>
     <string name="title_activity_history">Historiku</string>
     <string name="action_history">Historiku</string>
-    <string name="read_full_license">Lexo licensën</string>
     <string name="app_license_title">Licensa e NewPipe</string>
     <string name="read_privacy_policy">Lexoni politikën e privatësisë</string>
     <string name="privacy_policy_encouragement">Projekti NewPipe e merr privatësinë tuaj seriozisht. Kështu, aplikacioni nuk mbledh të dhëna pa dijeninë tuaj.
@@ -243,7 +242,6 @@
     <string name="app_description">Luajtës i lehtë dhe libre në Android.</string>
     <string name="tab_licenses">Licensat</string>
     <string name="tab_about">Rreth</string>
-    <string name="copyright" formatted="true">© %1$s nga %2$s nën %3$s</string>
     <string name="title_licenses">Licensat e palëve të treta</string>
     <string name="title_activity_about">Rreth NewPipe</string>
     <string name="charset_most_special_characters">Shumica e karaktereve speciale</string>
@@ -256,7 +254,6 @@
     <string name="recaptcha_request_toast">sfida reCAPTCHA u kërkua</string>
     <string name="subtitle_activity_recaptcha">Shtyp \"U bë\" kur ta zgjidhni</string>
     <string name="title_activity_recaptcha">sfida reCAPTCHA</string>
-    <string name="one_item_deleted">1 objekt u fshi.</string>
     <string name="msg_popup_permission">Kjo leje duhet për
 \nt\'u hapur në modalitetin popup</string>
     <string name="no_available_dir">Ju lutemi vendosni një dosje shkarkimi më vonë nga aranzhimet</string>
@@ -269,7 +266,6 @@
     <string name="msg_name">Emri i skedarit</string>
     <string name="ok">OK</string>
     <string name="rename">Riemërto</string>
-    <string name="dismiss">Hiqe</string>
     <string name="checksum">Kodi verifikues</string>
     <string name="delete">Fshij</string>
     <string name="create">Krijo</string>
@@ -317,12 +313,9 @@
     <string name="restore_defaults">Kthe në gjendjen fillestare</string>
     <string name="saved_tabs_invalid_json">Nuk arritën të lexohen tab-et e ruajtura, do përdoren të paravendosurat</string>
     <string name="no_streams_available_download">Nuk ka streams të disponueshme për shkarkim</string>
-    <string name="error_occurred_detail">Ndodhi një gabim: %1$s</string>
     <string name="file_name_empty_error">Emri i skedarit nuk mund të jetë bosh</string>
-    <string name="invalid_file">Ky skedar nuk ekziston ose mungon leja për të lexuar ose shkruar në të</string>
     <string name="tab_subscriptions">Abonimet</string>
     <string name="subscribe_button_title">Abonohu</string>
-    <string name="invalid_source">Nuk ka burim të tillë për skedarin/përmbajtjen</string>
     <string name="invalid_directory">Nuk ka dosje të tillë</string>
     <string name="missing_file">Skedari ka lëvizur ose është fshirë</string>
     <string name="audio_streams_empty">Nuk u gjendën stream për audio</string>
@@ -574,7 +567,6 @@
     <string name="off">Fikur</string>
     <string name="on">Ndezur</string>
     <string name="tablet_mode_title">Modaliteti tablet</string>
-    <string name="open_website_license">Hap faqen e internetit</string>
     <string name="metadata_privacy_internal">E brendshme</string>
     <string name="metadata_privacy_private">Private</string>
     <string name="metadata_privacy_unlisted">E palistuar</string>

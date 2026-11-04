@@ -158,7 +158,6 @@
     <string name="charset_most_special_characters">רוב התווים המיוחדים</string>
     <string name="title_activity_about">על אודות NewPipe</string>
     <string name="title_licenses">רישיונות צד שלישי</string>
-    <string name="copyright" formatted="true">© %1$s ע״י %2$s תחת %3$s</string>
     <string name="tab_about">על אודות ושו״ת</string>
     <string name="tab_licenses">רישיונות</string>
     <string name="app_description">נגן קל וחופשי להזרמת מדיה עבור Android.</string>
@@ -171,7 +170,6 @@
     <string name="website_title">אתר הבית</string>
     <string name="website_encouragement">מומלץ לבקר באתר של NewPipe לפרטים נוספים ולחדשות.</string>
     <string name="app_license_title">הרישיון של NewPipe</string>
-    <string name="read_full_license">הצגת הרישיון</string>
     <string name="title_activity_history">היסטוריה</string>
     <string name="action_history">היסטוריה</string>
     <string name="delete_item_search_history">למחוק את הפריט הזה מהיסטוריית החיפושים\?</string>
@@ -214,13 +212,10 @@
     <string name="watch_history_deleted">היסטוריית הצפייה נמחקה</string>
     <string name="clear_search_history_title">מחיקת היסטוריית החיפוש</string>
     <string name="search_history_deleted">היסטוריית החיפוש נמחקה</string>
-    <string name="invalid_file">הקובץ אינו קיים או שחסרה הרשאה לקרוא אותו או לכתוב אליו</string>
     <string name="file_name_empty_error">שם הקובץ אינו יכול להיות ריק</string>
     <string name="detail_drag_description">ניתן לסדר מחדש בגרירה</string>
     <string name="create">יצירה</string>
-    <string name="dismiss">התעלמות</string>
     <string name="rename">שינוי שם</string>
-    <string name="one_item_deleted">פריט אחד נמחק.</string>
     <string name="export_complete_toast">הייצוא הסתיים</string>
     <string name="import_complete_toast">הייבוא הסתיים</string>
     <string name="no_valid_zip_file">אין קובץ ZIP תקין</string>
@@ -280,8 +275,6 @@
     <string name="video_streams_empty">לא נמצאו תזרימי וידאו</string>
     <string name="audio_streams_empty">לא נמצאו תזרימי שמע</string>
     <string name="invalid_directory">אין תיקייה כזו</string>
-    <string name="invalid_source">אין מקור תיקייה/תוכן</string>
-    <string name="error_occurred_detail">אירעה שגיאה: %1$s</string>
     <string name="no_streams_available_download">אין תזרימים זמינים להורדה</string>
     <string name="privacy_policy_title">מדיניות הפרטיות של NewPipe</string>
     <string name="privacy_policy_encouragement">מיזם NewPipe שומר על הפרטיות שלך בצורה מאוד קפדנית. לפיכך, היישומון אינו אוסף נתונים ללא הסכמתך.
@@ -628,7 +621,6 @@
     <string name="feed_load_error_terminated">חשבון היוצר הושמד.
 \nל־NewPipe לא תהיה אפשרות להוריד את ההזנה הזאת בעתיד.
 \nלהסיר את המינוי מהערוץ הזה\?</string>
-    <string name="open_website_license">פתיחת האתר</string>
     <string name="account_terminated">החשבון הושמד</string>
     <string name="feed_load_error_fast_unknown">מצב ההזנה המהירה לא מספק מידע נוסף על כך.</string>
     <string name="feed_load_error_account_info">לא ניתן לטעון את ההזנה עבור ‚%s’.</string>
@@ -703,7 +695,6 @@
     <string name="check_new_streams">הרצת בדיקה על תזרימים חדשים</string>
     <string name="enable_streams_notifications_title">התראות תזרימים חדשים</string>
     <string name="enable_streams_notifications_summary">הודעה על תזרימים חדשים מהמינויים</string>
-    <string name="enumeration_comma">,</string>
     <string name="streams_notification_channel_name">תזרימים חדשים</string>
     <string name="settings_category_player_notification_title">התראות נגן</string>
     <string name="any_network">רשת כלשהי</string>

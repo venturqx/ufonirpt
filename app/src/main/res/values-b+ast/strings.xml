@@ -85,13 +85,11 @@
     <string name="charset_most_special_characters">La mayoría de caráuteres especiales</string>
     <string name="title_activity_about">Tocante a NewPipe</string>
     <string name="title_licenses">Llicencies de terceros</string>
-    <string name="copyright" formatted="true">© %1$s por %2$s baxo %3$s</string>
     <string name="tab_about">Tocante a</string>
     <string name="tab_licenses">Llicencies</string>
     <string name="view_on_github">Ver en GitHub</string>
     <string name="app_license_title">Llicencia de NewPipe</string>
     <string name="contribution_encouragement">Si tienes idees, quies traducir, facer dalgún cambéu nel diseñu, acuriosar poco o muncho\'l códigu… Agradecemos l\'ayuda. ¡Cuanto más se faiga, meyor!</string>
-    <string name="read_full_license">Lleer</string>
     <string name="contribution_title">Collaboración</string>
     <string name="title_activity_history">Historial</string>
     <string name="action_history">Historial</string>
@@ -124,7 +122,6 @@
     <string name="show_info">Amosar la información</string>
     <string name="tab_bookmarks">Llistes en marcadores</string>
     <string name="create">Crear</string>
-    <string name="dismiss">Escartar</string>
     <string name="create_playlist">Llista de reproducción nueva</string>
     <string name="name">Nome</string>
     <string name="add_to_playlist">Amestar a una llista de reproducción</string>
@@ -134,8 +131,6 @@
     <string name="resize_fill">Rellenar</string>
     <string name="resize_zoom">Zoom</string>
     <string name="file">FIcheru</string>
-    <string name="invalid_file">El ficheru nun esiste o a l\'aplicación fálta-y el permisu de llectura/escritura</string>
-    <string name="error_occurred_detail">Asocedió un fallu: %1$s</string>
     <string name="import_ongoing">Importando…</string>
     <string name="export_ongoing">Esportando…</string>
     <string name="subscriptions_export_unsuccessful">Nun pudieron esportase les soscripciones</string>
@@ -415,7 +410,6 @@
     <string name="settings_file_replacement_character_summary">Los caráuteres que nun son válidos van trocase por esti valor</string>
     <string name="done">Fecho</string>
     <string name="subtitle_activity_recaptcha">Primi «Fecho» al resolvelu</string>
-    <string name="one_item_deleted">Desanicióse 1 elementu.</string>
     <string name="no_available_dir">Defini una capeta de descargues dempués, nos axustes de l\'aplicación</string>
     <string name="msg_running_detail">Toca pa los detalles</string>
     <string name="msg_running">Descarga de NewPipe</string>
@@ -452,7 +446,6 @@
     <string name="saved_tabs_invalid_json">Nun pudieron lleese les llingüetes guardaes polo que van usase les predeterminaes</string>
     <string name="no_streams_available_download">Nun hai fluxos disponibles pa baxar</string>
     <string name="file_name_empty_error">El nome del ficheru nun pue tar baleru</string>
-    <string name="invalid_source">El ficheru/orixe del conteníu nun esiste</string>
     <string name="invalid_directory">La carpeta nun esiste</string>
     <string name="audio_streams_empty">Nun s\'atoparon fluxos d\'audiu</string>
     <string name="video_streams_empty">Nun s\'atoparon fluxos de videu</string>

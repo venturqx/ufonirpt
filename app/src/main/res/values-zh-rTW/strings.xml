@@ -139,14 +139,12 @@
     <string name="charset_most_special_characters">大部分的特殊字元</string>
     <string name="title_activity_about">關於 NewPipe</string>
     <string name="title_licenses">第三方授權條款</string>
-    <string name="copyright" formatted="true">© %1$s 由 %2$s 使用 %3$s 授權條款發布</string>
     <string name="tab_about">關於與常見問題</string>
     <string name="tab_licenses">授權條款</string>
     <string name="app_description">Android 上自由且輕巧的串流播放器。</string>
     <string name="view_on_github">在 GitHub 上檢視</string>
     <string name="app_license_title">NewPipe 使用的授權條款</string>
     <string name="contribution_encouragement">不管您有什麼點子 ── 翻譯、設計、清理或撰寫大量程式碼 ── 我們永遠歡迎您來幫忙。做得越多，NewPipe 就會更好！</string>
-    <string name="read_full_license">閱讀授權條款</string>
     <string name="contribution_title">貢獻</string>
     <string name="title_activity_history">歷史記錄</string>
     <string name="action_history">歷史記錄</string>
@@ -211,7 +209,6 @@
     <string name="controls_add_to_playlist_title">新增至</string>
     <string name="detail_drag_description">拖曳以重新排序</string>
     <string name="create">建立</string>
-    <string name="dismiss">退出</string>
     <string name="rename">重新命名</string>
     <string name="always_ask_open_action">總是詢問</string>
     <string name="create_playlist">新的播放清單</string>
@@ -240,9 +237,7 @@
     <string name="auto_queue_summary">透過加入相關的串流來繼續結束的 (未重複) 播放佇列</string>
     <string name="file">檔案</string>
     <string name="invalid_directory">無效的資料夾</string>
-    <string name="invalid_source">無效的檔案或內容來源</string>
     <string name="file_name_empty_error">檔案名稱不能留空</string>
-    <string name="error_occurred_detail">發生錯誤： %1$s</string>
     <string name="import_title">匯入</string>
     <string name="import_from">匯入自</string>
     <string name="export_to">匯出至</string>
@@ -252,7 +247,6 @@
     <string name="subscriptions_import_unsuccessful">無法匯入訂閱內容</string>
     <string name="subscriptions_export_unsuccessful">無法匯出訂閱內容</string>
     <string name="previous_export">之前的匯出</string>
-    <string name="invalid_file">檔案不存在或缺少讀寫檔案的權限</string>
     <string name="import_youtube_instructions">從 Google Takeout 匯入您的 YouTube 訂閱： \n \n1. 移至此網址：%1$s \n2. 當被提示時登入帳號 \n3. 按一下「包含所有資料」，接著「取消選取全部」，然後僅勾選「訂閱」並按一下「確定」 \n4. 按一下「下一步」然後「建立匯出」 \n5. 在「下載」按鈕出現後按一下它 \n6. 點擊下方的「匯入檔案」並選取已下載的 zip 檔案 \n7. [若 zip 匯入失敗] 擷取 .csv 檔案 (通常位於「YouTube 與 YouTube Music/訂閱/訂閱.csv」)，按一下下方的「匯入檔案」並選取擷取的 csv 檔案</string>
     <string name="import_soundcloud_instructions_hint">您的 ID, soundcloud.com/yourid</string>
     <string name="import_network_expensive_warning">請記住，此操作可造成昂貴網路花費。
@@ -285,7 +279,6 @@
     <string name="clear_search_history_summary">刪除搜尋關鍵字的記錄</string>
     <string name="delete_search_history_alert">刪除所有搜尋歷史記錄？</string>
     <string name="search_history_deleted">搜尋記錄已刪除</string>
-    <string name="one_item_deleted">已刪除一個項目。</string>
     <string name="app_license">NewPipe 是一個 Copyleft 的自由軟體：您可以隨意使用、研究、分享並改進它。在遵守由自由軟體基金會所發佈的 GNU 通用公共授權條款的狀況下，您可以自由地再散佈及／或修改它；授權條款預設使用第三版，但您也可以選擇更新的版本。</string>
     <string name="import_settings">您是否要同時匯入設定？</string>
     <string name="privacy_policy_title">NewPipe 的隱私政策</string>
@@ -577,7 +570,6 @@
     <string name="description_select_disable">停用選取描述中的文字</string>
     <string name="description_select_enable">啟用選取描述中的文字</string>
     <string name="description_select_note">您現在可以選取描述中的文字了。請注意，在選取模式下，頁面可能會閃爍，連結也可能無法點擊。</string>
-    <string name="open_website_license">開啟網站</string>
     <string name="account_terminated">帳號已終止</string>
     <string name="feed_load_error_fast_unknown">快速 feed 模式不會提供更多資訊。</string>
     <string name="feed_load_error_terminated">作者的帳號已被終止。
@@ -634,7 +626,6 @@
     <string name="notifications">通知</string>
     <string name="loading_stream_details">正在載入串流詳細資訊……</string>
     <string name="you_successfully_subscribed">您已訂閱此頻道</string>
-    <string name="enumeration_comma">,</string>
     <string name="toggle_all">切換全部</string>
     <string name="enable_streams_notifications_title">新串流通知</string>
     <string name="settings_category_player_notification_summary">設定目前播放串流通知</string>
@@ -827,7 +818,6 @@
     <string name="export_subscriptions_title">匯出訂閱</string>
     <string name="export_subscriptions_summary">匯出您的訂閱至 .json 檔案</string>
     <string name="import_subscriptions_summary">從先前匯出的 .json 匯入訂閱</string>
-    <string name="import_from_previous_export">從先前的匯出檔案匯入</string>
     <string name="api23_requirement_dialog_title">NewPipe 即將停止支援 Android 5</string>
     <string name="api23_requirement_dialog_blogpost">部落格文章</string>
     <string name="api23_requirement_dialog_message">不幸的是，NewPipe 依賴的一些函式庫已停止支援 Android 5.0 和 5.1。因此，下一個版本的 NewPipe 將只能在 Android 6 或更高版本的裝置上運作，非常遺憾。更多資訊請參閱部落格文章。</string>

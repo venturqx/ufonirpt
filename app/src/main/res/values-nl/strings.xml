@@ -103,14 +103,12 @@
     <string name="best_resolution">Beste resolutie</string>
     <string name="title_activity_about">Over NewPipe</string>
     <string name="title_licenses">Licenties van derden</string>
-    <string name="copyright" formatted="true">© %1$s door %2$s, uitgebracht onder de %3$s</string>
     <string name="tab_about">Over &amp; veel­gestelde vragen</string>
     <string name="tab_licenses">Licenties</string>
     <string name="app_description">Libre en lichtgewicht streamen op Android.</string>
     <string name="view_on_github">Bekijken op GitHub</string>
     <string name="app_license_title">De licentie van NewPipe</string>
     <string name="contribution_encouragement">Hulp is altijd welkom. Of je nu nieuwe ideeën hebt, vertalingen kan aanleveren, wijzigingen in het ontwerp kan verrichten, code kan opschonen of van grote wijzigingen voorzien. Hoe meer hulp, hoe beter het wordt!</string>
-    <string name="read_full_license">Licentie lezen</string>
     <string name="contribution_title">Bij­dragen</string>
     <string name="settings_category_downloads_title">Download</string>
     <string name="settings_file_charset_title">Toegestane tekens in bestandsnamen</string>
@@ -217,7 +215,6 @@
     <string name="controls_add_to_playlist_title">Toevoegen aan</string>
     <string name="detail_drag_description">Versleep om de volgorde te wijzigen</string>
     <string name="create">Aanmaken</string>
-    <string name="dismiss">Sluiten</string>
     <string name="rename">Naam wijzigen</string>
     <string name="always_ask_open_action">Altijd vragen</string>
     <string name="create_playlist">Nieuwe afspeellijst</string>
@@ -246,10 +243,7 @@
     <string name="auto_queue_summary">Automatisch een gerelateerde stream toekennen bij het afspelen van de laatste stream in een niet-herhalende afspeelwachtlijst</string>
     <string name="file">Bestand</string>
     <string name="invalid_directory">Deze map bestaat niet</string>
-    <string name="invalid_source">Bestand/Inhoudsbron bestaat niet</string>
-    <string name="invalid_file">Het bestand bestaat niet of je bent onvoldoende gemachtigd om het te lezen/er naar te schrijven</string>
     <string name="file_name_empty_error">De bestandsnaam mag niet blanco zijn</string>
-    <string name="error_occurred_detail">Er is een fout opgetreden: %1$s</string>
     <string name="import_title">Importeren</string>
     <string name="import_from">Importeren uit</string>
     <string name="export_to">Exporteren naar</string>
@@ -299,7 +293,6 @@
     <string name="clear_search_history_summary">Verwijdert de gebruikte zoektermen</string>
     <string name="delete_search_history_alert">De gehele zoekgeschiedenis wissen\?</string>
     <string name="search_history_deleted">Zoekgeschiedenis gewist</string>
-    <string name="one_item_deleted">1 item verwijderd.</string>
     <string name="app_license">NewPipe is vrije software: je kan het gebruiken, bestuderen, delen en verbeteren zoveel je maar wilt. Je kan het opnieuw uitgeven en/of aanpassen volgens de voorwaarden van de GNU General Public License, gepubliceerd door de Free Software Foundation, versie 3 van de licentie, of (indien gewenst) om het even welke latere versie.</string>
     <string name="import_settings">Wil je ook de instellingen importeren?</string>
     <string name="privacy_policy_title">Privébeleid van NewPipe</string>
@@ -608,7 +601,6 @@
     <string name="off">Uit</string>
     <string name="on">Aan</string>
     <string name="tablet_mode_title">Tablet-modus</string>
-    <string name="open_website_license">Website openen</string>
     <string name="account_terminated">Account getermineerd</string>
     <string name="feed_load_error_fast_unknown">De snelle feed mode levert hierover niet meer informatie.</string>
     <string name="feed_load_error_terminated">De account van de auteur is getermineerd.
@@ -676,7 +668,6 @@
     <string name="any_network">Elk netwerk</string>
     <string name="notifications_disabled">Meldingen zijn uitgeschakeld</string>
     <string name="get_notified">Meldingen</string>
-    <string name="enumeration_comma">,</string>
     <string name="toggle_all">Alles in-/uitschakelen</string>
     <string name="percent">Percentage</string>
     <string name="semitone">Halve toon</string>
@@ -849,7 +840,6 @@
     <string name="kao_solution">Oplossing</string>
     <string name="import_subscriptions_title">Abonnementen importeren</string>
     <string name="export_subscriptions_title">Abonnementen exporteren</string>
-    <string name="import_from_previous_export">Importeren vanuit vorige export</string>
     <plurals name="export_subscriptions">
         <item quantity="one">%d abonnement aan het exporteren…</item>
         <item quantity="other">%d abonnementen aan het exporteren…</item>

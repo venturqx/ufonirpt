@@ -112,9 +112,7 @@
     <string name="external_player_unsupported_link_type">کارپێکەرە ڤیدیۆییە دەرەکییەکان پشتگیری ئەم جۆرە بەستەرانە ناکەن</string>
     <string name="video_streams_empty">هیچ پەخشێکی ڤیدیۆیی نەدۆزرایەوە</string>
     <string name="audio_streams_empty">پەخشی هیچ دەنگێک نەدۆزرایەوە</string>
-    <string name="invalid_file">ئەو فایلە بوونی نییە یان دەسەڵاتی خوێندنەوە و نوسینی لاوازە</string>
     <string name="file_name_empty_error">ناوی فایل ناکرێ بەتاڵ بێت</string>
-    <string name="error_occurred_detail">هەڵەیەک ڕوویدا : %1$s</string>
     <string name="sorry_string">ببوورە، ناتوانرێ ئەوە ڕووبدات.</string>
     <string name="error_report_button_text">سکاڵا لەسەر کێشە لەڕێگای ئیمێڵ</string>
     <string name="error_snackbar_message">ببورە، کێشەیەک ڕوویدا.</string>
@@ -153,7 +151,6 @@
     <string name="create">دروستکردن</string>
     <string name="delete">سڕینەوە</string>
     <string name="checksum">تاقیکردنەوەی هێڵێک</string>
-    <string name="dismiss">فەرامۆشی</string>
     <string name="rename">ناو لێنانەوە</string>
     <string name="ok">باشە</string>
     <string name="msg_name">ناوی فایل</string>
@@ -172,7 +169,6 @@
     <string name="charset_letters_and_digits">پیت و ژمارەکان</string>
     <string name="charset_most_special_characters">هێما تایبەتییەکان</string>
     <string name="title_activity_about">لەبارەی ئەپ</string>
-    <string name="copyright" formatted="true">© %1$s لەلایەن %2$s لەژێر %3$s</string>
     <string name="tab_about">سەبارەت</string>
     <string name="tab_licenses">مۆڵەتەکان</string>
     <string name="contribution_title">هاوبەشبوون</string>
@@ -183,7 +179,6 @@
     <string name="give_back">پێدانەوە</string>
     <string name="website_title">ماڵپەڕ</string>
     <string name="website_encouragement">سەردانی ماڵپەڕی ئەپەکەمان بکە بۆ زانیاری و هەواڵی نوێ.</string>
-    <string name="read_full_license">خوێندنەوەی مۆڵەتنامە</string>
     <string name="title_activity_history">مێژوو</string>
     <string name="action_history">مێژوو</string>
     <string name="delete_item_search_history">ئایا دەتەوێ ئەم بابەتە لە مێژووی گەڕان بسڕدرێتەوە؟</string>
@@ -255,7 +250,6 @@
     <string name="clear_search_history_summary">مێژووی گەڕانەکانت دەسڕێتەوە</string>
     <string name="delete_search_history_alert">تەواوی گەڕانەکانت بسڕدرێنەوە؟</string>
     <string name="search_history_deleted">مێژووی گەڕانەکانت سڕانەوە.</string>
-    <string name="one_item_deleted">1 بابەت سڕایەوە.</string>
     <string name="app_license">ئەم ئەپە سەرچاوە کراوەیە : دەتوانی بەکاریبهێنی، بیخوێنیتەوە و هاوبەشی پێبکەیت و بەرەوپێشی ببەیت.
 \nبەتایبەتی دەتوانی دابەشیبکەیتەوە یاخوود بگۆڕیت بەپێی مەرجەکانی GNU مۆڵەتنامەی گشتی وەک ئەپێکی بڵاوی خۆڕایی!</string>
     <string name="privacy_policy_title">سیاسەتی تایبەتی ئەپ</string>
@@ -325,7 +319,6 @@
     <string name="player_unrecoverable_failure">نەگێڕانەوەی کارپێکەر بۆ پێش کێشە ڕوویدا</string>
     <string name="player_recoverable_failure">گێڕانەوەی کارپێکەر بۆکاتی پێش کێشە</string>
     <string name="invalid_directory">هەمان فۆڵدەر بوونی نییە</string>
-    <string name="invalid_source">هەمان فایل/بابەت بوونی نییە</string>
     <string name="info_labels">چی:\nداواکراو:\nناوەڕۆک:\nلانگ:\nخزمەتگوزاری:\nGMT:\nکات:\nپاکێج:\nوەشان:\nوەشانی سیستەم:</string>
     <string name="settings_file_charset_title">هێما ڕێگەپێدراوەکان لە فایلێکی ناویدا</string>
     <string name="settings_file_replacement_character_summary">هێما نادروستەکان بەم بەهایە جێگۆڕکێ دەکرێن</string>

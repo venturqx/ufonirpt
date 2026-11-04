@@ -155,7 +155,6 @@
     <string name="charset_most_special_characters">Ypatingieji simboliai</string>
     <string name="title_activity_about">Apie NewPipe</string>
     <string name="title_licenses">Trečiųjų šalių licencijos</string>
-    <string name="copyright" formatted="true">© %1$s %2$s pagal %3$s</string>
     <string name="tab_about">Apie ir DUK</string>
     <string name="tab_licenses">Licencijos</string>
     <string name="app_description">Nemokama, atviro kodo transliacijų peržiūros programėlė Android sistemai.</string>
@@ -168,7 +167,6 @@
     <string name="website_title">Interneto puslapis</string>
     <string name="website_encouragement">Kad sužinotumėte daugiau apie NewPipe apsilankykite mūsų interneto puslapyje.</string>
     <string name="app_license_title">NewPipe licencija</string>
-    <string name="read_full_license">Skaityti licenciją</string>
     <string name="title_activity_history">Istorija</string>
     <string name="action_history">Istorija</string>
     <string name="delete_item_search_history">Ar norite ištrinti šį elementą iš paieškos istorijos?</string>
@@ -209,7 +207,6 @@
     <string name="audio_streams_empty">Nerasta audio srautų</string>
     <string name="detail_drag_description">Tempti kad perrūšiuoti</string>
     <string name="create">Kurti</string>
-    <string name="dismiss">Nutraukti</string>
     <string name="rename">Pervardyti</string>
     <string name="export_complete_toast">Eksportavimas baigtas</string>
     <string name="import_complete_toast">Importavimas baigtas</string>
@@ -250,7 +247,6 @@
     <string name="search_showing_result_for">Rodomi rezultatai užklausai: %s</string>
     <string name="open_with">Atverti su</string>
     <string name="notification_action_repeat">Pakartoti</string>
-    <string name="one_item_deleted">1 elementas pašalintas.</string>
     <string name="msg_calculating_hash">Skaičiuojama maišos suma</string>
     <string name="no_comments">Komentarų nėra</string>
     <string name="infinite_videos">∞ vaizdo įrašų</string>
@@ -279,10 +275,7 @@
     <string name="restore_defaults">Atstatyti numatytuosius</string>
     <string name="saved_tabs_invalid_json">Įkelti išsaugotų kortelių nepavyko, naudojamos numatytosios</string>
     <string name="no_streams_available_download">Nėra srautų parsiuntimui</string>
-    <string name="error_occurred_detail">Įvyko klaida: %1$s</string>
     <string name="file_name_empty_error">Failo vardas negali būti tuščias</string>
-    <string name="invalid_file">Tokio failo nėra arba nesuteiktas leidimas jį pasiekti</string>
-    <string name="invalid_source">Tokio failo/turinio šaltinio nėra</string>
     <string name="invalid_directory">Tokio aplanko nėra</string>
     <string name="missing_file">Failas perkeltas ar ištrintas</string>
     <string name="download_to_sdcard_error_message">Įrašyti į išorinę SD kortelę nepavyko. Atstatyti atsisiuntimo aplanką\?</string>
@@ -604,7 +597,6 @@
     <string name="on">Įjungta</string>
     <string name="off">Išjungta</string>
     <string name="tablet_mode_title">Planšetės režimas</string>
-    <string name="open_website_license">Atidaryti puslapį</string>
     <string name="metadata_privacy_internal">Vidinis</string>
     <string name="metadata_privacy_public">Viešas</string>
     <string name="metadata_privacy_private">Privatus</string>
@@ -678,7 +670,6 @@
     <string name="check_new_streams">Paleiskite naujų transliacijų tikrinimą</string>
     <string name="enable_streams_notifications_summary">Pranešti apie naujas transliacijas iš prenumeratų</string>
     <string name="streams_notifications_interval_title">Tikrinimo dažnumas</string>
-    <string name="enumeration_comma">,</string>
     <string name="toggle_all">Perjungti viską</string>
     <string name="enable_streams_notifications_title">Pranešimai apie naujas transliacijas</string>
     <plurals name="new_streams">

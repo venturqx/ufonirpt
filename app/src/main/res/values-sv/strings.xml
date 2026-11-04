@@ -152,14 +152,12 @@
     <string name="charset_most_special_characters">De flesta specialtecken</string>
     <string name="title_activity_about">Om NewPipe</string>
     <string name="title_licenses">Tredjepartslicenser</string>
-    <string name="copyright" formatted="true">© %1$s av %2$s under %3$s</string>
     <string name="tab_about">Om &amp; FAQ</string>
     <string name="tab_licenses">Licenser</string>
     <string name="app_description">Öppen och enkel Android-app för mediastreaming.</string>
     <string name="view_on_github">Visa på GitHub</string>
     <string name="app_license_title">NewPipes licens</string>
     <string name="contribution_encouragement">Vad du än har för idéer; översättningar, designändringar, kodstädning eller riktiga stora kodändringar—hjälp är alltid välkommen. Ju mer som görs desto bättre blir det!</string>
-    <string name="read_full_license">Läs hela licensen</string>
     <string name="contribution_title">Bidra</string>
     <string name="title_activity_history">Historik</string>
     <string name="action_history">Historik</string>
@@ -226,16 +224,11 @@
     <string name="video_streams_empty">Inga videoströmningar hittades</string>
     <string name="audio_streams_empty">Inga ljudspår hittades</string>
     <string name="invalid_directory">Ingen sådan mapp</string>
-    <string name="invalid_source">Ingen sådan fil/innehållskälla</string>
-    <string name="invalid_file">Filen finns inte eller behörighet att läsa eller skriva till den saknas</string>
     <string name="file_name_empty_error">Filnamnet får inte vara tomt</string>
-    <string name="error_occurred_detail">Ett fel uppstod: %1$s</string>
     <string name="no_streams_available_download">Inga strömningar tillgängliga för hämtning</string>
     <string name="detail_drag_description">Dra för att ändra ordning</string>
     <string name="create">Skapa</string>
-    <string name="dismiss">Avfärda</string>
     <string name="rename">Byt namn</string>
-    <string name="one_item_deleted">1 objekt borttaget.</string>
     <string name="privacy_policy_title">NewPipes sekretesspolicy</string>
     <string name="privacy_policy_encouragement">NewPipe-projektet tar din integritet på största allvar. Appen samlar därför inte in några uppgifter utan ditt medgivande.
 \nNewPipes sekretesspolicy förklarar i detalj vad för data som skickas och lagras när du skickar en kraschrapport.</string>
@@ -540,7 +533,6 @@
     <string name="downloads_storage_use_saf_summary_api_29">Från och med Android 10 stöds bara \"Storage Access Framework\"</string>
     <string name="soundcloud_go_plus_content">Det här är ett SoundCloud Go+-spår, åtminstone i ditt land, så det kan inte strömmas eller hämtas via NewPipe.</string>
     <string name="metadata_host">Värd</string>
-    <string name="open_website_license">Öppna webbplats</string>
     <string name="tablet_mode_title">Surfplatteläge</string>
     <string name="enqueue_stream">Köa</string>
     <string name="related_items_tab_description">Relaterade objekt</string>
@@ -682,7 +674,6 @@
     <string name="streams_notification_channel_name">Nya strömningar</string>
     <string name="loading_stream_details">Laddar strömdetaljer…</string>
     <string name="enable_streams_notifications_title">Aviseringar om nya strömningar</string>
-    <string name="enumeration_comma">,</string>
     <string name="settings_category_player_notification_title">Spelaravisering</string>
     <string name="toggle_all">Växla alla</string>
     <string name="percent">Procent</string>
@@ -860,7 +851,6 @@
     <string name="export_subscriptions_title">Exportera prenumerationer</string>
     <string name="import_subscriptions_summary">Importera prenumerationer från en tidigare .json-export</string>
     <string name="export_subscriptions_summary">Exportera dina prenumerationer till en .json-fil</string>
-    <string name="import_from_previous_export">Importera från tidigare export</string>
     <plurals name="load_subscriptions">
         <item quantity="one">Läser in %d prenumeration…</item>
         <item quantity="other">Läser in %d prenumerationer…</item>

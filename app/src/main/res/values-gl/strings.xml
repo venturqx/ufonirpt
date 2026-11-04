@@ -134,10 +134,7 @@
     <string name="video_streams_empty">Non foi encontrada ningunha emisión de vídeo</string>
     <string name="audio_streams_empty">Non foi encontrada ningunha emisión de audio</string>
     <string name="invalid_directory">Non hai ningún cartafol</string>
-    <string name="invalid_source">Non hai ningún ficheiro / fonte de contido</string>
-    <string name="invalid_file">O ficheiro non existe ou falta permiso para lelo ou escribilo</string>
     <string name="file_name_empty_error">O nome do ficheiro non pode estar baleiro</string>
-    <string name="error_occurred_detail">Ocorreu un erro: %1$s</string>
     <string name="no_streams_available_download">Non hai emisións para descargar</string>
     <string name="sorry_string">Deculpe, isto non debería ter acontecido.</string>
     <string name="error_report_button_text">Informar por correo electrónico</string>
@@ -178,7 +175,6 @@
     <string name="create">Crear</string>
     <string name="delete">Eliminar</string>
     <string name="checksum">Suma de comprobación</string>
-    <string name="dismiss">Descartar</string>
     <string name="rename">Renomear</string>
     <string name="ok">OK</string>
     <string name="msg_name">Nome do ficheiro</string>
@@ -191,7 +187,6 @@
     <string name="no_available_dir">Selecciona un cartafol de descarga máis tarde na configuración</string>
     <string name="msg_popup_permission">Esta permisión é necesaria
 \npara abrir o vídeo no modo «popup»</string>
-    <string name="one_item_deleted">1 elemento foi eliminado.</string>
     <string name="title_activity_recaptcha">Desafío reCAPTCHA</string>
     <string name="recaptcha_request_toast">ReCAPTCHA reto solicitado</string>
     <string name="settings_category_downloads_title">Descarregar</string>
@@ -202,7 +197,6 @@
     <string name="charset_most_special_characters">A maioría dos caracteres especiais</string>
     <string name="title_activity_about">Sobre NewPipe</string>
     <string name="title_licenses">Licenzas de terceiras partes</string>
-    <string name="copyright" formatted="true">© %1$s de %2$s, so %3$s</string>
     <string name="tab_about">Acerca de e preguntas frecuentes</string>
     <string name="tab_licenses">Licenzas</string>
     <string name="app_description">Transmisión lixeira e libre en Android.</string>
@@ -220,7 +214,6 @@
     <string name="read_privacy_policy">Le a política de privacidade</string>
     <string name="app_license_title">Licenza de NewPipe</string>
     <string name="app_license">NewPipe é un software libre copyleft: Pode usar, estudar compartillar e melloralo a vontade. En concreto, pode redistribuír e / ou modificala segundo os termos da Licenza Pública Xeral GNU publicada pola Free Software Foundation, xa sexa a versión 3 da licenza, ou (na súa opción) calquera outra versión posterior.</string>
-    <string name="read_full_license">Ler a licenza</string>
     <string name="title_activity_history">Historial</string>
     <string name="action_history">Historial</string>
     <string name="delete_item_search_history">Desexa eliminar este elemento do historial de procura?</string>
@@ -535,7 +528,6 @@
     <string name="notification_scale_to_square_image_title">Cortar miniatura á relación de aspecto 1:1</string>
     <string name="off">Apagado</string>
     <string name="tablet_mode_title">Modo tableta</string>
-    <string name="open_website_license">Abrir sitio Web</string>
     <string name="metadata_privacy_internal">Interno</string>
     <string name="metadata_privacy_private">Privado</string>
     <string name="metadata_privacy_public">Público</string>
@@ -665,7 +657,6 @@
     <string name="streams_notification_channel_description">Notificacións sobre novas emisións para subscricións</string>
     <string name="streams_notifications_interval_title">Frecuencia de verificación</string>
     <string name="streams_notifications_network_title">Conexión á rede necesaria</string>
-    <string name="enumeration_comma">,</string>
     <string name="toggle_all">Alternar todo</string>
     <plurals name="new_streams">
         <item quantity="one">%s nova emisión</item>
@@ -839,7 +830,6 @@
     <string name="export_subscriptions_title">Exportar subscricións</string>
     <string name="import_subscriptions_summary">Importar subscricións dunha exportación .json anterior</string>
     <string name="export_subscriptions_summary">Exportar as túas subscricións a un ficheiro .json</string>
-    <string name="import_from_previous_export">Importar dunha exportación anterior</string>
     <string name="account_terminated_service_provides_reason">Conta cancelada\n\n%1$s proporciona este motivo: %2$s</string>
     <string name="audio_track_type_secondary">secundario</string>
     <string name="channel_tab_likes">Gústame</string>

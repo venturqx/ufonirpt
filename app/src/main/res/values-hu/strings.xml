@@ -159,10 +159,7 @@
     <string name="player_unrecoverable_failure">Helyreállíthatatlan lejátszóhiba történt</string>
     <string name="player_recoverable_failure">Lejátszóhiba helyreállítása</string>
     <string name="invalid_directory">Nincs ilyen mappa</string>
-    <string name="invalid_source">Nincs ilyen fájl- vagy tartalomforrás</string>
-    <string name="invalid_file">A fájl nem létezik, vagy hiányzik az olvasási vagy írási jogosultság</string>
     <string name="file_name_empty_error">A fájlnév nem lehet üres</string>
-    <string name="error_occurred_detail">Hiba történt: %1$s</string>
     <string name="no_streams_available_download">Nincs letölthető adatfolyam</string>
     <string name="empty_list_subtitle">Nincs itt semmi pár tücskön kívül</string>
     <string name="detail_drag_description">Húzza az átrendezéshez</string>
@@ -185,7 +182,6 @@
     <string name="rename">Átnevezés</string>
     <string name="msg_popup_permission">Ez az engedély szükséges
 \na felugró ablakban történő megnyitáshoz</string>
-    <string name="one_item_deleted">1 elem törölve.</string>
     <string name="title_activity_recaptcha">reCAPTCHA rejtvény</string>
     <string name="recaptcha_request_toast">reCAPTCHA rejtvény kérve</string>
     <string name="settings_category_downloads_title">Letöltés</string>
@@ -210,7 +206,6 @@
     <string name="privacy_policy_encouragement">A NewPipe projekt komolyan veszi az adatvédelmét. Az alkalmazás nem gyűjt semmilyen adatot a beleegyezése nélkül.\nA NewPipe adatvédelmi irányelve részletesen elmagyarázza, mely adatok kerülnek elküldésre és tárolásra az alkalmazás összeomlásának jelentésekor.</string>
     <string name="read_privacy_policy">Adatvédelmi irányelvek megtekintése</string>
     <string name="app_license_title">A NewPipe licence</string>
-    <string name="read_full_license">Licenc megtekintése</string>
     <string name="title_activity_history">Előzmények</string>
     <string name="action_history">Előzmények</string>
     <string name="delete_item_search_history">Törli ezt az elemet a keresési előzmények közül\?</string>
@@ -293,7 +288,6 @@
     <string name="show_comments_summary">Kapcsolja ki a hozzászólások elrejtéséhez</string>
     <string name="default_content_country_title">Tartalom alapértelmezett országa</string>
     <string name="switch_to_main">Folytatás főnézetben</string>
-    <string name="dismiss">Eltüntetés</string>
     <string name="bookmark_playlist">Lejátszási lista könyvjelzőzése</string>
     <string name="auto_queue_summary">Egy hasonló videó hozzáadása a befejeződő (nem ismétlődő) lejátszási sorhoz</string>
     <string name="enqueue">Sorba állítás</string>
@@ -433,7 +427,6 @@
     <string name="permission_denied">A rendszer megtagadta a műveletet</string>
     <string name="never">Soha</string>
     <string name="feed_group_dialog_select_subscriptions">Feliratkozások kiválasztása</string>
-    <string name="copyright">© %1$s %2$s, %3$s licenc alatt</string>
     <string name="title_licenses">Harmadik féltől származó licencek</string>
     <string name="done">Kész</string>
     <string name="no_comments">Nincsenek hozzászólások</string>
@@ -587,7 +580,6 @@
     <string name="feed_load_error">Hiba a hírfolyam betöltésekor</string>
     <string name="metadata_language">Nyelv</string>
     <string name="metadata_support">Támogatás</string>
-    <string name="open_website_license">Weboldal megnyitása</string>
     <string name="tablet_mode_title">Táblagép mód</string>
     <string name="downloads_storage_use_saf_summary_api_29">Az Android 10-től kezdve, csak a „Storage Access Framework” támogatott</string>
     <string name="feed_new_items">Új hírfolyamelemek</string>
@@ -657,7 +649,6 @@
     </plurals>
     <string name="progressive_load_interval_exoplayer_default">ExoPlayer alapértelmezett</string>
     <string name="you_successfully_subscribed">Feliratkozott erre a csatornára</string>
-    <string name="enumeration_comma">,</string>
     <string name="streams_not_yet_supported_removed">Azok az élő adások melyek nem támogatottak a letöltő által, rejtve vannak</string>
     <string name="selected_stream_external_player_not_supported">A választott élő adást nem lehet külső lejátszóval lejátszani</string>
     <string name="toggle_all">Összes be/ki</string>
@@ -834,7 +825,6 @@
     <string name="export_subscriptions_title">Feliratkozások exportálása</string>
     <string name="import_subscriptions_summary">Feliratkozások importálása korábbi .json-fájlból</string>
     <string name="export_subscriptions_summary">Feliratkozások exportálása .json-fájlba</string>
-    <string name="import_from_previous_export">Importálás korábbi exportból</string>
     <string name="api23_requirement_dialog_title">A NewPipe megszünteti az Android 5 támogatását</string>
     <string name="api23_requirement_dialog_message">Sajnos a NewPipe néhány olyan programkönyvtárra támaszkodik, amelyek megszüntették az Android 5.0 és 5.1 verziójának támogatását. A NewPipe következő verziója ezért sajnos csak Android 6 vagy újabb rendszerrel rendelkező eszközökön fog működni. További információt a blogbejegyzésben olvashat.</string>
     <string name="api23_requirement_dialog_blogpost">Blogbejegyzés</string>

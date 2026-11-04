@@ -94,7 +94,6 @@
     <string name="settings_category_player_behavior_title">ڕەفتار</string>
     <string name="select_a_channel">کەناڵێک دیار بکە</string>
     <string name="downloads_storage_ask_title">پرس بکرێت لەکوێ داببەزێنرێت</string>
-    <string name="copyright" formatted="true">© %1$s لەلایەن %2$s لەژێر %3$s</string>
     <string name="title_licenses">مۆڵەتنامەی لایەنی-سێیەم</string>
     <string name="app_license_title">مۆڵەتنامەی نیوپایپ</string>
     <string name="show_hold_to_append_title">پیشاندانی ڕێنمایی ”داگرتن تا پاشکۆ”</string>
@@ -149,10 +148,8 @@
     <string name="detail_drag_description">ڕاکێشان بۆ ڕیزكردنه‌وه‌</string>
     <string name="play_queue_remove">لادان</string>
     <string name="always">هه‌رده‌م</string>
-    <string name="read_full_license">خوێندنه‌وه‌ی مۆڵەتنامە</string>
     <string name="app_ui_crash">بەرنامە/ڕووکار ڕاوەستا</string>
     <string name="play_all">لێدانی گشتی</string>
-    <string name="invalid_source">هەمان فایل/بابەت بوونی نییە</string>
     <string name="start">دەستپێکردن</string>
     <string name="subscribe_button_title">به‌ژداریکردن</string>
     <string name="show_play_with_kodi_title">بژاردەی ”لێدان بە Kodi“ پیشانبدرێت</string>
@@ -180,7 +177,6 @@
     <string name="caption_none">ژێرنووس نییە</string>
     <string name="popup_playing_toast">لێدان لە پەنجەرە</string>
     <string name="no_views">بینراو نییە</string>
-    <string name="invalid_file">ئەو فایله‌ بوونی نییە یان دەسەڵاتی خوێندنەوە و نوسینی لاوازە</string>
     <string name="parsing_error">ناتوانرێت ماڵپەڕ شیبکرێتەوە</string>
     <string name="settings_file_charset_title">ڕه‌نووسه‌ ڕێپێدراوه‌كان له‌ فایله‌ ناوییه‌كاندا</string>
     <string name="import_soundcloud_instructions_hint">ئایدییەکەت ، soundcloud.com/yourid</string>
@@ -208,7 +204,6 @@
     <string name="switch_to_background">گۆڕین بۆ پاشبنەما</string>
     <string name="infinite_videos">∞ ڤیدیۆ</string>
     <string name="use_inexact_seek_title">بەکارهێنانی بردنەپێشی ناتەواوی خێرا</string>
-    <string name="error_occurred_detail">هەڵەیەک ڕوویدا : %1$s</string>
     <string name="download_path_dialog_title">فۆڵده‌ری داگرتن بۆ فایلی ڤیدیۆکان هەڵبژێرە</string>
     <string name="channel_created_by">ساز کراوه‌ لەلایەن %s</string>
     <string name="users">بەکارهێنەران</string>
@@ -270,7 +265,6 @@
     <string name="no_valid_zip_file">فایلی ZIP دروست نییە</string>
     <string name="disabled">ناكارایه‌</string>
     <string name="contribution_title">بەشداریکردن</string>
-    <string name="dismiss">پشتگوێخستن</string>
     <string name="downloads_title">دابه‌زاندنه‌كان</string>
     <string name="contribution_encouragement">هەرکاتێك بیرۆکەیەکت هەبوو وەک ; وەرگێڕان، گۆڕینی دیزاین ، سڕینەوەی کۆد ،یان هەر گۆڕانکارییەکی دیكه‌ ئەوا یارمەتییەکەت لەسەرچاوانمانە. ئێمە هەمیشە دەمانەوێ به‌رنامه‌كه‌ زیاتر بەرەوپێشه‌وه‌ ببەین!</string>
     <string name="playlist_add_stream_success">خشته‌لێدان كرا</string>
@@ -306,7 +300,6 @@
     <string name="preferred_player_fetcher_notification_message">بابەتی داواکراو باردەکرێت</string>
     <string name="clear_views_history_summary">مێژوو دەسڕێتەوە لەگەڵ په‌خشه‌ لێدراوه‌كان و شوێنی کارپێکەر</string>
     <string name="caption_auto_generated">دانان-خۆکار</string>
-    <string name="one_item_deleted">١ بابەت سڕایەوە.</string>
     <string name="select_a_kiosk">هکیۆسکێک دیار بکە</string>
     <string name="conferences">کۆنفرانسەکان</string>
     <string name="open_in_popup_mode">كردنه‌وه‌ له‌ دۆخی په‌نجه‌ره‌</string>
@@ -616,7 +609,6 @@
     <string name="off">ناکارا</string>
     <string name="on">کارا</string>
     <string name="tablet_mode_title">دۆخی تابلێت</string>
-    <string name="open_website_license">کردنەوەی ماڵپەڕ</string>
     <string name="seekbar_preview_thumbnail_title">پێشبینینی سەروێنەی گەڕان</string>
     <string name="detail_heart_img_view_description">بەدڵکراوە لەلایەن بڵاوکەرەوە</string>
     <string name="dont_show">پیشان نەدرێت</string>
@@ -666,7 +658,6 @@
     <string name="streams_notifications_network_title">پەیوەندی تۆڕ داواکراوە</string>
     <string name="any_network">هەر تۆڕێک</string>
     <string name="you_successfully_subscribed">تۆ ئێستا ئەم چەناڵەت بەژداری کردووە</string>
-    <string name="enumeration_comma">،</string>
     <string name="streams_notification_channel_name">پەخشە نوێیەکان</string>
     <string name="settings_category_player_notification_title">پەیامی لێدەر</string>
     <string name="notifications">پەیامەکان</string>

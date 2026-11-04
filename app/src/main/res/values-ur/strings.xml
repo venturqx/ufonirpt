@@ -122,10 +122,7 @@
     <string name="video_streams_empty">کوئی ویڈیو سلسلے نہیں ملے</string>
     <string name="audio_streams_empty">کوئی آڈیو سلسلے نہیں ملے</string>
     <string name="invalid_directory">ایسا کوئی فولڈر نہیں</string>
-    <string name="invalid_source">ایسی کوئی فائل/مواد کا ذریعہ نہیں</string>
-    <string name="invalid_file">فائل موجود نہیں ہے یا اسے پڑھنے یا لکھنے کی اجازت کا فقدان ہے</string>
     <string name="file_name_empty_error">فائل کا نام ضروری ہے</string>
-    <string name="error_occurred_detail">ایک خامی پیش آگئی: %1$s</string>
     <string name="no_streams_available_download">کوئی سلسلسہ ڈاؤن لوڈ کرنے کے لئے دستیاب نہیں</string>
     <string name="sorry_string">معذرت، ایسا نہیں ہونا چاہئے تھا۔</string>
     <string name="error_report_button_text">ای میل کے ذریعے اطلاع دیں</string>
@@ -166,7 +163,6 @@
     <string name="create">بنانا</string>
     <string name="delete">حذف کریں</string>
     <string name="checksum">تشخیص کریں</string>
-    <string name="dismiss">برخاست کریں</string>
     <string name="rename">نام تبدیل کریں</string>
     <string name="ok">ٹھيک ہے</string>
     <string name="msg_name">فائل کا نام</string>
@@ -187,7 +183,6 @@
     <string name="charset_most_special_characters">اہم مخصوص حروف</string>
     <string name="title_activity_about">نیو پائپ کے بارے میں</string>
     <string name="title_licenses">تیسری پارٹی کی لائسنس</string>
-    <string name="copyright" formatted="true">© %1$s بذریعہ %2$s %3$s کے تحت</string>
     <string name="tab_about">کے بارے میں اور اکثر پوچھے گئے سوالات</string>
     <string name="tab_licenses">لائسنس</string>
     <string name="app_description">اینڈروئیڈ پر لِبرے کی ہلکی اسٹریمنگ۔</string>
@@ -200,7 +195,6 @@
     <string name="website_title">ویب سائٹ</string>
     <string name="website_encouragement">مزید معلومات اور خبروں کے لئے نیو پائپ ویب سائٹ ملاحظہ کریں۔</string>
     <string name="app_license_title">نیو پائپ کا لائسنس</string>
-    <string name="read_full_license">لائسنس پڑھیں</string>
     <string name="title_activity_history">سرگزشت</string>
     <string name="action_history">سرگزشت</string>
     <string name="delete_item_search_history">کیا آپ اس آئٹم کو تلاش کی سرگزشت سے حذف کرنا چاہتے ہیں؟</string>
@@ -293,7 +287,6 @@
     <string name="clear_search_history_summary">تلاش کے الفاظ کی سرگزشت حذف کی گئیں</string>
     <string name="delete_search_history_alert">تلاش کی مکمل سرگزشت حذف کریں؟</string>
     <string name="search_history_deleted">تلاش کی سرگزشت حذف ہوئی</string>
-    <string name="one_item_deleted">1 شے حذف کر دی گئی۔</string>
     <string name="app_license">نیو پائپ کاپی لیفٹ فری سافٹ ویئر ہے: آپ استعمال، مطالعہ، شیئر اور اپنی مرضی سے اسے بہتر بنا سکتے ہیں۔ خاص طور پر آپ اسے مفت سافٹ ویئر فاؤنڈیشن کے ذریعہ شائع کردہ GNU جنرل پبلک لائسنس کی شرائط کے تحت دوبارہ تقسیم اور/یا ترمیم کرسکتے ہیں، خواہ لائسنس کا ورژن 3، یا (آپ کے اختیار پر) کسی بھی بعد کا ورژن میں۔</string>
     <string name="import_settings">کیا آپ ترتیبات بھی درآمد کرنا چاہتے ہیں؟</string>
     <string name="privacy_policy_title">نیو پائپ کی رازداری کی پالیسی</string>

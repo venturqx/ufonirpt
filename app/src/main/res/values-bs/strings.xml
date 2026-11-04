@@ -246,10 +246,7 @@
     <string name="audio_streams_empty">Nisu pronađeni audio tokovi</string>
     <string name="missing_file">Datoteka je premještena ili izbrisana</string>
     <string name="invalid_directory">Fascikla sa popisima</string>
-    <string name="invalid_source">Nema takve datoteke/izvora sadržaja</string>
-    <string name="invalid_file">Datoteka ne postoji ili nedostaje dozvola za čitanje ili pisanje u nju</string>
     <string name="file_name_empty_error">Naziv datoteke ne može biti prazan</string>
-    <string name="error_occurred_detail">Došlo je do greške: %1$s</string>
     <string name="no_streams_available_download">Nema dostupnih tokova za preuzimanje</string>
     <string name="saved_tabs_invalid_json">Nije moguće pročitati sačuvane kartice, pa se koriste zadane</string>
     <string name="restore_defaults">Vrati zadane postavke</string>
@@ -308,7 +305,6 @@
     <string name="delete_file">Izbriši datoteku</string>
     <string name="delete_entry">Izbriši unos</string>
     <string name="checksum">Kontrolni zbir</string>
-    <string name="dismiss">Raspusti</string>
     <string name="rename">Preimenuj</string>
     <string name="msg_name">Naziv datoteke</string>
     <string name="msg_threads">Teme</string>
@@ -322,7 +318,6 @@
     <string name="no_available_dir">Molimo vas da kasnije u postavkama definišete folder za preuzimanje</string>
     <string name="no_dir_yet">Još nije postavljen folder za preuzimanje, odaberite zadani folder za preuzimanje sada</string>
     <string name="msg_popup_permission">Ova dozvola je potrebna za \notvaranje u skočnom prozoru</string>
-    <string name="one_item_deleted">1 stavka je izbrisana.</string>
     <string name="title_activity_recaptcha">reCAPTCHA izazov</string>
     <string name="subtitle_activity_recaptcha">Pritisnite \"Gotovo\" kada riješite problem</string>
     <string name="recaptcha_request_toast">Zatražen je reCAPTCHA izazov</string>
@@ -336,7 +331,6 @@
     <string name="charset_most_special_characters">Većina specijalnih znakova</string>
     <string name="title_activity_about">O NewPipe-u</string>
     <string name="title_licenses">Licence trećih strana</string>
-    <string name="copyright">© %1$s od %2$s pod %3$s</string>
     <string name="tab_licenses">Dozvole</string>
     <string name="app_description">Besplatno lagano tokanje na Androidu.</string>
     <string name="contribution_title">Doprinesite</string>
@@ -352,7 +346,6 @@
     <string name="read_privacy_policy">Pročitajte politiku privatnosti</string>
     <string name="app_license_title">NewPipe-ova licenca</string>
     <string name="app_license">NewPipe je copyleft libre softver: Možete ga koristiti, proučavati, dijeliti i poboljšavati po volji. Konkretno, možete ga redistribuirati i/ili mijenjati pod uvjetima GNU Opće javne licence koju je objavila Fondacija za slobodni softver, bilo verzije 3 Licence ili (po vašem izboru) bilo koje kasnije verzije.</string>
-    <string name="read_full_license">Pročitaj licencu</string>
     <string name="faq_title">Često postavljana pitanja</string>
     <string name="faq_description">Ako imate problema s korištenjem aplikacije, obavezno pogledajte ove odgovore na česta pitanja!</string>
     <string name="faq">Pogledajte na web stranici</string>
@@ -657,7 +650,6 @@
     <string name="metadata_subscribers">Pretplatnici</string>
     <string name="detail_pinned_comment_view_description">Zakačen komentar</string>
     <string name="detail_heart_img_view_description">Srce od strane kreatora</string>
-    <string name="open_website_license">Otvori web stranicu</string>
     <string name="tablet_mode_title">Tabletni način rada</string>
     <string name="on">Upaljeno</string>
     <string name="off">Ugašeno</string>
@@ -665,7 +657,6 @@
     <string name="notifications_disabled">Obavještenja su onemogućena</string>
     <string name="get_notified">Primajte obavještenja</string>
     <string name="you_successfully_subscribed">Sada ste pretplaćeni na ovaj kanal</string>
-    <string name="enumeration_comma">,</string>
     <string name="toggle_all">Prikaži/Uključi sve</string>
     <string name="streams_not_yet_supported_removed">Strimovi koje program za preuzimanje još ne podržava nisu prikazani</string>
     <string name="audio_track_present_in_video">Zvučni zapis bi već trebao biti prisutan u ovom toku</string>

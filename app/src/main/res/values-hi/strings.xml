@@ -31,7 +31,6 @@
     <string name="tab_licenses">लाइसेंस</string>
     <string name="view_on_github">GitHub पर देखें</string>
     <string name="app_license_title">NewPipe का लाइसेंस</string>
-    <string name="read_full_license">लाइसेंस पढ़ें</string>
     <string name="contribution_title">योगदान करें</string>
     <string name="title_activity_history">इतिहास</string>
     <string name="action_history">इतिहास</string>
@@ -162,7 +161,6 @@
     <string name="settings_file_replacement_character_title">रिप्लेसमेंट करैक्टर</string>
     <string name="charset_letters_and_digits">वर्ण और अंक</string>
     <string name="charset_most_special_characters">सबसे विशेष कैरेक्टर्स</string>
-    <string name="copyright" formatted="true">%2$s के द्वारा © %1$s जो %3$s के अधीन आते हैं</string>
     <string name="app_description">एंड्राइड के लिए हल्का और मुफ्त स्ट्रीमिंग एप्लिकेशन।</string>
     <string name="contribution_encouragement">अगर आपके पास कोई सुझाव हो जैसे कि - अनुवाद करना, डिजाईन में बदलाव करना, कोड को साफ़ रखना, या फिर कोड में जायदा बदलाव लाना हो तो - सहायता के लिए आपका स्वागत है। जितना ज्यादा होगा उतना बेहतर होगा !</string>
     <string name="delete_item_search_history">क्या आप इसको खोज इतिहास से मिटाना चाहते हैं \?</string>
@@ -200,7 +198,6 @@
     <string name="audio_streams_empty">कोई ऑडियो स्ट्रीम नहीं मिला</string>
     <string name="detail_drag_description">फिर से क्रम देने के लिए खींचें</string>
     <string name="create">बनाइये</string>
-    <string name="dismiss">ख़ारिज करें</string>
     <string name="rename">नाम बदलें</string>
     <string name="donation_title">दान करें</string>
     <string name="donation_encouragement">न्यूपाइप वॉलंटियर्स द्वारा विकसित किया जाता है जो आपको अच्छा अनुभव देने के लिए अपना खाली समय इस एप्लिकेशन को देते हैं। डेवलपर्स को मदद भेजे, ताकि वह न्यूपाइप को और अच्छा बना सके।</string>
@@ -261,12 +258,8 @@
     <string name="delete_search_history_alert">पूरे खोज इतिहास को मिटा दें\?</string>
     <string name="search_history_deleted">खोज इतिहास मिटाया गया</string>
     <string name="invalid_directory">ऐसा कोई फ़ोल्डर मौजूद नहीं</string>
-    <string name="invalid_source">अमान्य फाइल/विषय - वस्तु का स्रोत</string>
-    <string name="invalid_file">फ़ाइल मौजूद नहीं है या उसे पढ़ने या लिखने की पर्याप्त अनुमति नहीं है</string>
     <string name="file_name_empty_error">फ़ाइल का नाम खाली नहीं हो सकता</string>
-    <string name="error_occurred_detail">एक त्रुटी उत्पन्न हुई: %1$s</string>
     <string name="no_streams_available_download">डाउनलोड करने के लिए कोई स्ट्रीम उपलब्ध नहीं है</string>
-    <string name="one_item_deleted">एक आइटम मिटा दी गई।</string>
     <string name="privacy_policy_title">न्यूपाइप की प्राइवेसी पॉलिसी</string>
     <string name="privacy_policy_encouragement">न्यूपाइप परियोजना आपकी गोपनीयता को बहुत गंभीर रूप से लेता है। इसलिए, ऐप आपकी अनुमति के बिना कोई डेटा जमा नहीं करता।\nन्यूपाइप की गोपनीयता नीति विस्तार से समझाती है कि कौनसा डेटा भेजा और संग्रह किया जाता है जब आप क्रेश विवरण भेजते हैं।</string>
     <string name="read_privacy_policy">प्राइवेसी पॉलिसी पढ़ें</string>
@@ -596,7 +589,6 @@
     <string name="metadata_privacy_unlisted">गैर-सूचीबद्ध</string>
     <string name="toggle_all">सबको टॉगल करें</string>
     <string name="get_notified">अधिसूचना पायें</string>
-    <string name="enumeration_comma">,</string>
     <string name="manual_update_description">नई अपडेट के लिए मैन्युअल रूप से जांचें</string>
     <string name="new_seek_duration_toast">एक्सोप्लेयर की बंदिश के कारण सीक करने की अवधि %d सेकंड पर सेट की गई</string>
     <string name="account_terminated">खाता बंद किया गया</string>
@@ -639,7 +631,6 @@
     <string name="settings_category_feed_title">फ़ीड</string>
     <string name="feed_new_items">नये फ़ीड आइटम</string>
     <string name="feed_processing_message">फ़ीड प्रोसेस हो रही है …</string>
-    <string name="open_website_license">वेबसाइट खोलें</string>
     <string name="feed_use_dedicated_fetch_method_title">उपलब्ध होने पर समर्पित फ़ीड से प्राप्त करें</string>
     <string name="metadata_language">भाषा</string>
     <string name="on">ऑन</string>
@@ -863,7 +854,6 @@
     <string name="export_subscriptions_title">सब्सक्रिप्शन एक्सपोर्ट करें</string>
     <string name="import_subscriptions_summary">पिछले .json एक्सपोर्ट से सब्सक्रिप्शन इंपोर्ट करें</string>
     <string name="export_subscriptions_summary">अपनी सब्सक्रिप्शन को एक .json फ़ाइल में एक्सपोर्ट करें</string>
-    <string name="import_from_previous_export">पिछले एक्सपोर्ट से इंपोर्ट करें</string>
     <string name="api23_requirement_dialog_title">NewPipe, Android 5 के लिए सपोर्ट बंद कर रहा है</string>
     <string name="api23_requirement_dialog_message">दुर्भाग्य से, NewPipe कुछ ऐसी लाइब्रेरीज़ पर निर्भर है जिन्होंने Android 5.0 और 5.1 के लिए सपोर्ट बंद कर दिया है। इसलिए, अफ़सोस की बात है कि NewPipe का अगला वर्शन सिर्फ़ Android 6 या उससे नए वर्शन वाले डिवाइस पर ही काम करेगा। ज़्यादा जानकारी के लिए ब्लॉग पोस्ट पढ़ें।</string>
     <string name="api23_requirement_dialog_blogpost">ब्लॉगपोस्ट</string>

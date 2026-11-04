@@ -155,10 +155,7 @@
     <string name="video_streams_empty">Δε βρέθηκαν ροές βίντεο</string>
     <string name="audio_streams_empty">Δε βρέθηκαν ροές ήχου</string>
     <string name="invalid_directory">Δεν υπάρχει αυτός ο φάκελος</string>
-    <string name="invalid_source">Δεν υπάρχει το αρχείο/πηγή περιεχομένου</string>
-    <string name="invalid_file">Το αρχείο δεν υπάρχει ή δεν υπάρχει επαρκής εξουσιοδότηση ανάγνωσης ή εγγραφής σε αυτό</string>
     <string name="file_name_empty_error">Το όνομα αρχείου δεν μπορεί να είναι κενό</string>
-    <string name="error_occurred_detail">Προέκυψε ένα σφάλμα: %1$s</string>
     <string name="no_streams_available_download">Δεν υπάρχουν διαθέσιμες ροές για λήψη</string>
     <string name="sorry_string">Λυπούμαστε, αυτό δεν έπρεπε να έχει συμβεί.</string>
     <string name="error_report_button_text">Αναφορά μέσω ηλεκτρονικού ταχυδρομείου</string>
@@ -186,7 +183,6 @@
     <string name="start">Εκκίνηση</string>
     <string name="create">Δημιουργία</string>
     <string name="checksum">Άθροισμα ελέγχου</string>
-    <string name="dismiss">Αγνόηση</string>
     <string name="rename">Μετονομασία</string>
     <string name="ok">Εντάξει</string>
     <string name="msg_name">Όνομα αρχείου</string>
@@ -197,7 +193,6 @@
     <string name="no_available_dir">Παρακαλώ ορίστε έναν φάκελο λήψεων αργότερα στις ρυθμίσεις</string>
     <string name="msg_popup_permission">Αυτή η άδεια είναι απαραίτητη για
 \nτο άνοιγμα αναδυόμενων παραθύρων</string>
-    <string name="one_item_deleted">1 αντικείμενο διαγράφηκε.</string>
     <string name="title_activity_recaptcha">Δοκιμασία reCAPTCHA</string>
     <string name="recaptcha_request_toast">Ζητήθηκε δοκιμασία reCAPTCHA</string>
     <string name="settings_file_charset_title">Επιτρεπόμενοι χαρακτήρες σε ονόματα αρχείων</string>
@@ -206,7 +201,6 @@
     <string name="charset_most_special_characters">Οι περισσότεροι ειδικοί χαρακτήρες</string>
     <string name="title_activity_about">Σχετικά με το NewPipe</string>
     <string name="title_licenses">Άδειες Τρίτων</string>
-    <string name="copyright" formatted="true">© %1$s από %2$s υπό %3$s</string>
     <string name="tab_about">Πληροφορίες &amp; Συχνές Ερωτήσεις</string>
     <string name="app_description">Ανοιχτού κώδικα, ελαφριά εφαρμογή Android, για την αναπαραγωγή πολυμέσων από το διαδίκτυο.</string>
     <string name="contribution_title">Συνεισφέρετε</string>
@@ -223,7 +217,6 @@
     <string name="read_privacy_policy">Ανάγνωση της πολιτικής ιδιωτικού απόρρητου</string>
     <string name="app_license_title">Η άδεια του NewPipe</string>
     <string name="app_license">Το NewPipe είναι copylelft ελεύθερο λογισμικό: Μπορείτε να το χρησιμοποιήσετε, να το μελετήσετε, να το μοιραστείτε και να το βελτιώσετε κατά βούληση. Ειδικότερα, μπορείτε να το αναδιανείμετε ή/και να το τροποποιήσετε υπό την άδεια GNU General Public Licence όπως αυτή εκδόθηκε από το Free Software Foundation, είτε υπό την έκδοση 3 της άδειας, είτε (προαιρετικά) υπό οποιαδήποτε μεταγενέστερη άδεια.</string>
-    <string name="read_full_license">Ανάγνωση της άδειας</string>
     <string name="delete_item_search_history">Θέλετε να σβήσετε αυτό το αντικείμενο από το ιστορικό αναζήτησης;</string>
     <string name="main_page_content">Περιεχόμενο της κεντρικής σελίδας</string>
     <string name="blank_page_summary">Κενή σελίδα</string>
@@ -604,7 +597,6 @@
     <string name="description_select_disable">Απενεργοποίηση επιλογής κειμένου στην περιγραφή</string>
     <string name="description_select_enable">Ενεργοποίηση επιλογής κειμένου στην περιγραφή</string>
     <string name="description_select_note">Τώρα μπορείτε να επιλέξετε κείμενο εντός της περιγραφής. Σημειώστε ότι, η σελίδα μπορεί να παρουσιάζει αστάθεια κατά τη διάρκεια της κατάστασης επιλογής κειμένου.</string>
-    <string name="open_website_license">Ανοικτή ιστοσελίδα</string>
     <string name="account_terminated">Ο λογαριασμός διαγράφηκε</string>
     <string name="feed_load_error_fast_unknown">Η κατάσταση γρήγορης τροφοδοσίας δεν παρέχει περισσότερες πληροφορίες.</string>
     <string name="feed_load_error_terminated">Ο λογαριασμός του δημιουργού έχει διαγραφεί.
@@ -680,7 +672,6 @@
     <string name="enable_streams_notifications_summary">Ειδοποίηση για νέες ροές από συνδρομές</string>
     <string name="delete_downloaded_files_confirm">Διαγραφή όλων των ληφθέντων αρχείων από το δίσκο;</string>
     <string name="notifications_disabled">Οι ειδοποιήσεις είναι απενεργοποιημένες</string>
-    <string name="enumeration_comma">,</string>
     <string name="get_notified">Λάβετε ειδοποίηση</string>
     <string name="you_successfully_subscribed">Έχετε εγγραφεί τώρα σε αυτό το κανάλι</string>
     <string name="toggle_all">Εναλλαγή όλων</string>
@@ -864,7 +855,6 @@
     <string name="export_subscriptions_title">Εξαγωγή συνδρομών</string>
     <string name="import_subscriptions_summary">Εισαγωγή συνδρομών από προηγούμενη εξαγωγή</string>
     <string name="export_subscriptions_summary">Εξαγωγή των συνδρομών σας σε αρχείο .json</string>
-    <string name="import_from_previous_export">Εισαγωγή από προηγούμενη εξαγωγή</string>
     <string name="api23_requirement_dialog_title">Το NewPipe καταργεί την υποστήριξη για το Android 5</string>
     <string name="api23_requirement_dialog_message">Δυστυχώς, το NewPipe βασίζεται σε ορισμένες βιβλιοθήκες που έχουν σταματήσει να υποστηρίζουν τα Android 5.0 και 5.1. Ως εκ τούτου, η επόμενη έκδοση του NewPipe θα λειτουργεί μόνο σε συσκευές με Android 6 ή νεότερη έκδοση, δυστυχώς. Διαβάστε περισσότερα στην ανάρτηση του ιστολογίου.</string>
     <string name="api23_requirement_dialog_blogpost">Δημοσίευση στο ιστολόγιο</string>

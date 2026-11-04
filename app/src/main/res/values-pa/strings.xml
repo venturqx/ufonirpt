@@ -129,10 +129,7 @@
     <string name="video_streams_empty">ਕੋਈ ਵੀਡੀਓ ਸਟ੍ਰੀਮ ਨਹੀਂ ਮਿਲੀ</string>
     <string name="audio_streams_empty">ਕੋਈ ਆਡੀਓ ਸਟ੍ਰੀਮ ਨਹੀਂ ਮਿਲੀ</string>
     <string name="invalid_directory">ਅਜਿਹਾ ਕੋਈ ਫੋਲਡਰ ਨਹੀਂ</string>
-    <string name="invalid_source">ਅਜਿਹਾ ਕੋਈ ਫਾਈਲ/ਸਮੱਗਰੀ ਸਰੋਤ ਨਹੀਂ ਹੈ</string>
-    <string name="invalid_file">ਫਾਈਲ ਮੌਜੂਦ ਨਹੀਂ ਹੈ ਜਾਂ ਇਸ ਨੂੰ ਪੜ੍ਹਨ ਜਾਂ ਲਿਖਣ ਦੀ ਆਗਿਆ ਨਹੀਂ ਹੈ</string>
     <string name="file_name_empty_error">ਫਾਈਲ ਨਾਮ ਖਾਲੀ ਨਹੀਂ ਹੋ ਸਕਦਾ</string>
-    <string name="error_occurred_detail">ਇੱਕ ਤਰੁੱਟੀ ਆਈ ਹੈ: %1$s</string>
     <string name="no_streams_available_download">ਡਾਊਨਲੋਡ ਕਰਨ ਲਈ ਕੋਈ ਸਟ੍ਰੀਮ ਉਪਲਬਧ ਨਹੀਂ ਹੈ</string>
     <string name="sorry_string">ਮੁਆਫ ਕਰਨਾ, ਅਜਿਹਾ ਨਹੀਂ ਹੋਣਾ ਚਾਹੀਦਾ ਸੀ।</string>
     <string name="error_report_button_text">ਈ-ਮੇਲ ਦੁਆਰਾ ਇਤਲਾਹ ਦਿਓ</string>
@@ -173,7 +170,6 @@
     <string name="create">ਬਣਾਓ</string>
     <string name="delete">ਮਿਟਾਓ</string>
     <string name="checksum">ਚੈੱਕ-ਸਮ</string>
-    <string name="dismiss">ਖਾਰਿਜ ਕਰੋ</string>
     <string name="rename">ਨਾਮ ਬਦਲੋ</string>
     <string name="ok">ਠੀਕ ਹੈ</string>
     <string name="msg_name">ਫਾਈਲ ਦਾ ਨਾਮ</string>
@@ -186,7 +182,6 @@
     <string name="no_available_dir">ਬਾਅਦ ਵਿੱਚ ਸੈਟਿੰਗਾਂ ਵਿਚੋਂ ਇੱਕ ਡਾਊਨਲੋਡ ਫੋਲਡਰ ਨੂੰ ਚੁਣੋ</string>
     <string name="msg_popup_permission">ਪੌਪ-ਅਪ ਮੋਡ ਵਿੱਚ ਖੋਲ੍ਹਣ ਵਾਸਤੇ
 \nਇਸ ਇਜਾਜ਼ਤ ਦੀ ਲੋੜ ਹੈ</string>
-    <string name="one_item_deleted">1 ਆਈਟਮ ਮਿਟਾਈ ਗਈ।</string>
     <string name="title_activity_recaptcha">ReCaptcha ਚੁਣੌਤੀ</string>
     <string name="recaptcha_request_toast">ReCaptcha ਚੁਣੌਤੀ ਲਈ ਬੇਨਤੀ</string>
     <string name="settings_category_downloads_title">ਡਾਊਨਲੋਡ</string>
@@ -197,7 +192,6 @@
     <string name="charset_most_special_characters">ਬਹੁਤੇ ਖ਼ਾਸ ਅੱਖਰ</string>
     <string name="title_activity_about">ਨਿਊਪਾਈਪ ਬਾਰੇ ਵਿੱਚ ਜਾਣੋ</string>
     <string name="title_licenses">ਤੀਜੀ-ਧਿਰ ਦੇ ਲਾਇਸੈਂਸ</string>
-    <string name="copyright" formatted="true">%2$s ਵੱਲੋਂ © %1$s , %3$s ਅਧੀਨ</string>
     <string name="tab_about">ਐਪ ਬਾਰੇ ਤੇ ਆਮ ਸਵਾਲ</string>
     <string name="tab_licenses">ਲਾਇਸੈਂਸ</string>
     <string name="app_description">ਐਂਡਰਾਇਡ \'ਤੇ ਹਲਕੀ ਅਤੇ ਮੁਫ਼ਤ ਸਟ੍ਰੀਮਿੰਗ ਐਪਲੀਕੇਸ਼ਨ।</string>
@@ -211,7 +205,6 @@
     <string name="website_encouragement">ਵਧੇਰੇ ਜਾਣਕਾਰੀ ਅਤੇ ਖ਼ਬਰਾਂ ਲਈ ਨਿਊਪਾਈਪ ਵੈੱਬਸਾਈਟ ਵੇਖੋ।</string>
     <string name="app_license_title">ਨਿਊਪਾਈਪ ਦਾ ਲਾਇਸੈਂਸ</string>
     <string name="app_license">ਨਿਊਪਾਈਪ ਇੱਕ ਕਾਪੀਲਿਫਟ ਮੁਫ਼ਤ ਸਾਫਟਵੇਅਰ ਹੈ। ਤੁਸੀਂ ਇਸ ਦੀ ਵਰਤੋਂ, ਇਸ ਦਾ ਅਧਿਐਨ ਅਤੇ ਇਸ ਨੂੰ ਸਾਂਝਾ ਕਰ ਸਕਦੇ ਹੋ ਅਤੇ ਇਸ ਵਿੱਚ ਆਪਣੀ ਮਰਜ਼ੀ ਅਨੁਸਾਰ ਸੁਧਾਰ ਸਕਦੇ ਹੋ। ਖਾਸ ਤੌਰ \'ਤੇ ਤੁਸੀਂ ਇਸ ਨੂੰ GNU ਜਨਰਲ ਪਬਲਿਕ ਲਾਇਸੈਂਸ ਦੀਆਂ ਸ਼ਰਤਾਂ ਦੇ ਅਧੀਨ ਵੰਡ ਸਕਦੇ ਹੋ / ਜਾਂ ਸੰਸ਼ੋਧਿਤ ਕਰ ਸਕਦੇ ਹੋ ਜਿਵੇਂ ਕਿ ਮੁਫਤ ਸਾਫਟਵੇਅਰ ਫਾਊਂਡੇਸ਼ਨ ਦੁਆਰਾ ਪ੍ਰਕਾਸ਼ਤ ਕੀਤਾ ਗਿਆ ਹੈ, ਜਾਂ ਤਾਂ ਲਾਇਸੈਂਸ ਦਾ ਵਰਜ਼ਨ 3, ਜਾਂ (ਤੁਹਾਡੇ ਵਿਕਲਪ \'ਤੇ) ਬਾਅਦ ਦਾ ਕੋਈ ਸੰਸਕਰਣ।</string>
-    <string name="read_full_license">ਲਾਇਸੈਂਸ ਪੜ੍ਹੋ</string>
     <string name="title_activity_history">ਇਤਿਹਾਸ</string>
     <string name="action_history">ਇਤਿਹਾਸ</string>
     <string name="delete_item_search_history">ਕੀ ਤੁਸੀਂ ਇਸਨੂੰ ਖੋਜ ਇਤਿਹਾਸ ਵਿੱਚੋਂ ਮਿਟਾਉਣਾ ਚਾਹੁੰਦੇ ਹੋ\?</string>
@@ -430,7 +423,6 @@
 \nਯੂਟਿਊਬ ਦੀਆਂ ਉਮਰ-ਹੱਦ ਪਾਬੰਦੀਸ਼ੁਦਾ ਵੀਡੀਓਜ਼ ਬਾਰੇ ਨੀਤੀਆਂ ਦੇ ਕਾਰਨ ਨਿਊ-ਪਾਈਪ ਇਸਦੀਆਂ ਵੀਡੀਓ ਸਟ੍ਰੀਮ ਤੱਕ ਨਹੀਂ ਪਹੁੰਚ ਸਕਦੀ ਅਤੇ ਇਸੇ ਕਰਕੇ ਇਸਨੂੰ ਚਲਾ ਵੀ ਨਹੀਂ ਸਕਦੀ।</string>
     <string name="notification_scale_to_square_image_summary">ਨੋਟੀਫਿਕੇਸ਼ਨ ਵਿੱਚ ਵਿਖਾਏ ਵੀਡਿਓ ਥੰਮਨੇਲ ਨੂੰ 16:9 ਦੀ ਬਜਾਏ 1:1 ਅਨੁਪਾਤ ਦਾ ਵਿਖਾਓ</string>
     <string name="open_with">ਇਸ ਵਿੱਚ ਖੋਲ੍ਹੋ</string>
-    <string name="open_website_license">ਵੈਬਸਾਈਟ ਖੋਲ੍ਹੋ</string>
     <string name="metadata_privacy_internal">ਅੰਦਰੂਨੀ</string>
     <string name="metadata_privacy_private">ਨਿੱਜੀ (ਪ੍ਰਾਈਵੇਟ)</string>
     <string name="metadata_privacy_unlisted">ਗੈਰ-ਸੂਚੀਬੱਧ</string>
@@ -603,7 +595,6 @@
     <string name="notification_action_0_title">ਪਹਿਲਾ ਕਾਰਵਾਈ ਬਟਨ</string>
     <string name="dont_show">ਨਾਂ ਵਿਖਾਓ</string>
     <string name="on">ਆਨ</string>
-    <string name="enumeration_comma">,</string>
     <plurals name="download_finished_notification">
         <item quantity="one">%s ਡਾਉਨਲੋਡ ਮੁਕੰਮਲ</item>
         <item quantity="other">%s ਡਾਊਨਲੋਡਾਂ ਮੁਕੰਮਲ</item>
@@ -863,7 +854,6 @@
     <string name="export_subscriptions_title">ਸਬਸਕ੍ਰਿਪਸ਼ਨਾਂ ਐਕਸਪੋਰਟ ਕਰੋ</string>
     <string name="import_subscriptions_summary">ਪਹਿਲਾਂ ਕੀਤੇ .json ਐਕਸਪੋਰਟ ਤੋਂ ਸਬਸਕ੍ਰਿਪਸ਼ਨਾਂ ਨੂੰ ਇੰਪੋਰਟ ਕਰੋ</string>
     <string name="export_subscriptions_summary">ਆਪਣੀਆਂ ਸਬਸਕ੍ਰਿਪਸ਼ਨਾਂ ਨੂੰ .json ਫਾਈਲ ਵਿੱਚ ਐਕਸਪੋਰਟ ਕਰੋ</string>
-    <string name="import_from_previous_export">ਪਹਿਲਾਂ ਕੀਤੇ ਐਕਸਪੋਰਟ ਤੋਂ ਇੰਪੋਰਟ ਕਰੋ</string>
     <string name="api23_requirement_dialog_title">ਨਿਊਪਾਈਪ ਐਂਡਰਾਇਡ 5 ਲਈ ਸਮਰਥਨ ਬੰਦ ਕਰ ਰਿਹਾ ਹੈ</string>
     <string name="api23_requirement_dialog_message">ਬਦਕਿਸਮਤੀ ਨਾਲ NewPipe ਕੁਝ ਲਾਇਬ੍ਰੇਰੀਆਂ \'ਤੇ ਨਿਰਭਰ ਕਰਦਾ ਹੈ ਜਿਨ੍ਹਾਂ ਨੇ Android 5.0 ਅਤੇ 5.1 ਲਈ ਸਮਰਥਨ ਛੱਡ ਦਿੱਤਾ ਹੈ। ਇਸ ਲਈ, ਅਗਲੀ NewPipe ਰੀਲੀਜ਼ ਸਿਰਫ਼ Android 6 ਜਾਂ ਇਸ ਤੋਂ ਉੱਚੇ ਵਰਜਨ ਵਾਲੇ ਡਿਵਾਈਸਾਂ \'ਤੇ ਕੰਮ ਕਰੇਗੀ। ਬਲੌਗਪੋਸਟ ਵਿੱਚ ਹੋਰ ਪੜ੍ਹੋ।</string>
     <string name="api23_requirement_dialog_blogpost">ਬਲੌਗਪੋਸਟ</string>

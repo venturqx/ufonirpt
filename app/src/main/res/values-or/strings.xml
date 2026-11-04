@@ -274,7 +274,6 @@
     <string name="player_recoverable_failure">ପ୍ଲେୟାର ତ୍ରୁଟିରୁ ପୁନରୁଦ୍ଧାର</string>
     <string name="video_streams_empty">କୌଣସି ଭିଡିଓ ଷ୍ଟ୍ରିମ୍ ମିଳିଲା ନାହିଁ</string>
     <string name="audio_streams_empty">କୌଣସି ଅଡିଓ ଷ୍ଟ୍ରିମ୍ ମିଳିଲା ନାହିଁ</string>
-    <string name="error_occurred_detail">ଏକ ତ୍ରୁଟି ଘଟିଲା:%1$s</string>
     <string name="no_streams_available_download">ଡାଉନଲୋଡ୍ କରିବାକୁ କୌଣସି ଷ୍ଟ୍ରିମ୍ ଉପଲବ୍ଧ ନାହିଁ</string>
     <string name="restore_defaults_confirmation">ଆପଣ ଡିଫଲ୍ଟ ପୁନଃସ୍ଥାପନ କରିବାକୁ ଚାହୁଁଛନ୍ତି କି\?</string>
     <string name="error_report_notification_title">NewPipe ଏକ ତ୍ରୁଟିର ସମ୍ମୁଖୀନ ହେଲା, ରିପୋର୍ଟ କରିବାକୁ ଟ୍ୟାପ୍ କରନ୍ତୁ</string>
@@ -293,14 +292,12 @@
     <string name="start">ଆରମ୍ଭ</string>
     <string name="delete">ବିଲୋପ କରନ୍ତୁ</string>
     <string name="checksum">ଚେକ୍ସମ୍</string>
-    <string name="dismiss">ବରଖାସ୍ତ</string>
     <string name="msg_name">ଦସ୍ତାବିଜ୍ ର ନାମ</string>
     <string name="msg_threads">ଥ୍ରେଡ୍</string>
     <string name="msg_error">ତ୍ରୁଟି</string>
     <string name="msg_running">ନୂତନ ପାଇପ୍ ଡାଉନଲୋଡ୍ କରୁଛି</string>
     <string name="msg_calculating_hash">ହ୍ୟାସ୍ ଗଣନା</string>
     <string name="msg_copied">କ୍ଲିପବୋର୍ଡରେ କପି କରାଯାଇଛି</string>
-    <string name="one_item_deleted">1 ଆଇଟମ୍ ଡିଲିଟ୍ ହୋଇଛି ।</string>
     <string name="title_activity_recaptcha">reCAPTCHA ଆହ୍ୱାନ</string>
     <string name="done">ସମାପ୍ତ</string>
     <string name="settings_category_downloads_title">ଡାଉନଲୋଡ୍ କରନ୍ତୁ</string>
@@ -317,7 +314,6 @@
     <string name="privacy_policy_title">NewPipe ର ଗୋପନୀୟତା ନୀତି</string>
     <string name="read_privacy_policy">ଗୋପନୀୟତା ନୀତି ପଢ଼ନ୍ତୁ</string>
     <string name="app_license_title">NewPipe ର ଲାଇସେନ୍ସ</string>
-    <string name="read_full_license">ଲାଇସେନ୍ସ ପଢ଼ନ୍ତୁ</string>
     <string name="blank_page_summary">ଖାଲି ପୃଷ୍ଠା</string>
     <string name="channel_page_summary">ଚ୍ୟାନେଲ୍ ପୃଷ୍ଠା</string>
     <string name="kiosk_page_summary">କିଓସ୍କ ପୃଷ୍ଠା</string>
@@ -456,7 +452,6 @@
     <string name="events">ଘଟଣା</string>
     <string name="artists">କଳାକାର ମାନେ</string>
     <string name="player_stream_failure">ଏହି ଷ୍ଟ୍ରିମ୍ ଚଲାଇ ପାରିଲା ନାହିଁ</string>
-    <string name="invalid_file">ଫାଇଲ୍ ବିଦ୍ୟମାନ ନାହିଁ କିମ୍ବା ଏହାକୁ ପଢ଼ିବା କିମ୍ବା ଲେଖିବା ପାଇଁ ଅନୁମତି ଅଭାବ</string>
     <string name="invalid_directory">ଏପରି ଫୋଲ୍ଡର ନାହିଁ</string>
     <string name="saved_tabs_invalid_json">ସଞ୍ଚିତ ଟ୍ୟାବଗୁଡିକ ପଢ଼ି ପାରିଲା ନାହିଁ, ତେଣୁ ଡିଫଲ୍ଟଗୁଡିକ ବ୍ୟବହାର କରି</string>
     <string name="info_labels">କଣ:\nRequest:\nContent Language:\nContent Country:\nApp Language:\nService:\nGMT Time:\nPackage:\nVersion:\nOS ସଂସ୍କରଣ:</string>
@@ -513,7 +508,6 @@
     <string name="external_player_unsupported_link_type">ବହିଃ-ଚାଳକ ଏଭଳି ଲିଙ୍କ୍ ସମର୍ଥନ କରେନି</string>
     <string name="missing_file">ଫାଇଲ୍ ଘୁଞ୍ଚିଗଲା କିମ୍ବା ଡିଲିଟ୍ ହେଲା</string>
     <string name="no_playlist_bookmarked_yet">ଏପର୍ଯ୍ୟନ୍ତ କୌଣସି ପ୍ଲେଲିଷ୍ଟ ବୁକମାର୍କ ନାହିଁ</string>
-    <string name="invalid_source">ସେପରି କୌଣସି ଫାଇଲ / ବିଷୟବସ୍ତୁ ଉତ୍ସ ନାହିଁ</string>
     <string name="restore_defaults">ଡିଫଲ୍ଟଗୁଡିକ ପୁନରୁଦ୍ଧାର କରନ୍ତୁ</string>
     <string name="error_report_notification_toast">ଏକ ତ୍ରୁଟି ଘଟିଛି, ବିଜ୍ଞପ୍ତିକୁ ଦେଖନ୍ତୁ</string>
     <string name="copy_for_github">ଫର୍ମାଟ୍ ହୋଇଥିବା ରିପୋର୍ଟ କପି କରନ୍ତୁ</string>
@@ -533,7 +527,6 @@
     <string name="recaptcha_request_toast">reCAPTCHA ଚ୍ୟାଲେଞ୍ଜ ଅନୁରୋଧ</string>
     <string name="settings_file_charset_title">ଫାଇଲ ନାମରେ ଅନୁମତିପ୍ରାପ୍ତ ବର୍ଣ୍ଣଗୁଡିକ</string>
     <string name="charset_letters_and_digits">ଅକ୍ଷର ଏବଂ ସଂଖ୍ୟା</string>
-    <string name="copyright">© %1$s ଦ୍ଵାରା %2$s ରେ %3$s</string>
     <string name="contribution_encouragement">ଆପଣଙ୍କର ଧାରଣା ଅଛି କି ନାହିଁ; ଅନୁବାଦ, ଡିଜାଇନ୍ ପରିବର୍ତ୍ତନ, କୋଡ୍ ସଫା କରିବା, କିମ୍ବା ପ୍ରକୃତ ଭାରୀ କୋଡ୍ ପରିବର୍ତ୍ତନ - ସାହାଯ୍ୟ ସର୍ବଦା ସ୍ୱାଗତଯୋଗ୍ୟ ।ଯେତେ ଭଲ ହୁଏ ସେତେ ଭଲ ହୁଏ!</string>
     <string name="app_description">ଆଣ୍ଡ୍ରଏଡରେ ସ୍ଵାଧୀନ ହାଲୁକା ଷ୍ଟ୍ରିମିଂ ।</string>
     <string name="privacy_policy_encouragement">ନ୍ୟୁ ପାଇପ୍ ପ୍ରୋଜେକ୍ଟ ଆପଣଙ୍କ ଗୋପନୀୟତାକୁ ଅତି ଗମ୍ଭୀରତାର ସହିତ ନେଇଥାଏ । ତେଣୁ, ଆପଣଙ୍କ ସମ୍ମତି ବିନା ଆପ୍ କୌଣସି ତଥ୍ୟ ସଂଗ୍ରହ କରେ ନାହିଁ ।
@@ -602,7 +595,6 @@
     <string name="no_audio_streams_available_for_external_players">ବହିଃ-ଚାଳକ ନିମନ୍ତେ କୌଣସି ଅଡ଼ିଓ ଷ୍ଟ୍ରିମ୍ ଉପଲବ୍ଧ ନାହିଁ</string>
     <string name="select_quality_external_players">ବହିଃ-ଚାଳକ ପାଇଁ ଗୁଣବତ୍ତା ଚୟନ କରନ୍ତୁ</string>
     <string name="detail_pinned_comment_view_description">ପିନ୍ ହୋଇଥିବା ମନ୍ତବ୍ୟ</string>
-    <string name="open_website_license">ୱେବସାଇଟ୍ ଖୋଲନ୍ତୁ</string>
     <string name="preferred_player_fetcher_notification_title">ସୂଚନା ପାଇବା…</string>
     <plurals name="subscribers">
         <item quantity="one">%s ଗ୍ରାହକ</item>
@@ -683,7 +675,6 @@
     <string name="download_has_started">ଡାଉନଲୋଡ୍ ଆରମ୍ଭ ହୋଇଛି</string>
     <string name="metadata_tags">ଟ୍ୟାଗ୍ସ</string>
     <string name="get_notified">ସୂଚିତ କର</string>
-    <string name="enumeration_comma">,</string>
     <string name="selected_stream_external_player_not_supported">ମନୋନୀତ ଷ୍ଟ୍ରିମ୍ ବହିଃ-ଚାଳକ ଦ୍ୱାରା ସମର୍ଥିତ ନୁହେଁ</string>
     <plurals name="listening">
         <item quantity="one">%s ଜଣ ଶ୍ରୋତା</item>

@@ -143,9 +143,7 @@
     <string name="video_streams_empty">هیچ جریان ویدیویی پیدا نشد</string>
     <string name="audio_streams_empty">هیچ جریان صدایی پیدا نشد</string>
     <string name="invalid_directory">چنین پوشه‌ای وجود ندارد</string>
-    <string name="invalid_source">چنین منبع محتوا/پرونده‌ای وجود ندارد</string>
     <string name="file_name_empty_error">نام پرونده نمی‌تواند خالی باشد</string>
-    <string name="error_occurred_detail">خطایی رخ داد: %1$s</string>
     <string name="no_streams_available_download">جریانی برای بارگیری در دسترس نیست</string>
     <string name="search_no_results">بدون نتیجه</string>
     <plurals name="subscribers">
@@ -163,9 +161,7 @@
         <item quantity="other">%s ویدیو</item>
     </plurals>
     <string name="create">ایجاد</string>
-    <string name="dismiss">صرف نظر</string>
     <string name="rename">تغییر نام</string>
-    <string name="one_item_deleted">یک مورد پاک شد.</string>
     <string name="settings_file_charset_title">نویسه‌های مجاز در نام پرونده‌ها</string>
     <string name="settings_file_replacement_character_summary">نویسه‌های نامعتبر با این مقدار جایگزین شدند</string>
     <string name="settings_file_replacement_character_title">نویسه جایگزین</string>
@@ -182,7 +178,6 @@
     <string name="privacy_policy_title">سیاست حریم خصوصی نیوپایپ</string>
     <string name="read_privacy_policy">خواندن سیاست حریم خصوصی</string>
     <string name="app_license_title">پروانه نیوپایپ</string>
-    <string name="read_full_license">خواندن پروانه</string>
     <string name="title_activity_history">تاریخچه</string>
     <string name="action_history">تاریخچه</string>
     <string name="delete_item_search_history">می‌خواهید این مورد را از تاریخچه جستجو پاک کنید؟</string>
@@ -280,7 +275,6 @@
 \nتصویر در تصویر لازم است</string>
     <string name="popup_playing_toast">نمایش در حالت تصویر در تصویر</string>
     <string name="title_licenses">پروانه‌های شخص سوم</string>
-    <string name="copyright" formatted="true">© %1$s توسط %2$s تحت %3$s</string>
     <string name="contribution_encouragement">اگر ایده‌ای برای ترجمه، تغییر طراحی، پاک‌سازی کد و یا تغییرات واقعا سنگین کدنویسی دارید، از کمک‌تان همواره استقبال می‌کنیم. هر چه بیشتر کار کنیم، نتایج بهتری می‌گیریم!</string>
     <string name="notification_channel_description">آگاهی‌ها برای پخش‌کنندهٔ نیوپایپ</string>
     <string name="empty_list_subtitle">چیزی جز کریکت اینجا نیست</string>
@@ -308,7 +302,6 @@
     <string name="resize_fill">پر کردن</string>
     <string name="resize_zoom">بزرگ‌نمایی</string>
     <string name="caption_auto_generated">تولیدشدهٔ خودکار</string>
-    <string name="invalid_file">پرونده موجود نیست و یا مجوز خواندن یا نوشتن روی آن وجود ندارد</string>
     <string name="import_file_title">وارد کردن پرونده</string>
     <string name="previous_export">صادرکردن قبلی</string>
     <string name="import_youtube_instructions">درون‌ریزی اشتراک‌های یوتوب از بیرون‌بری گوگل:
@@ -557,7 +550,6 @@
     <string name="clear_cookie_title">پاک‌سازی کوکی‌های ری‌کپچا</string>
     <string name="dont_show">نشان ندادن</string>
     <string name="tablet_mode_title">حالت رایانک</string>
-    <string name="open_website_license">گشودن پایگاه وب</string>
     <string name="account_terminated">حساب از بین رفت</string>
     <string name="metadata_age_limit">کرانهٔ عمر</string>
     <string name="related_items_tab_description">موارد مرتبط</string>
@@ -666,7 +658,6 @@
     <string name="loading_stream_details">بار کردن جزییات جریان…</string>
     <string name="check_new_streams">اجرای بررسی برای جریان‌های جدید</string>
     <string name="streams_notifications_network_title">نیازمند اتّصال شبکه</string>
-    <string name="enumeration_comma">،</string>
     <string name="toggle_all">تغییر وضعیت همه</string>
     <string name="streams_notification_channel_name">جریان‌های جدید</string>
     <plurals name="new_streams">
@@ -832,7 +823,6 @@
     <string name="select_a_feed_group">گزینش گروه خوراک</string>
     <string name="migration_info_7_8_title">داغ‌های ترکیبی یوتوب برداشته شد</string>
     <string name="trending_movies">فیلم و سریال‌های داغ</string>
-    <string name="import_from_previous_export">درون‌ریزی از برون‌ریزی پیشین</string>
     <string name="no_feed_group_created_yet">هنوز گروه خوراکی ایجاد نشده</string>
     <string name="migration_info_6_7_title">۵۰ صفحهٔ برتر سوندکلود برداشته شد</string>
     <string name="permission_display_over_apps_permission_name">«اجازهٔ نمایش روی دیگر کاره‌ها»</string>

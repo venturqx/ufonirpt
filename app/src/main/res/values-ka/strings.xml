@@ -206,9 +206,7 @@
     <string name="audio_streams_empty">აუდიო ნაკადები ვერ მოიძებნა</string>
     <string name="missing_file">ფაილი გადატანილია ან წაშლილია</string>
     <string name="invalid_directory">ასეთი საქაღალდე არ არის</string>
-    <string name="invalid_source">ასეთი ფაილის/შიგთავსის წყარო არ არის</string>
     <string name="file_name_empty_error">ფაილის სახელი არ შეიძლება იყოს ცარიელი</string>
-    <string name="error_occurred_detail">მოხდა შეცდომა: %1$s</string>
     <string name="no_streams_available_download">ჩამოსატვირთად ხელმისაწვდომი ნაკადები არ არის</string>
     <string name="restore_defaults">ნაგულისხმევი პარამეტრების აღდგენა</string>
     <string name="restore_defaults_confirmation">გსურთ ნაგულისხმევი პარამეტრების აღდგენა\?</string>
@@ -284,7 +282,6 @@
     <string name="msg_copied">კოპირებულია ბუფერში</string>
     <string name="msg_popup_permission">ეს უფლება აუცილებელია
 \nმხტუნარა რეჟიმში გასახსნელად</string>
-    <string name="one_item_deleted">1 ელემენტი წაიშალა.</string>
     <string name="title_activity_recaptcha">reCAPTCHA გამოწვევა</string>
     <string name="subtitle_activity_recaptcha">როდესაც მოგვარდება, დააჭირეთ შესრულებულია</string>
     <string name="recaptcha_request_toast">მოთხოვნილია reCAPTCHA გამოწვევა</string>
@@ -307,7 +304,6 @@
 \nNewPipe-ის კონფიდენციალურობის პოლიტიკა დეტალურად განმარტავს, თუ რა მონაცემები იგზავნება და ინახება ავარიის ანგარიშის გაგზავნისას.</string>
     <string name="read_privacy_policy">წაიკითხეთ კონფიდენციალურობის პოლიტიკა</string>
     <string name="app_license_title">NewPipe-ის ლიცენზია</string>
-    <string name="read_full_license">წაიკითხეთ ლიცენზია</string>
     <string name="faq_title">Ხშირად დასმული შეკითხვები</string>
     <string name="faq_description">თუ აპლიკაციის გამოყენება გიჭირთ, დარწმუნდით, რომ შეამოწმეთ ეს პასუხები საერთო კითხვებზე!</string>
     <string name="faq">ნახვა საიტზე</string>
@@ -562,7 +558,6 @@
     <string name="metadata_privacy_internal">შიდა</string>
     <string name="detail_pinned_comment_view_description">ჩამაგრებული კომენტარი</string>
     <string name="detail_heart_img_view_description">დაგულებულია შემქმნელის მიერ</string>
-    <string name="open_website_license">საიტის გახსნა</string>
     <string name="tablet_mode_title">პლანშეტის რეჟიმი</string>
     <string name="on">ჩართულია</string>
     <string name="off">გამორთულია</string>
@@ -570,7 +565,6 @@
     <string name="notifications_disabled">შეტყობინებები გამორთულია</string>
     <string name="get_notified">მიიღეთ შეტყობინება</string>
     <string name="you_successfully_subscribed">თქვენ ახლა გამოიწერეთ ეს არხი</string>
-    <string name="enumeration_comma">,</string>
     <string name="toggle_all">ყველას გადართვა</string>
     <string name="streams_not_yet_supported_removed">ნაკადები, რომლებიც ჯერ არ არის მხარდაჭერილი დამტვირთველის მიერ, არ არის ნაჩვენები</string>
     <string name="selected_stream_external_player_not_supported">არჩეული ნაკადი არ არის მხარდაჭერილი გარე დამკვრელის მიერ</string>
@@ -599,14 +593,12 @@
     <string name="error_report_open_github_notice">გთხოვთ, შეამოწმოთ, არის თუ არა პრობლემა თქვენი ავარიის განხილვის შესახებ. დუბლიკატი ბილეთების შექმნისას ჩვენგან იღებთ დროს, რომელიც ჩვენ შეგვიძლია დავხარჯოთ ფაქტობრივი ხარვეზის გამოსწორებაში.</string>
     <string name="download_to_sdcard_error_message">გარე SD ბარათზე ჩამოტვირთვა შეუძლებელია. გსურთ ჩამოტვირთვის საქაღალდის მდებარეობის გადაყენება\?</string>
     <string name="external_player_unsupported_link_type">გარე დამკვრელს არ აქვთ ამ ტიპის ბმულების მხარდაჭერა</string>
-    <string name="invalid_file">ფაილი არ არსებობს ან მასზე წაკითხვის ან ჩაწერის ნებართვა აკლია</string>
     <string name="saved_tabs_invalid_json">შენახული ჩანართების წაკითხვა ვერ მოხერხდა, ამიტომ გამოიყენეთ ნაგულისხმევი ჩანართები</string>
     <string name="info_labels">რა:\nმოითხოვეთ:\nშემცველობის ენა:\nშემცველობის ქვეყანა:\nაპლიკაციის ენა:\nსერვისი:\nGMT დრო:\nპაკეტი:\nვერსია:\nOS ვერსია:</string>
     <string name="detail_uploader_thumbnail_view_description">ამტვირთველის ავატარის ესკიზი</string>
     <string name="comments_are_disabled">კომენტარები გამორთულია</string>
     <string name="create">Შექმნა</string>
     <string name="delete">წაშლა</string>
-    <string name="dismiss">გაუქმება</string>
     <string name="checksum">საკონტროლო ჯამი</string>
     <string name="no_available_dir">გთხოვთ, განსაზღვროთ ჩამოტვირთვის საქაღალდე მოგვიანებით პარამეტრებში</string>
     <string name="no_dir_yet">ჩამოტვირთვის საქაღალდე ჯერ არ არის დაყენებული, ახლავე აირჩიეთ ჩამოტვირთვის ნაგულისხმევი საქაღალდე</string>
@@ -616,7 +608,6 @@
     <string name="settings_file_replacement_character_summary">არასწორი სიმბოლოები ჩანაცვლებულია ამ მნიშვნელობით</string>
     <string name="tab_about">შესახებ &amp; ხშირად დასმული კითხვები</string>
     <string name="title_licenses">მესამე მხარის ლიცენზიები</string>
-    <string name="copyright">© %1$s მიერ %2$s %3$s-ის ქვეშ</string>
     <string name="donation_encouragement">NewPipe შემუშავებულია მოხალისეების მიერ, რომლებიც ატარებენ თავისუფალ დროს და მოგაქვთ საუკეთესო მომხმარებლის გამოცდილება. დაეხმარეთ დეველოპერებს, გააუმჯობესონ NewPipe, სანამ ფინჯანი ყავით ტკბებიან.</string>
     <string name="import_youtube_instructions">YouTube გამოწერების იმპორტი Google takeout-დან:
 \n

@@ -202,7 +202,6 @@
     <string name="updates_setting_title">Yeniləmələr</string>
     <string name="limit_mobile_data_usage_title">Mobil internet istifadə edərkən ayırdetməni məhdudlaşdır</string>
     <string name="limit_data_usage_none_description">Limitsiz</string>
-    <string name="one_item_deleted">1 element silindi.</string>
     <string name="peertube_instance_add_title">Server əlavə et</string>
     <string name="peertube_instance_url_summary">Sevimli \"PeerTube\" serverlərinizi seçin</string>
     <string name="delete_downloaded_files">Endirilmiş faylları sil</string>
@@ -307,7 +306,6 @@
     <string name="start">Başlat</string>
     <string name="pause">Dayandır</string>
     <string name="checksum">Təsdiqləmə</string>
-    <string name="dismiss">İmtina</string>
     <string name="msg_error">Xəta</string>
     <string name="msg_running_detail">Detallar üçün toxun</string>
     <string name="msg_wait">Zəhmət olmasa, gözləyin…</string>
@@ -413,7 +411,6 @@
     <string name="notifications_disabled">Bildirişlər qeyri-aktivdir</string>
     <string name="get_notified">Bildiriş al</string>
     <string name="you_successfully_subscribed">Artıq bu kanala abunə oldunuz</string>
-    <string name="enumeration_comma">,</string>
     <string name="toggle_all">Hamısın dəyişdir</string>
     <string name="msg_name">Fayl adı</string>
     <string name="recaptcha_solve">Həll et</string>
@@ -505,7 +502,6 @@
     <string name="tablet_mode_title">Planşet rejimi</string>
     <string name="off">Bağla</string>
     <string name="detail_heart_img_view_description">Müəllifdən ürəkləndi</string>
-    <string name="open_website_license">Veb saytı aç</string>
     <plurals name="views">
         <item quantity="one">%s baxış</item>
         <item quantity="other">%s baxış</item>
@@ -559,7 +555,6 @@
     <string name="hold_to_append">Növbələşdirmək üçün basılı tut</string>
     <string name="play_queue_remove">Sil</string>
     <string name="app_description">Android-də pulsuz, çevik yayımlanma.</string>
-    <string name="copyright">© %1$s, %2$s tərəfindən %3$s altında</string>
     <string name="settings_category_downloads_title">Endirmə</string>
     <string name="msg_popup_permission">Bu icazə, ani görüntü rejimində
 \naçmaq üçün lazımdır</string>
@@ -581,8 +576,6 @@
     <string name="peertube_instance_url_help">%s-də bəyəndiyiniz serverləri tapın</string>
     <string name="show_hold_to_append_summary">Video \"Təfsilatlar\" səhifəsində fon və ya ani görüntü düyməsin basarkən ipucu göstər</string>
     <string name="caption_setting_description">Oynadıcı titr mətn miqyasını və arxa plan üslublarını dəyişdir. Effektiv olması üçün tətbiqi yenidən başlatmaq tələb olunur</string>
-    <string name="error_occurred_detail">Xəta baş verdi: %1$s</string>
-    <string name="invalid_file">Fayl mövcud deyil, yaxud oxumaq və ya yazmaq icazəsi yoxdur</string>
     <string name="parsing_error">Veb saytı təhlil etmək alınmadı</string>
     <string name="playback_pitch">Ucalıq</string>
     <string name="radio">Radio</string>
@@ -613,7 +606,6 @@
     <string name="metadata_language">Dil</string>
     <string name="metadata_privacy_public">İctimai</string>
     <string name="subscribers_count_not_available">Abunəçi sayı əlçatan deyil</string>
-    <string name="read_full_license">Lisenziyanı oxu</string>
     <string name="title_activity_history">Tarixçə</string>
     <string name="charset_letters_and_digits">Hərflər və rəqəmlər</string>
     <string name="crash_the_player">Oynadıcını çökdür</string>
@@ -664,7 +656,6 @@
     <string name="description_select_note">İndi açıqlamadakı mətni seçə bilərsiniz. Nəzərə alın ki, seçim rejimində səhifə titrəyə və linklər kliklənməyə bilər.</string>
     <string name="notification_scale_to_square_image_summary">Bildirişdə göstərilən video miniatürünü 16:9-dan 1:1 görünüş nisbətinə qədər kəs</string>
     <string name="notification_actions_summary">Aşağıdakı hər bir bildiriş fəaliyyətini üzərinə toxunaraq redaktə edin. Sağdakı təsdiq qutuların istifadə edərək yığcam bildirişdə göstərmək üçün onların üçünü seçin.</string>
-    <string name="invalid_source">Belə fayl/məzmun mənbəyi yoxdur</string>
     <string name="selected_stream_external_player_not_supported">Seçilən yayım xarici oynadıcılar tərəfindən dəstəklənmir</string>
     <string name="streams_not_yet_supported_removed">Yükləyici tərəfindən hələ dəstəklənməyən yayımlar göstərilmir</string>
     <string name="no_audio_streams_available_for_external_players">Xarici oynadıcılar üçün mövcud səs yayımı yoxdur</string>
@@ -842,7 +833,6 @@
     <string name="export_subscriptions_title">Abunəlikləri ixrac et</string>
     <string name="import_subscriptions_summary">Əvvəlki .json ixracından abunəlikləri idxal et</string>
     <string name="export_subscriptions_summary">Abunəliklərinizi .json faylına köçürün</string>
-    <string name="import_from_previous_export">Əvvəlki köçürmədən idxal et</string>
     <string name="api23_requirement_dialog_title">NewPipe Android 5 üçün dəstəyi dayandırır</string>
     <string name="api23_requirement_dialog_blogpost">Bloq elanı</string>
     <string name="api23_requirement_dialog_message">Təəssüf ki, NewPipe Android 5.0 və 5.1 üçün dəstəyi dayandıran bir neçə kitabxanadan asılıdır. Bu səbəbdən, üzücü olaraq növbəti NewPipe buraxılışı yalnız Android 6 və ya daha yüksək versiyalı cihazlarda işləyəcək. Daha çoxunu blog elanında oxu.</string>

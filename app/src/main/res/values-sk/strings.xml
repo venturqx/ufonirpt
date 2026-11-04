@@ -124,14 +124,12 @@
     <string name="charset_most_special_characters">Väčšina špeciálnych znakov</string>
     <string name="title_activity_about">O NewPipe</string>
     <string name="title_licenses">Licencie tretích strán</string>
-    <string name="copyright" formatted="true">© %1$s od %2$s pod %3$s</string>
     <string name="tab_about">O nás a často kladené otázky</string>
     <string name="tab_licenses">Licencie</string>
     <string name="app_description">Ľahké prehrávanie na Androide.</string>
     <string name="view_on_github">Pozrieť na GitHube</string>
     <string name="app_license_title">Licencia NewPipe</string>
     <string name="contribution_encouragement">Či už máte nápady, prekladáte, spravíte zmenu dizajnu, čistenie kódu alebo skutočné ťažké zmeny v kóde, pomoc je vždy vítaná. Čím viac, tým lepšie!</string>
-    <string name="read_full_license">Prečítať licencie</string>
     <string name="contribution_title">Zapojiť sa</string>
     <string name="title_activity_history">História</string>
     <string name="action_history">História</string>
@@ -187,7 +185,6 @@
     <string name="audio_streams_empty">Neboli nájdené žiadne audio streamy</string>
     <string name="detail_drag_description">Potiahnutím zmeniť poradie</string>
     <string name="create">Vytvoriť</string>
-    <string name="dismiss">Zrušiť</string>
     <string name="rename">Premenovať</string>
     <string name="donation_title">Prispieť</string>
     <string name="donation_encouragement">Aplikácia NewPipe je vyvíjaná dobrovoľníkmi v ich voľnom čase snažiac sa vám priniesť najlepší zážitok z appky, ak sa vám páči, odmeňte vývojárov aby mohli NewPipe naďalej vylepšovať napríklad pri šálke dobrej kávy.</string>
@@ -250,10 +247,7 @@
     <string name="settings_category_debug_title">Ladenie</string>
     <string name="file">Súbor</string>
     <string name="invalid_directory">Neplatný adresár</string>
-    <string name="invalid_source">Neplatný zdroj súboru/obsahu</string>
-    <string name="invalid_file">Súbor buď neexistuje alebo nemáte dostatočné práva na je čítanie či zápis</string>
     <string name="file_name_empty_error">Názov súboru nesme byť prázdny</string>
-    <string name="error_occurred_detail">Nastala chyba: %1$s</string>
     <string name="no_streams_available_download">Žiadne streamy nie sú k dispozícii na prevzatie</string>
     <string name="preferred_open_action_settings_title">Preferovaná akcia \'otvoriť\'</string>
     <string name="preferred_open_action_settings_summary">Predvolená akcia pri otváraní obsahu — %s</string>
@@ -303,7 +297,6 @@
     <string name="clear_search_history_summary">Odstráni históriu vyhľadávania kľúčových slov</string>
     <string name="delete_search_history_alert">Vymazať celú históriu vyhľadávania\?</string>
     <string name="search_history_deleted">História vyhľadávaní bola vymazaná</string>
-    <string name="one_item_deleted">1 položka bola vymazaná.</string>
     <string name="app_license">NewPipe je slobodný softvér pod licenciou copyleft. Môžete ho používať, študovať a vylepšovať ako len chcete. Konkrétne ho môžete šíriť a/alebo upravovať pod podmienkami Všeobecnej verejnej licencie GNU, ako ju publikuje Free Software Foundation, buď verzia 3 licencie, alebo (podľa vašej voľby) ktorákoľvek neskoršia verzia.</string>
     <string name="privacy_policy_title">Ochrana osobných údajov v NewPipe</string>
     <string name="privacy_policy_encouragement">NewPipe projekt berie vaše súkromie vážne. Preto aplikácia nezhromažďuje žiadne údaje bez vášho súhlasu.
@@ -616,7 +609,6 @@
     <string name="description_select_disable">Zakázať výber textu v popise</string>
     <string name="description_select_enable">Povolenie výberu textu v popise</string>
     <string name="description_select_note">Teraz môžete vybrať text vo vnútri popisu. Upozorňujeme, že stránka môže blikať a odkazy nemusia byť klikateľné, keď je v režime výberu.</string>
-    <string name="open_website_license">Otvoriť webstránku</string>
     <string name="account_terminated">Účet bol zrušený</string>
     <string name="feed_load_error_fast_unknown">Tento rýchly režim neposkytuje viac informácií.</string>
     <string name="feed_load_error_terminated">Účet autora bol zrušený.
@@ -683,7 +675,6 @@
     <string name="settings_category_player_notification_summary">Nastavte oznámenie aktuálneho streamu prehrávania</string>
     <string name="streams_notifications_network_title">Je vyžadované pripojenie na internet</string>
     <string name="you_successfully_subscribed">Začali ste odoberať tento kanál</string>
-    <string name="enumeration_comma">,</string>
     <string name="toggle_all">Zapnúť všetko</string>
     <string name="streams_notification_channel_name">Nové streamy</string>
     <string name="streams_notification_channel_description">Oznámenia o nových streamoch v odberoch</string>
@@ -885,7 +876,6 @@
     <string name="export_subscriptions_title">Exportovať odbery</string>
     <string name="import_subscriptions_summary">Import odberov z predchádzajúceho exportu .json</string>
     <string name="export_subscriptions_summary">Export vašich odberov do súboru .json</string>
-    <string name="import_from_previous_export">Importovať z predchádzajúceho exportu</string>
     <string name="api23_requirement_dialog_title">NewPipe ukončuje podporu pre Android 5</string>
     <string name="api23_requirement_dialog_message">NewPipe je bohužiaľ závislý od niekoľkých knižníc, ktoré ukončili podporu pre Android 5.0 a 5.1. Ďalšia verzia NewPipe bude preto, žiaľ, fungovať len na zariadeniach s Androidom 6 alebo novším. Viac informácií nájdete v blogovom príspevku.</string>
     <string name="api23_requirement_dialog_blogpost">Blogový príspevok</string>

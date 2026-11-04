@@ -211,7 +211,6 @@
     <string name="disabled">Անջատված</string>
     <string name="description_tab_description">Նկարագիր</string>
     <string name="notifications">Ծանուցումներ</string>
-    <string name="open_website_license">Բացել կայքը</string>
     <string name="chapters">Գլուխներ</string>
     <string name="metadata_privacy_public">Հանրային</string>
     <string name="metadata_tags">Պիտակներ</string>
@@ -271,7 +270,6 @@
     <string name="albums">Ալբոմներ</string>
     <string name="artists">Արվեստագետներ</string>
     <string name="donation_title">Նվիրել</string>
-    <string name="dismiss">Անտեսել</string>
     <string name="short_thousand">%sՀզր</string>
     <string name="short_million">%sՄլն</string>
     <string name="short_billion">%sԲլն</string>

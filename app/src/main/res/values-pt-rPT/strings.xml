@@ -35,7 +35,6 @@
     <string name="overwrite_finished_warning">Já existe um ficheiro descarregado com este nome</string>
     <string name="caption_setting_title">Legendas</string>
     <string name="restore_defaults">Repor predefinições</string>
-    <string name="error_occurred_detail">Ocorreu um erro: %1$s</string>
     <string name="controls_popup_title">Pop-up</string>
     <string name="msg_running">Descarga NewPipe</string>
     <string name="new_seek_duration_toast">Devido às restrições de ExoPlayer, a duração da pesquisa foi definida para %d segundos</string>
@@ -74,7 +73,6 @@
     <string name="restricted_video">Este vídeo está restringido a idades.
 \n
 \nPara o poder ver, tem que ativar \"%1$s\" nas definições.</string>
-    <string name="read_full_license">Ver licença</string>
     <string name="peertube_instance_add_https_only">Apenas os URL HTTPS são suportados</string>
     <string name="peertube_instance_add_fail">Falha ao validar a instância</string>
     <string name="clear_download_history">Limpar histórico de descargas</string>
@@ -160,7 +158,6 @@
     <string name="audio_streams_empty">Não foram encontrados áudios</string>
     <string name="error_postprocessing_stopped">NewPipe foi fechado enquanto trabalhava no ficheiro</string>
     <string name="create_playlist">Nova lista de reprodução</string>
-    <string name="copyright">© %1$s de %2$s nos termos da %3$s</string>
     <string name="black_theme_title">Preto</string>
     <string name="no_one_listening">Ninguém está a ouvir</string>
     <string name="playlist_thumbnail_change_success">Miniatura da lista de reprodução alterada.</string>
@@ -275,7 +272,6 @@
     <string name="no_comments">Sem comentários</string>
     <string name="post_processing">pós-processamento</string>
     <string name="overwrite_failed">não é possível sobrescrever o ficheiro</string>
-    <string name="invalid_source">Fonte de conteúdo/ficheiro inexistente</string>
     <string name="app_update_notification_channel_description">Notificações para novas versões do NewPipe</string>
     <string name="action_history">Histórico</string>
     <string name="list">Lista</string>
@@ -321,7 +317,6 @@
     <string name="error_http_unsupported_range">O servidor não aceita transferências multi-processo, tente novamente com @string/msg_threads = 1</string>
     <string name="detail_drag_description">Arraste para reordenar</string>
     <string name="recovering">a recuperar</string>
-    <string name="dismiss">Rejeitar</string>
     <string name="playback_speed_control">Controlos para velocidade de reprodução</string>
     <string name="subscriptions_export_unsuccessful">Não foi possível exportar as subscrições</string>
     <string name="enable_disposed_exceptions_summary">Forçar reporte de exceções Rx não entregáveis ocorrendo fora do fragmento ou ciclo de vida da atividade após eliminação</string>
@@ -341,7 +336,6 @@
     <string name="pause_downloads">Pausa nas transferências</string>
     <string name="title_activity_recaptcha">Desafio reCAPTCHA</string>
     <string name="import_from">Importar de</string>
-    <string name="one_item_deleted">1 item eliminado.</string>
     <string name="video_streams_empty">Não foram encontrados vídeos</string>
     <string name="kiosk_page_summary">Página \'kiosk\'</string>
     <plurals name="hours">
@@ -432,7 +426,6 @@
     <string name="tab_subscriptions">Subscrições</string>
     <string name="give_back">Contribuir</string>
     <string name="default_audio_format_title">Formato padrão de áudio</string>
-    <string name="invalid_file">O ficheiro não existe ou não tem permissões para ler e/ou escrever</string>
     <string name="feed_group_dialog_empty_name">O nome do grupo está vazio</string>
     <string name="share_dialog_title">Partilhar com</string>
     <string name="feed_update_threshold_summary">Tempo após a última atualização antes de a subscrição ser considerada desatualizada - %s</string>
@@ -603,7 +596,6 @@
     <string name="off">Desligado</string>
     <string name="on">Ligado</string>
     <string name="tablet_mode_title">Modo tablet</string>
-    <string name="open_website_license">Abrir site de web</string>
     <string name="detail_heart_img_view_description">Entusiasmado pelo criador</string>
     <string name="metadata_privacy_internal">Interno</string>
     <string name="metadata_privacy_private">Privado</string>
@@ -695,7 +687,6 @@
     <string name="settings_category_player_notification_summary">Configurar a notificação da reprodução do vídeo atual</string>
     <string name="get_notified">Seja notificado</string>
     <string name="you_successfully_subscribed">Agora assinou este canal</string>
-    <string name="enumeration_comma">,</string>
     <string name="streams_notification_channel_name">Novos vídeos</string>
     <string name="percent">Por cento</string>
     <string name="semitone">Semitom</string>
@@ -881,7 +872,6 @@
     <string name="export_subscriptions_title">Exportar subscrições</string>
     <string name="import_subscriptions_summary">Importar subscrições do ficheiro .json anteriormente exportado</string>
     <string name="export_subscriptions_summary">Exportar subscrições para um ficheiro .json</string>
-    <string name="import_from_previous_export">Importar da exportação anterior</string>
     <string name="api23_requirement_dialog_title">O NewPipe deixará de apoiar o Android 5</string>
     <string name="api23_requirement_dialog_message">Infelizmente, o NewPipe depende de algumas bibliotecas que terminaram apoio para o Android 5.0 e 5.1. Por isso, a próxima versão do NewPipe só funcionará em dispositivos com Android 6 ou superior, infelizmente. Saiba mais na publicação do blog.</string>
     <string name="api23_requirement_dialog_blogpost">Postagem no blog</string>

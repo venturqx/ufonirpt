@@ -148,14 +148,12 @@
     <string name="charset_most_special_characters">Caractere speciale</string>
     <string name="title_activity_about">Despre NewPipe</string>
     <string name="title_licenses">Licențe terță-parte</string>
-    <string name="copyright" formatted="true">© %1$s de %2$s sub %3$s</string>
     <string name="tab_about">Despre &amp; FAQ</string>
     <string name="tab_licenses">Licențe</string>
     <string name="app_description">Un player de streaming „ușor” liber, pentru Android.</string>
     <string name="view_on_github">Vedeți pe GitHub</string>
     <string name="app_license_title">Licența NewPipe</string>
     <string name="contribution_encouragement">Fie că aveți idei de: traducere, modificări de design, curățare a codului sau modificări de cod cu adevărat importante - ajutorul este întotdeauna binevenit. Cu cât se face mai mult, cu atât mai bine devine!</string>
-    <string name="read_full_license">Citiți licența</string>
     <string name="contribution_title">Contribuiți</string>
     <string name="title_activity_history">Istoric</string>
     <string name="action_history">Istoric</string>
@@ -206,10 +204,7 @@
     <string name="video_streams_empty">Niciun stream video găsit</string>
     <string name="audio_streams_empty">Niciun stream audio găsit</string>
     <string name="invalid_directory">Director Invalid</string>
-    <string name="invalid_source">Nu există un astfel de fișier/conținut sursă</string>
-    <string name="invalid_file">Fișierul nu există sau lipsește permisiunea de a citi sau scrie în el</string>
     <string name="file_name_empty_error">Numele fișierului nu poate fi gol</string>
-    <string name="error_occurred_detail">A survenit o eroare: %1$s</string>
     <string name="donation_encouragement">NewPipe este dezvoltat de voluntari care își petrec timpul liber pentru a vă oferi cea mai bună experiență de utilizare. Donează pentru a ajuta dezvoltatorii să facă NewPipe și mai bun în timp ce ei se bucură de o ceașcă de cafea.</string>
     <string name="give_back">Dăruiește înapoi</string>
     <string name="website_title">Site web</string>
@@ -236,7 +231,6 @@
     <string name="no_streams_available_download">Nu există fluxuri disponibile pentru descărcare</string>
     <string name="detail_drag_description">Trageți pentru a reordona</string>
     <string name="create">Creați</string>
-    <string name="dismiss">Respingeți</string>
     <string name="rename">Redenumiți</string>
     <string name="donation_title">Donați</string>
     <string name="import_settings">De asemenea, doriți să importați setări?</string>
@@ -253,7 +247,6 @@
     <string name="clear_views_history_title">Ștergeți istoricul vizionărilor</string>
     <string name="clear_views_history_summary">Șterge istoricul fluxurilor redate și pozițiile de redare</string>
     <string name="delete_view_history_alert">Ștergeți întregul istoric al vizionărilor\?</string>
-    <string name="one_item_deleted">1 element șters.</string>
     <string name="create_playlist">Playlist nou</string>
     <string name="add_to_playlist">Adăugați la playlist</string>
     <string name="import_title">Importare</string>
@@ -589,7 +582,6 @@
     <string name="off">Oprit</string>
     <string name="on">Pornit</string>
     <string name="tablet_mode_title">Mod tabletă</string>
-    <string name="open_website_license">Deschideți site-ul web</string>
     <string name="detail_heart_img_view_description">Inimă de la creator</string>
     <string name="metadata_privacy_internal">Intern</string>
     <string name="metadata_privacy_private">Privat</string>
@@ -683,7 +675,6 @@
     <string name="get_notified">Primiți notificări</string>
     <string name="you_successfully_subscribed">V-ați abonat la acest canal</string>
     <string name="toggle_all">Comutați toate</string>
-    <string name="enumeration_comma">,</string>
     <string name="streams_not_yet_supported_removed">Fluxurile care încă nu pot fi descărcate nu sunt afișate</string>
     <string name="selected_stream_external_player_not_supported">Fluxul selectat nu este acceptat de playerele externe</string>
     <string name="no_audio_streams_available_for_external_players">Nu sunt disponibile fluxuri audio pentru playerele externe</string>
@@ -862,7 +853,6 @@
     <string name="export_subscriptions_title">Exportați abonamente</string>
     <string name="import_subscriptions_summary">Importați abonamente dintr-un export .json anterior</string>
     <string name="export_subscriptions_summary">Exportați abonamentele într-un fișier .json</string>
-    <string name="import_from_previous_export">Importați dintr-un export anterior</string>
     <string name="account_terminated_service_provides_reason">Cont închis.\n\n%1$s oferă acest motiv: %2$s</string>
     <string name="api23_requirement_dialog_title">NewPipe nu va mai fi compatibil cu Android 5</string>
     <string name="api23_requirement_dialog_blogpost">Postare blog</string>

@@ -130,10 +130,7 @@
     <string name="video_streams_empty">Videovooge ei leitud</string>
     <string name="audio_streams_empty">Helivooge ei leitud</string>
     <string name="invalid_directory">Kataloogi pole</string>
-    <string name="invalid_source">Faili/sisu allikat pole</string>
-    <string name="invalid_file">Puudub fail või puuduvad õigused seda faili lugeda või kirjutada</string>
     <string name="file_name_empty_error">Tühi failinimi pole lubatud</string>
-    <string name="error_occurred_detail">Ilmnes viga: %1$s</string>
     <string name="no_streams_available_download">Allalaaditavaid videovooge pole</string>
     <string name="sorry_string">Vabandust, seda poleks pidanud juhtuma.</string>
     <string name="error_report_button_text">Teata e-posti teel</string>
@@ -174,7 +171,6 @@
     <string name="create">Loo</string>
     <string name="delete">Kustuta</string>
     <string name="checksum">Kontrollsumma</string>
-    <string name="dismiss">Loobu</string>
     <string name="rename">Muuda nime</string>
     <string name="ok">OK</string>
     <string name="msg_name">Failinimi</string>
@@ -187,7 +183,6 @@
     <string name="no_available_dir">Vali määra allalaadimiste kataloog hiljem sätetes</string>
     <string name="msg_popup_permission">Need õigused on vajalikud
 \nhüpikakna avamiseks</string>
-    <string name="one_item_deleted">1 üksus kustutatud.</string>
     <string name="settings_category_downloads_title">Laadi alla</string>
     <string name="settings_file_charset_title">Lubatud tähemärgid failinimedes</string>
     <string name="settings_file_replacement_character_summary">Vigased tähemärgid asendatakse selle väärtusega</string>
@@ -206,7 +201,6 @@
     <string name="privacy_policy_title">NewPipe\'i andmekaitsepõhimõtted</string>
     <string name="read_privacy_policy">Loe andmekaitsepõhimõtteid</string>
     <string name="app_license_title">NewPipe\'i litsents</string>
-    <string name="read_full_license">Loe litsentsi</string>
     <string name="title_activity_history">Ajalugu</string>
     <string name="action_history">Ajalugu</string>
     <string name="delete_item_search_history">Kas kustutame selle kirje otsinguajaloost\?</string>
@@ -295,7 +289,6 @@
     <string name="switch_to_main">Lülitu peamisele</string>
     <string name="title_activity_recaptcha">reCAPTCHA nõue</string>
     <string name="recaptcha_request_toast">reCAPTCHA nõude taotlus</string>
-    <string name="copyright" formatted="true">© %1$s %2$s %3$s alla</string>
     <string name="app_description">Vaba ja lihtne voogesitus Androidis.</string>
     <string name="contribution_encouragement">Kui sul on ideid kujunduse muutmisest, koodi puhastamisest või suurtest koodi muudatustest - abi on alati teretulnud. Mida rohkem tehtud, seda paremaks läheb!</string>
     <string name="donation_encouragement">NewPipe\'i arendajad on vabatahtlikud, kes kulutavad oma vaba aega, toomaks sulle parimat kasutuskogemust. On aeg anda tagasi aidates arendajaid ja muuta NewPipe veel paremaks, nautides ise tassi kohvi.</string>
@@ -569,7 +562,6 @@
     <string name="off">Väljalülitatatud</string>
     <string name="on">Kasutusel</string>
     <string name="tablet_mode_title">Vaade tahvelarvuti jaoks</string>
-    <string name="open_website_license">Vaata veebis</string>
     <string name="metadata_privacy_internal">Sisemine</string>
     <string name="metadata_privacy_private">Privaatne</string>
     <string name="metadata_privacy_public">Avalik</string>
@@ -668,7 +660,6 @@
     <string name="any_network">Mis tahes võrk</string>
     <string name="get_notified">Saa teavitusi</string>
     <string name="you_successfully_subscribed">Sa oled nüüd selle kanali tellija</string>
-    <string name="enumeration_comma">,</string>
     <string name="toggle_all">Lülita kõik sisse</string>
     <string name="no_audio_streams_available_for_external_players">Välise pleieri jaoks ei leidu sobilikke helivoogusid</string>
     <string name="streams_not_yet_supported_removed">Need meediavood, mida allalaadija ei oska kasutada, on peidetud</string>
@@ -849,7 +840,6 @@
     <string name="export_subscriptions_title">Ekspordi tellimusi</string>
     <string name="import_subscriptions_summary">Impordi tellimusi varasemeksporditud json-failist</string>
     <string name="export_subscriptions_summary">Ekspirdi oma tellimused json-faili</string>
-    <string name="import_from_previous_export">Impordi tellimusi varasemeksporditud failist</string>
     <string name="api23_requirement_dialog_title">NewPipe loobub Android 5 toest</string>
     <string name="api23_requirement_dialog_message">Kahjuks sõltub NewPipe mõnest teegist, mis on lõpetanud Androidi versioonide 5.0 ja 5.1 toetamise. Seetõttu töötab järgmine NewPipe’i versioon kahjuks ainult nutiseadmetes, millel on Android 6 või uuem versioon. Lisateavet leiad ajaveebi postitusest.</string>
     <string name="api23_requirement_dialog_blogpost">Postitus meie ajaveebis</string>

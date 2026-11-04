@@ -41,7 +41,6 @@
         tools:ignore="AllowBackup">
         <activity
             android:name=".MainActivity"
-            android:configChanges="keyboardHidden|orientation|screenSize"
             android:exported="true"
             android:label="@string/app_name"
             android:launchMode="singleTask">
@@ -433,28 +432,13 @@
             android:exported="false" />
 
         <activity
-            android:name=".fragments.detail.CompareHistoryActivity"
+            android:name=".tournesol.ui.CompareHistoryActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize|screenLayout|smallestScreenSize"
             android:exported="false" />
 
         <activity
-            android:name=".util.TournesolAuthActivity"
-            android:exported="true"
-            android:launchMode="singleTop"
-            android:theme="@style/RouterActivityThemeLight" />
-
-        <activity
             android:name="net.openid.appauth.RedirectUriReceiverActivity"
-            tools:node="replace"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="android.intent.action.VIEW" />
-                <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.BROWSABLE" />
-                <data
-                    android:scheme="${applicationId}"
-                    android:path="/oauth2redirect" />
-            </intent-filter>
-        </activity>
+            tools:node="remove" />
 
         <!-- opting out of sending metrics to Google in Android System WebView -->
         <meta-data

@@ -103,14 +103,12 @@
     <string name="best_resolution">最高</string>
     <string name="title_activity_about">NewPipe について</string>
     <string name="title_licenses">サードパーティー ライセンス</string>
-    <string name="copyright" formatted="true">© %1$s 作者 %2$s ライセンス %3$s</string>
     <string name="tab_about">バージョン情報とよくある質問</string>
     <string name="tab_licenses">ライセンス</string>
     <string name="app_description">Android 向けのフリーで軽量なストリーミング。</string>
     <string name="view_on_github">GitHub で表示</string>
     <string name="app_license_title">NewPipe のライセンス</string>
     <string name="contribution_encouragement">翻訳、デザインの変更、コードの整理、動作の重いコードの変更など、アイデアをお持ちではありませんか？ヘルプはいつでも歓迎します。より良いものを一緒に作り上げましょう！</string>
-    <string name="read_full_license">ライセンスを読む</string>
     <string name="contribution_title">貢献する</string>
     <string name="subscribe_button_title">チャンネル登録</string>
     <string name="subscribed_button_title">登録済み</string>
@@ -202,13 +200,10 @@
     <string name="video_streams_empty">動画が見つかりません</string>
     <string name="audio_streams_empty">音声が見つかりません</string>
     <string name="invalid_directory">フォルダーが見つかりません</string>
-    <string name="invalid_file">ファイルが存在しないか、読み書きする権限がありません</string>
     <string name="file_name_empty_error">ファイル名は空白にできません</string>
-    <string name="error_occurred_detail">エラーが発生しました: %1$s</string>
     <string name="no_streams_available_download">ダウンロードできる動画はありません</string>
     <string name="detail_drag_description">ドラッグして並べ替え</string>
     <string name="create">作成</string>
-    <string name="dismiss">破棄</string>
     <string name="rename">名前を変更</string>
     <string name="always_ask_open_action">常に確認</string>
     <string name="create_playlist">新規プレイリスト</string>
@@ -252,7 +247,6 @@
     <string name="auto_queue_summary">キューに関連動画を追加して再生を続ける (繰り返ししない場合)</string>
     <string name="delete_view_history_alert">すべての再生履歴を削除しますか？</string>
     <string name="delete_search_history_alert">すべての検索履歴を削除しますか？</string>
-    <string name="invalid_source">このファイル/コンテンツはありません</string>
     <plurals name="subscribers">
         <item quantity="other">チャンネル登録者数 %s人</item>
     </plurals>
@@ -260,7 +254,6 @@
     <plurals name="views">
         <item quantity="other">再生回数 %s回</item>
     </plurals>
-    <string name="one_item_deleted">1 つのアイテムが削除されました。</string>
     <string name="give_back">支援する</string>
     <string name="privacy_policy_encouragement">NewPipe プロジェクトはあなたのプライバシーを非常に大切にしています。あなたの同意がない限り、アプリはいかなるデータも収集しません。
 \nNewPipe のプライバシー・ポリシーでは、クラッシュリポート送信時にどのような種類のデータが送信・記録されるかを詳細に説明しています。</string>
@@ -592,7 +585,6 @@
     <string name="metadata_language">言語</string>
     <string name="metadata_support">サポート</string>
     <string name="metadata_host">ホスト</string>
-    <string name="open_website_license">ウェブサイトを開く</string>
     <string name="downloads_storage_ask_summary_no_saf_notice">ダウンロードのたびに保存する場所を尋ねます</string>
     <string name="no_dir_yet">ダウンロードフォルダーがまだ設定されていません。今すぐデフォルトのフォルダーを選択してください</string>
     <string name="downloads_storage_use_saf_summary_api_29">Android 10 以降は \'Storage Access Framework\' のみがサポートされます</string>
@@ -652,7 +644,6 @@
     <string name="settings_category_player_notification_title">プレイヤー通知</string>
     <string name="loading_stream_details">ストリームの詳細を読み込んでいます…</string>
     <string name="enable_streams_notifications_summary">登録チャンネルの新しいストリームについて通知する</string>
-    <string name="enumeration_comma">,</string>
     <string name="notifications_disabled">通知は無効化されています</string>
     <string name="progressive_load_interval_exoplayer_default">ExoPlayer のデフォルト</string>
     <string name="get_notified">通知を受け取る</string>

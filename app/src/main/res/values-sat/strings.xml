@@ -222,7 +222,6 @@
     <string name="more_than_100_videos">᱑᱐᱐+ ᱵᱷᱤᱰᱤᱭᱳ</string>
     <string name="no_live_streams">ᱡᱤᱣᱤ ᱥᱴᱨᱤᱢ ᱵᱟᱹᱱᱩᱜᱼᱟ</string>
     <string name="checksum">ᱪᱮᱠᱥᱢ</string>
-    <string name="dismiss">ᱵᱚᱫᱚᱞ ᱢᱮ</string>
     <string name="msg_wait">ᱫᱟᱭᱟ ᱠᱟᱛᱮ ᱮᱛᱦᱚᱵ ᱢᱮ ᱾</string>
     <string name="msg_copied">ᱠᱞᱤᱯᱵᱳᱨᱰ ᱨᱮ ᱠᱚᱯᱤ ᱟᱠᱟᱱᱟ</string>
     <string name="title_activity_recaptcha">reCAPTCHA ᱪᱟᱞᱟᱣ</string>
@@ -341,7 +340,6 @@
     <string name="metadata_privacy_unlisted">ᱵᱟᱝ ᱞᱤᱥᱴᱤ ᱟᱠᱟᱱᱟ</string>
     <string name="notifications_disabled">ᱱᱤᱴᱤᱯᱷᱤᱠᱮᱥᱚᱱ ᱠᱚ ᱵᱚᱫᱚᱞ ᱟᱠᱟᱱᱟ</string>
     <string name="you_successfully_subscribed">ᱟᱢ ᱱᱤᱛᱚᱜ ᱱᱚᱣᱟ ᱪᱮᱱᱮᱞ ᱨᱮ ᱥᱮᱞᱮᱫ ᱟᱠᱟᱱᱟᱢ</string>
-    <string name="enumeration_comma">,</string>
     <string name="select_audio_track_external_players">ᱵᱟᱦᱨᱮ ᱯᱞᱮᱭᱟᱨ ᱞᱟᱹᱜᱤᱫ ᱚᱰᱤᱭᱚ ᱴᱨᱟᱠ ᱵᱟᱪᱷᱟᱣ ᱢᱮ</string>
     <string name="unknown_quality">ᱵᱟᱝ ᱵᱟᱰᱟᱭ ᱧᱟᱢ ᱟᱠᱟᱱ ᱥᱤᱠᱷᱱᱟᱹᱛ</string>
     <string name="unknown_audio_track">ᱵᱟᱝ ᱵᱟᱰᱟᱭ</string>
@@ -450,9 +448,7 @@
     <string name="player_stream_failure">ᱱᱚᱣᱟ ᱥᱴᱨᱤᱢ ᱯᱞᱮ ᱵᱟᱭ ᱫᱟᱲᱮᱭᱟᱜ ᱠᱟᱱᱟ</string>
     <string name="player_unrecoverable_failure">ᱠᱷᱮᱞᱚᱸᱰᱤᱭᱟᱹ ᱵᱟᱭ ᱵᱩᱡᱷᱟᱹᱣ ᱫᱟᱲᱮᱭᱟᱜ-ᱟ</string>
     <string name="player_recoverable_failure">ᱠᱷᱮᱞᱚᱸᱰᱤᱭᱟᱹ ᱦᱩᱫᱤᱥ ᱠᱷᱚᱱ ᱨᱤᱠᱳᱨᱰ</string>
-    <string name="invalid_file">ᱱᱚᱶᱟ ᱯᱷᱤᱞ ᱵᱟᱹᱱᱩᱜᱼᱟ ᱥᱮ ᱱᱚᱶᱟ ᱨᱮ ᱚᱞ ᱟᱨ ᱯᱟᱲᱦᱟᱣ ᱞᱟᱹᱜᱤᱫ ᱫᱟᱣ ᱵᱟᱹᱱᱩᱜᱼᱟ</string>
     <string name="file_name_empty_error">ᱯᱷᱤᱞᱤᱢ ᱧᱩᱛᱩᱢ ᱵᱚᱸᱫᱚ ᱫᱟᱲᱮᱭᱟᱜ-ᱟ ᱵᱟᱝ</string>
-    <string name="error_occurred_detail">%1$s ᱢᱤᱫ ᱵᱷᱩᱞ ᱦᱩᱭ ᱞᱮᱱᱟ:</string>
     <string name="no_streams_available_download">ᱰᱟᱩᱱᱞᱚᱰ ᱞᱟᱹᱜᱤᱫ ᱡᱟᱦᱟᱱ ᱥᱴᱨᱤᱢ ᱵᱟᱭ</string>
     <string name="saved_tabs_invalid_json">ᱥᱚᱞᱦᱮ ᱟᱠᱟᱱ ᱴᱮᱵᱽ ᱠᱚ ᱵᱟᱝ ᱯᱟᱲᱦᱟᱣ ᱫᱟᱲᱮᱭᱟᱜ ᱠᱟᱱᱟ, ᱚᱱᱟᱛᱮ ᱵᱮᱵᱷᱟᱨᱤᱡᱽ ᱠᱚ</string>
     <string name="restore_defaults_confirmation">ᱟᱢ ᱥᱩᱯᱚᱨᱴ ᱠᱚ ᱵᱚᱫᱚᱞ ᱢᱮᱢᱮ?</string>
@@ -489,7 +485,6 @@
     <string name="pause">ᱯᱷᱟᱭᱩᱥ</string>
     <string name="create">ᱵᱮᱱᱟᱣ ᱢᱮ</string>
     <string name="no_available_dir">ᱛᱷᱚᱠ ᱨᱮ ᱛᱟᱭᱚᱢ ᱛᱮ ᱢᱤᱫ ᱰᱟᱩᱱᱞᱚᱰ ᱯᱷᱳᱞᱰᱟᱨ ᱮᱢ ᱢᱮ</string>
-    <string name="one_item_deleted">ᱢᱤᱫᱴᱟᱹᱝ ᱡᱤᱱᱤᱥ ᱵᱚᱫᱚᱞ ᱟᱠᱟᱱᱟ</string>
     <string name="recaptcha_request_toast">reCAPTCHA challenge ᱞᱟᱹᱠᱛᱤ ᱠᱟᱱᱟ</string>
     <string name="recaptcha_solve">ᱥᱚᱞᱦᱮ</string>
     <string name="donation_encouragement">ᱱᱤᱭᱩ ᱯᱟᱭᱤᱯ ᱫᱚ ᱱᱤᱡᱮᱨᱟᱜ ᱚᱠᱛᱚ ᱟᱢᱟᱜ ᱵᱮᱵᱷᱟᱨᱤᱭᱟᱹ ᱵᱷᱟᱹᱜᱤ ᱵᱷᱟᱹᱜᱤ ᱥᱟᱹᱜᱟᱹᱭ ᱮᱢ ᱠᱟᱛᱮ ᱵᱮᱱᱟᱣ ᱟᱠᱟᱱᱟ ᱾ ᱱᱤᱣ ᱯᱟᱭᱤᱯ ᱵᱮᱨᱮᱫ ᱞᱟᱹᱜᱤᱫ ᱮᱱᱮᱢᱤᱭᱟᱹ ᱠᱚ ᱜᱚᱲᱚ ᱥᱚᱦᱚᱫ ᱮᱢ ᱢᱮ ᱾</string>
@@ -643,7 +638,6 @@
     <string name="metadata_subscribers">ᱥᱚᱵᱽᱥᱠᱨᱟᱭᱵᱟᱨ</string>
     <string name="detail_pinned_comment_view_description">ᱯᱤᱱ ᱟᱠᱟᱱ ᱟᱹᱱᱤᱡ</string>
     <string name="detail_heart_img_view_description">ᱵᱮᱱᱟᱣᱤᱡᱟᱜ ᱢᱚᱱᱮ</string>
-    <string name="open_website_license">ᱚᱯᱮᱱ ᱣᱮᱵᱥᱟᱤᱴ</string>
     <string name="tablet_mode_title">ᱴᱮᱵᱽᱞᱮᱴ ᱢᱚᱰ</string>
     <string name="on">ᱨᱮ</string>
     <string name="off">ᱚᱯᱷ</string>
@@ -713,7 +707,6 @@
     <string name="msg_running_detail">ᱵᱟᱰᱟᱭ ᱞᱟᱹᱜᱤᱫ ᱴᱟᱯ ᱢᱮ</string>
     <string name="msg_calculating_hash">ᱦᱟᱥᱤ ᱠᱚᱞᱠᱟᱛᱟ</string>
     <string name="no_dir_yet">ᱱᱤᱛ ᱦᱟᱹᱵᱤᱡ ᱰᱟᱩᱱᱞᱚᱰ ᱯᱷᱳᱞᱰᱟᱨ ᱥᱮᱴ ᱵᱟᱝ, ᱱᱤᱛ ᱦᱟᱹᱵᱤᱡ ᱰᱟᱩᱱᱞᱚᱰ ᱯᱷᱳᱞᱰᱟᱨ ᱵᱟᱪᱷᱟᱣ ᱢᱮ</string>
-    <string name="copyright">© %1$s ᱛᱮ %2$s ᱞᱟᱛᱟᱨ ᱨᱮ %3$s</string>
     <string name="tab_about">About &amp; FAQ</string>
     <string name="tab_licenses">ᱞᱟᱭᱥᱮᱱᱥ</string>
     <string name="contribution_title">ᱥᱮᱞᱮᱫᱚᱜ ᱢᱮ</string>
@@ -721,11 +714,9 @@
     <string name="privacy_policy_encouragement">ᱱᱤᱣ ᱯᱟᱭᱤᱯ ᱯᱨᱚᱡᱮᱠᱴ ᱟᱢᱟᱜ ᱯᱨᱟᱭᱵᱷᱮᱴ ᱟᱹᱰᱤ ᱥᱚᱨᱮᱥ ᱜᱮᱭᱟ. ᱚᱱᱟᱛᱮ, ᱟᱢᱟᱜ ᱟᱹᱭᱫᱟᱹᱨᱤ ᱵᱟᱹᱱᱩᱜ ᱠᱷᱟᱱ ᱱᱚᱶᱟ ᱮᱯᱞᱤᱠᱮᱥᱚᱱ ᱡᱟᱦᱟᱱ ᱰᱮᱴᱟ ᱵᱟᱭ ᱥᱟᱢᱟᱝᱟ ᱾_x000D_
 \nᱱᱤᱣ ᱯᱟᱭᱤᱯ ᱨᱮᱱᱟᱜ ᱯᱨᱟᱭᱵᱷᱮᱴ ᱯᱚᱞᱤᱥᱤ ᱨᱮ ᱡᱟᱦᱟᱸᱱ ᱰᱮᱴᱟ ᱠᱚ ᱟᱢ ᱠᱨᱮᱥᱚᱨ ᱨᱮᱯᱳᱨᱴ ᱚᱠᱟᱛᱮ ᱟᱢ ᱚᱠᱟ ᱞᱮᱠᱟᱛᱮ ᱟᱢᱟᱜ ᱰᱮᱴᱟ ᱠᱚ ᱵᱚᱫᱚᱞᱟ ᱟᱨ ᱵᱚᱫᱚᱞᱟ ᱚᱱᱟ ᱵᱟᱵᱚᱫ ᱛᱮ ᱡᱚᱛᱚ ᱵᱟᱰᱟᱭ ᱮᱢᱚᱜ ᱟ᱾</string>
     <string name="read_privacy_policy">ᱯᱨᱟᱭᱵᱷᱮᱴᱤ ᱯᱚᱞᱤᱥ ᱯᱟᱲᱦᱟᱣ ᱢᱮ</string>
-    <string name="read_full_license">ᱞᱟᱭᱥᱮᱱᱥ ᱯᱟᱲᱦᱟᱣ ᱢᱮ</string>
     <string name="faq_title">ᱟᱥᱚᱠᱟᱭ ᱛᱮ ᱚᱞ ᱟᱠᱟᱱ ᱯᱩᱥᱴᱟ</string>
     <string name="missing_file">ᱯᱷᱤᱞ ᱥᱮᱴᱮᱨ ᱟᱠᱟᱱᱟ ᱟᱨ ᱵᱟᱝ ᱵᱚᱫᱚᱞ ᱟᱠᱟᱱᱟ</string>
     <string name="invalid_directory">ᱱᱚᱝᱠᱟᱱ ᱯᱷᱳᱞᱰᱟᱨ ᱵᱟᱹᱱᱩᱜᱼᱟ</string>
-    <string name="invalid_source">ᱱᱚᱝᱠᱟᱱ ᱯᱷᱤᱞ/ᱥᱟᱹᱛ ᱨᱮᱱᱟᱜ ᱜᱟᱞᱢᱟᱨᱟᱣ ᱵᱟᱹᱱᱩᱜᱼᱟ</string>
     <string name="loading_metadata_title">ᱢᱮᱴᱟᱰᱟᱴᱟ ᱞᱚᱰ ᱠᱟᱱᱟ…</string>
     <string name="channels">ᱪᱟᱱᱮᱞ</string>
     <string name="undo">ᱵᱚᱫᱚᱞ ᱢᱮ</string>

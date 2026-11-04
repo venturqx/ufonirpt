@@ -116,14 +116,12 @@
     <string name="tab_licenses">Лиценце</string>
     <string name="app_description">Слободно и лагано токовање на Android-у.</string>
     <string name="view_on_github">Погледај на GitHub-у</string>
-    <string name="read_full_license">Прочитај лиценцу</string>
     <string name="contribution_title">Допринос</string>
     <string name="title_activity_history">Историја</string>
     <string name="action_history">Историја</string>
     <string name="resume_on_audio_focus_gain_summary">Наставите са пуштањем након прекида (нпр. телефонски позиви)</string>
     <string name="settings_file_charset_title">Дозвољени знакови у називима фајлова</string>
     <string name="charset_letters_and_digits">Слова и бројеви</string>
-    <string name="copyright" formatted="true">© %1$s од %2$s под %3$s</string>
     <string name="channel_unsubscribed">Прекинуто праћење канала</string>
     <string name="subscription_change_failed">Није могуће променити праћење</string>
     <string name="subscription_update_failed">Није могуће ажурирати праћење</string>
@@ -383,10 +381,8 @@
     <string name="done">Готово</string>
     <string name="recaptcha_solve">Реши</string>
     <string name="subtitle_activity_recaptcha">Притисните „Готово“ када решите</string>
-    <string name="one_item_deleted">Избрисана је 1 ставка.</string>
     <string name="msg_calculating_hash">Израчунавање хеша</string>
     <string name="rename">Преименуј</string>
-    <string name="dismiss">Одбаци</string>
     <string name="create">Направи</string>
     <string name="no_comments">Нема коментара</string>
     <string name="infinite_videos">∞ видео снимака</string>
@@ -416,10 +412,7 @@
     <string name="restore_defaults_confirmation">Желите ли да вратите подразумеване вредности\?</string>
     <string name="saved_tabs_invalid_json">Није могуће прочитати сачуване картице, тако да се користе подразумеване</string>
     <string name="no_streams_available_download">Нема токова доступних за преузимање</string>
-    <string name="error_occurred_detail">Дошло је до грешке: %1$s</string>
-    <string name="invalid_file">Фајл не постоји или нема дозволе за читање или писање</string>
     <string name="file_name_empty_error">Назив фајла не може бити празан</string>
-    <string name="invalid_source">Нема таквог фајла/извора садржаја</string>
     <string name="invalid_directory">Нема таквог фолдера</string>
     <string name="missing_file">Фајл је премештен или избрисан</string>
     <string name="video_streams_empty">Нису пронађени видео токови</string>
@@ -600,7 +593,6 @@
     <string name="related_items_tab_description">Сродне ставке</string>
     <string name="disable_media_tunneling_summary">Онемогућите тунеловање медија ако искусите црни екран или застајкивање при репродукцији видео снимка.</string>
     <string name="disable_media_tunneling_title">Онемогући тунеловање медија</string>
-    <string name="open_website_license">Отвори веб-сајт</string>
     <string name="metadata_privacy_internal">Унутрашње</string>
     <string name="metadata_privacy_private">Приватно</string>
     <string name="metadata_privacy_unlisted">По позиву</string>
@@ -760,7 +752,6 @@
 \nОмогућавање ове опције може спречити грешке при репродукцији приликом пребацивања тренутног плејера видео снимака или преласка на цео екран</string>
     <string name="play_queue_audio_track">Аудио снимак: %s</string>
     <string name="fast_mode">Брзи режим</string>
-    <string name="enumeration_comma">,</string>
     <string name="msg_failed_to_copy">Копирање у привремену меморију није успело</string>
     <string name="sort">Сортирање</string>
     <string name="you_successfully_subscribed">Сада пратите овај канал</string>
@@ -878,5 +869,4 @@
     <string name="export_subscriptions_title">Извету претплату</string>
     <string name="import_subscriptions_summary">Увези претплате из претходне датотеке .json</string>
     <string name="export_subscriptions_summary">Извези своје претплате у датотеку .json</string>
-    <string name="import_from_previous_export">Увези из претходног извоза</string>
 </resources>

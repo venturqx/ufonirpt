@@ -103,14 +103,12 @@
     <string name="best_resolution">さいこう</string>
     <string name="title_activity_about">NewPipeにちいてぃ</string>
     <string name="title_licenses">サードパーティーライセンス</string>
-    <string name="copyright" formatted="true">© %1$s さくしゃ %2$s ライセンス %3$s</string>
     <string name="tab_about">バージョンじょうほうとぅゆくあるしちむん</string>
     <string name="tab_licenses">ライセンス</string>
     <string name="app_description">Androidんきーぬフリーっしけいりょうなストリーミング。</string>
     <string name="view_on_github">GitHubっしひょうじ</string>
     <string name="app_license_title">NewPipeぬライセンス</string>
     <string name="contribution_encouragement">ふんやちゅん、デザインぬへんかん、コードぬせいり、ちゃーさぬんぶさるコードぬへんかんんでー、アイデアうむちっしぇーあいびらに？ヘルポーいちやてぃんかんぎうぅいさびーん。ゆりじょーとぅーまじゅんちゅくいとぅらさびら！</string>
-    <string name="read_full_license">ライセンスゆむん</string>
     <string name="contribution_title">かんきんすん</string>
     <string name="subscribe_button_title">チャンネルとぅうるく</string>
     <string name="subscribed_button_title">とうるくじみ</string>
@@ -202,13 +200,10 @@
     <string name="video_streams_empty">ちゃーしががみちかやびらん</string>
     <string name="audio_streams_empty">うんせいがみちかやびらん</string>
     <string name="invalid_directory">フォルダーぬみちかやびらん</string>
-    <string name="invalid_file">ファイルぬすんじぇーさんが、ゆみがきするきんぎんぬあいびらん</string>
     <string name="file_name_empty_error">ファイルめえーくゎいるはくんかいなやびらん</string>
-    <string name="error_occurred_detail">エラーぬはっせいさびたん： %1$s</string>
     <string name="no_streams_available_download">ダウンロードないんちゃーしがーあいびらん</string>
     <string name="detail_drag_description">ドラッグしならべいがい</string>
     <string name="create">さくせい</string>
-    <string name="dismiss">はき</string>
     <string name="rename">やーめーへいるかん</string>
     <string name="always_ask_open_action">ちゃーかくにん</string>
     <string name="create_playlist">しんきプレイリスト</string>
@@ -252,7 +247,6 @@
     <string name="auto_queue_summary">キューんかいかんりんちゃーがちいからちさいせいちづきーん（くいけーしさんーあい）</string>
     <string name="delete_view_history_alert">まじりぬさいせいりりきさちゅるじょさびーが？</string>
     <string name="delete_search_history_alert">まじりどぅきらんさくりりきさちゅるじょさびーが？</string>
-    <string name="invalid_source">くぬファイル/コンテンツーあいびらん</string>
     <plurals name="subscribers">
         <item quantity="one">チャンネルとぅうるくしゃすう %sんかいん</item>
         <item quantity="other">チャンネルとぅうるくしゃすう %sんかいん</item>
@@ -262,7 +256,6 @@
         <item quantity="one">さいせいかいすん %sかい</item>
         <item quantity="other">さいせいかいすん %sかい</item>
     </plurals>
-    <string name="one_item_deleted">てぃーちぬアイテムぬさちゅるじょさりやびたん。</string>
     <string name="give_back">しーいんすん</string>
     <string name="privacy_policy_encouragement">NewPipeプロジェクトーうんじゅがプライバシーふぃじょうにてーしちなちょーいびーん。うんじゅがちゃーいがねーんかぎり、アプレーいかなるデータんしゅうしゅうさびらん。
 \nNewPipeぬプライバシー・ポリシーっしぇー、クラッシュリポートそうしんじんかいちゃぬぐとーるしゅるいぬデータぬあんしん・きるくされいがしーょうさいにしちめいそーいびーん。</string>
@@ -600,7 +593,6 @@
     <string name="metadata_language">ぎんぐ</string>
     <string name="metadata_support">サポート</string>
     <string name="metadata_host">ホスト</string>
-    <string name="open_website_license">ウェブサイトふぃらちゅん</string>
     <string name="downloads_storage_ask_summary_no_saf_notice">ダウンロードぬかーじにふずんすーしょたんにやびーん</string>
     <string name="no_dir_yet">ダウンロードフォルダーぬなーらしっていさりやびらん。なまちゃーきデフォルトぬフォルダーさんたくちくぃみそーれー</string>
     <string name="downloads_storage_use_saf_summary_api_29">Android10いこおー \'Storage Access Framework\' ぬみやしがサポートさりやびーん</string>
@@ -662,7 +654,6 @@
     <string name="settings_category_player_notification_title">プレイヤーちうち</string>
     <string name="loading_stream_details">ストリームぬしょうさいゆみくどーいびーん…</string>
     <string name="enable_streams_notifications_summary">とうるいちゅるチャンネルぬみーさるストリームんかいちいていちうちすん</string>
-    <string name="enumeration_comma">,</string>
     <string name="notifications_disabled">ちうちぇーんーかなやーさりとーいびーん</string>
     <string name="progressive_load_interval_exoplayer_default">ExoPlayerぬデフォルト</string>
     <string name="get_notified">ちうちうきとぅいん</string>

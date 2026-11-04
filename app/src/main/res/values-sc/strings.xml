@@ -85,7 +85,6 @@
     <string name="delete_item_search_history">Cheres iscantzellare custu elementu dae sa cronologia de chirca\?</string>
     <string name="action_history">Cronologia</string>
     <string name="title_activity_history">Cronologia</string>
-    <string name="read_full_license">Leghe sa litzèntzia</string>
     <string name="app_license">NewPipe est unu programma lìberu cun litzèntzia copyleft: lu podes impreare, cumpartzire e megiorare comente cheres. Pro èssere prus craros, lu podes torrare a intregare in suta de sos tèrmines de sa Litzèntzia Generale Pùblica GNU publicada dae sa Free Software Foundation, sa versione 3 de sa litzèntzia o, si preferis, una prus noa.</string>
     <string name="app_license_title">Litzèntzia de NewPipe</string>
     <string name="read_privacy_policy">Leghe sa polìtica de riservadesa</string>
@@ -103,7 +102,6 @@
     <string name="app_description">Riprodutzione lìbera e lèbia de trasmissiones (streaming) in Android.</string>
     <string name="tab_licenses">Litzèntzias</string>
     <string name="tab_about">Informatziones e PF</string>
-    <string name="copyright">© %1$s de %2$s cun litzèntzia %3$s</string>
     <string name="title_licenses">Litzèntzias de tertzas partes</string>
     <string name="title_activity_about">In subra de NewPipe</string>
     <string name="charset_most_special_characters">Majoria de sos caràteres ispetziales</string>
@@ -116,7 +114,6 @@
     <string name="recaptcha_request_toast">B\'at bisòngiu de risòlvere unu reCAPTCHA</string>
     <string name="subtitle_activity_recaptcha">Incarca \"Fatu\" cando est risoltu</string>
     <string name="title_activity_recaptcha">Disafiu reCAPTCHA</string>
-    <string name="one_item_deleted">1 elementu iscantzelladu.</string>
     <string name="no_available_dir">Issèbera una cartella de iscarrigamentu prus a tardu in sas impostatziones</string>
     <string name="msg_copied">Copiadu in punta de billete</string>
     <string name="msg_wait">Iseta…</string>
@@ -127,7 +124,6 @@
     <string name="msg_name">Nùmene de su documentu</string>
     <string name="ok">AB</string>
     <string name="rename">Càmbia de nùmene</string>
-    <string name="dismiss">Ignora</string>
     <string name="checksum">Summa de verìfica</string>
     <string name="delete">Iscantzella</string>
     <string name="create">Crea</string>
@@ -185,10 +181,7 @@
     <string name="restore_defaults">Riprìstina sos predefinidos</string>
     <string name="saved_tabs_invalid_json">No est istadu possìbile lèghere sas ischedas sarbadas. S\'ant a impreare sas predefinidas</string>
     <string name="no_streams_available_download">Perunu flussu a disponimentu pro s\'iscarrigamentu</string>
-    <string name="error_occurred_detail">B\'at àpidu un\'errore: %1$s</string>
     <string name="file_name_empty_error">Su nùmene de su documentu non podet èssere bòidu</string>
-    <string name="invalid_file">Su documentu no esistit o mancat su permissu pro lèghere e pro b\'iscrìere cosa</string>
-    <string name="invalid_source">Custa fonte de documentos o cuntenutos no esistit</string>
     <string name="invalid_directory">Sa cartella no esistit</string>
     <string name="missing_file">Documentu iscostiadu o iscantzelladu</string>
     <string name="audio_streams_empty">Peruna trasmissione àudio agatada</string>
@@ -606,7 +599,6 @@
     <string name="description_select_enable">Abìlita s\'ischerta de su testu in sa descritzione</string>
     <string name="description_select_note">Como podes ischertare su testu in intro de sa descritzione. Ammenta·ti chi sa pàgina diat pòdere trèmere e sos ligàmenes si diant pòdere no abèrrere cando ses in modalidade de ischerta.</string>
     <string name="downloads_storage_use_saf_summary_api_29">Incumintzende dae Android 10 petzi sa \'Storage Access Framework\' (Istrutura de Atzessu a s\'Archiviatzione) est suportada</string>
-    <string name="open_website_license">Aberi su situ web</string>
     <string name="account_terminated">Contu serradu</string>
     <string name="feed_load_error_fast_unknown">Su recùperu lestru de sos flussos non frunit àteras informatziones in subra de custu.</string>
     <string name="feed_load_error_terminated">Su contu de s\'autore l\'ant serradu.
@@ -677,7 +669,6 @@
     <string name="any_network">Cale si siat retze</string>
     <string name="notifications_disabled">Sas notìficas sunt disabilitadas</string>
     <string name="get_notified">Retzi notìficas</string>
-    <string name="enumeration_comma">,</string>
     <string name="toggle_all">Ativa/disativa totu</string>
     <string name="you_successfully_subscribed">Como ses iscritu a custu canale</string>
     <string name="settings_category_player_notification_title">Notìfica de su riproduidore</string>

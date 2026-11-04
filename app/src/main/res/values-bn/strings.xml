@@ -61,7 +61,6 @@
     <string name="blank_page_summary">খালি পাতা</string>
     <string name="action_history">ইতিহাস</string>
     <string name="title_activity_history">ইতিহাস</string>
-    <string name="read_full_license">লাইসেন্স পড়ুন</string>
     <string name="app_license_title">নিউপাইপ এর লাইসেন্স</string>
     <string name="read_privacy_policy">প্রাইভেসি পলিসি পড়ুন</string>
     <string name="privacy_policy_title">নিউপাইপ এর গোপনীয়তা নীতি</string>
@@ -79,7 +78,6 @@
     <string name="done">হয়েছে</string>
     <string name="recaptcha_request_toast">reCAPTCHA চ্যালেঞ্জ অনুরোধ করা হয়েছে</string>
     <string name="title_activity_recaptcha">reCAPTCHA চ্যালেঞ্জ</string>
-    <string name="one_item_deleted">একটি আইটেম ডিলিট হয়েছে।</string>
     <string name="msg_popup_permission">এই অনুমতিটি
 \nপপআপ মোডে খুলতে প্রয়োজন</string>
     <string name="no_available_dir">অনুগ্রহ করে একটি উপলব্ধ ডাউনলোড ডিরেক্টরি নির্বাচন করো</string>
@@ -92,7 +90,6 @@
     <string name="msg_name">ফাইলের নাম</string>
     <string name="ok">ঠিক আছে</string>
     <string name="rename">নাম পরিবর্তন করুন</string>
-    <string name="dismiss">সরাও</string>
     <string name="checksum">চেকসাম</string>
     <string name="delete">ডিলেট</string>
     <string name="create">তৈরি করো</string>
@@ -123,7 +120,6 @@
     <string name="restore_defaults_confirmation">তুমি কি এই সহজাত পছন্দ ফিরত চাও\?</string>
     <string name="restore_defaults">ডিফল্ট এ ফিরে যান</string>
     <string name="no_streams_available_download">ডাউন লোড এর জন্য কোন স্ট্রিম নেই</string>
-    <string name="error_occurred_detail">একটা এরর হয়েছেঃ %1$s</string>
     <string name="file_name_empty_error">ফাইল এর নাম খালি থাকতে পারে না</string>
     <string name="invalid_directory">কোন ফোল্ডার নেই</string>
     <string name="missing_file">ফাইল সরে গেছে না হয় মুছে ফেলা হয়েছে</string>
@@ -331,7 +327,6 @@
     <string name="no_one_watching">কেউ দেখছে না</string>
     <string name="drawer_header_description">সেবাটি পরিবর্তন করো, বর্তমানে নির্বাচিত:</string>
     <string name="empty_list_subtitle">ঝিঝিপোকা ছাড়া কিছুই নেই এখানে</string>
-    <string name="invalid_source">এই ধরনের কোন ফাইল/বিষয়বস্তুর উৎস নেই</string>
     <string name="player_unrecoverable_failure">অপুনরুদ্ধারযোগ্য প্লেয়ার ত্রুটি ঘটেছে</string>
     <string name="peertube_instance_add_fail">ইন্সট্যান্সটি যাচাই করা যায়নি</string>
     <string name="recaptcha_cookies_cleared">রিক্যাপচা কুকিগুলো পরিষ্কার করা হয়েছে</string>
@@ -481,7 +476,6 @@
     <string name="website_encouragement">আরও তথ্য এবং খবরের জন্য নিউপাইপ ওয়েবসাইট দেখো।</string>
     <string name="override_current_data">এতে তোমার বর্তমান অবস্থা সরানো হবে।</string>
     <string name="could_not_import_all_files">সতর্কতা: সব তথ্য আনা যায়নি।</string>
-    <string name="copyright">© %3$s এর মাধ্যমে %2$s দিয়ে %1$s</string>
     <string name="hash_channel_description">ভিডিও হ্যাশিংয়ের অগ্রগতির বিজ্ঞপ্তি</string>
     <string name="download_has_started">ডাউনলোড শুরু হয়েছে</string>
     <string name="auto_device_theme_title">স্বয়ংক্রিয় (ডিভাইস রঙ)</string>
@@ -539,7 +533,6 @@
     <string name="description_select_disable">বর্ণনার লেখা নির্বাচন করা নিষ্ক্রিয় করো</string>
     <string name="description_select_enable">বর্ণনার লেখা নির্বাচন করা সক্ষম করো</string>
     <string name="feed_load_error">প্রক্রিয়াকরণ ফিডে ত্রুটি</string>
-    <string name="open_website_license">ওয়েবসাইট খুলুন</string>
     <string name="account_terminated">অ্যাকাউন্ট ধ্বংসকৃত</string>
     <string name="metadata_age_limit">বয়সসীমা</string>
     <string name="metadata_privacy_internal">অভ্যন্তরীণ</string>
@@ -567,7 +560,6 @@
     <string name="settings_category_player_notification_title">চালক বিজ্ঞপ্তি</string>
     <string name="low_quality_smaller">নিম্ন মান(ছোট)</string>
     <string name="detail_heart_img_view_description">মূল তৈরিকারকের পছন্দ করা</string>
-    <string name="enumeration_comma">,</string>
     <string name="get_notified">বিজ্ঞপ্তি পাঠাও</string>
     <string name="toggle_all">সব পরিবর্তন করো</string>
     <string name="high_quality_larger">উচ্চতর মান (বৃহত্তর)</string>
@@ -610,7 +602,6 @@
     <string name="error_report_notification_title">NewPipe একটি ত্রুটির সম্মুখীন হয়েছে, রিপোর্ট করতে আলতো চাপুন</string>
     <string name="error_report_notification_toast">একটি ত্রুটি ঘটেছে, বিজ্ঞপ্তি দেখুন</string>
     <string name="error_report_open_github_notice">আপনার ক্র্যাশ নিয়ে আলোচনা করা একটি সমস্যা ইতিমধ্যেই বিদ্যমান কিনা অনুগ্রহ করে পরীক্ষা করুন৷ ডুপ্লিকেট টিকিট তৈরি করে আপনি আমাদের কাছ থেকে সময় নেন তা আমরা প্রকৃত বাগ ঠিক করার জন্য ব্যয় করতে পারি।</string>
-    <string name="invalid_file">ফাইলটি বিদ্যমান নেই বা এটি পড়ার বা লেখার অনুমতির অভাব রয়েছে</string>
     <string name="processing_may_take_a_moment">প্রক্রিয়ারত…এক মুহূর্ত লাগতে পারে</string>
     <string name="leak_canary_not_available">লিকক্যানারি নেই</string>
     <string name="show_error_snackbar">ত্রুটি স্ন্যাকবার দেখাও</string>

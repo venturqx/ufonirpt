@@ -159,7 +159,6 @@
     <string name="main_page_content">Bogga guud</string>
     <string name="delete_item_search_history">Ma rabtaa inaad ka saarto shaygan kaydka wixii la raadiyay\?</string>
     <string name="action_history">Wixii Hore</string>
-    <string name="read_full_license">Liisanka akhri</string>
     <string name="app_license">NewPipe waa copyleft software libre: Waad isticmaali kartaa, baran kartaa, wadaagi kartaa, oo waad hagaajin kartaa markaad doonto. Gaar ahaan waad dib u qaybin kartaa oo/ama wax ka beddeli kartaa iyada oo la raacayo shuruudaha GNU General Public License sida ay daabacday Mu\'asasada Software-ka Xorta ah, nooca 3 ee shatiga, ama (doorashadaada) nooc kasta oo dambe.</string>
     <string name="privacy_policy_title">Siyaasadda Arrimaha Khaaska ah ee NewPipe</string>
     <string name="app_license_title">Shatiga NewPipe</string>
@@ -177,7 +176,6 @@
     <string name="app_description">Daawashada fudud ee Libre ee Android.</string>
     <string name="tab_licenses">Shati</string>
     <string name="tab_about">Ku Saabsan &amp; Su’aalaha Inta Badan La Isweydiiyo</string>
-    <string name="copyright">© %1$s sameeyay %2$s ayagoo raacaya %3$s</string>
     <string name="title_licenses">Shatiyada qolo saddexaad</string>
     <string name="title_activity_about">Ku saabsan NewPipe</string>
     <string name="charset_most_special_characters">Xarfaha gaarka ah kuwa ugu badan</string>
@@ -190,7 +188,6 @@
     <string name="recaptcha_request_toast">Tijaabada reCAPTCHA ayaa la codsaday</string>
     <string name="subtitle_activity_recaptcha">Taabo \"Dhameeyay\" ✅ markaad xaliso</string>
     <string name="title_activity_recaptcha">Tijaabada reCAPTCHA</string>
-    <string name="one_item_deleted">1 shay ayaa la saaray.</string>
     <string name="msg_popup_permission">Ogolaanshahan ayaa loo baahan yahay si
 \nloogu furo qaabka daaqada</string>
     <string name="no_available_dir">Fadlan khaanada wax lagu dajin doono hadhawto xaga fadhiga kasoo dooro</string>
@@ -204,7 +201,6 @@
     <string name="msg_name">Magaca shayga</string>
     <string name="ok">Hagaag</string>
     <string name="rename">Magaca ka baddal</string>
-    <string name="dismiss">Iska dhaaf</string>
     <string name="checksum">Xaqiijiyaha</string>
     <string name="delete">Tirtir</string>
     <string name="create">Samee</string>
@@ -267,10 +263,7 @@
     <string name="restore_defaults">Dib ugu celi sidii hore</string>
     <string name="saved_tabs_invalid_json">Lama akhrin karo daaqadihii la kaydiyay, …isticmaalaya kuwii app-ku kusoo baxay</string>
     <string name="no_streams_available_download">Wax la dajiyo lama heli karo</string>
-    <string name="error_occurred_detail">Khalad ayaa ka dhacay: %1$s</string>
     <string name="file_name_empty_error">Magaca shayga ma madhnaan karo</string>
-    <string name="invalid_file">Shaygani ma jiro ama ogolaansho looma haysto in wax laga baddalo ama la furo</string>
-    <string name="invalid_source">Shaygan/tixraaca shayga lama heli karo</string>
     <string name="invalid_directory">khaanadan ma jirto</string>
     <string name="missing_file">Shaygan waa la guuriyay ama waa la tirtiray</string>
     <string name="audio_streams_empty">Wax la dhagaysto lama helin</string>
@@ -589,7 +582,6 @@
     <string name="off">Xidhan</string>
     <string name="on">Furan</string>
     <string name="tablet_mode_title">Qaabka tablet-ka</string>
-    <string name="open_website_license">Fur websiteka</string>
     <string name="metadata_privacy_internal">Gudaha</string>
     <string name="metadata_privacy_private">Gaar ah</string>
     <string name="metadata_privacy_unlisted">Aan liistada kujirin</string>

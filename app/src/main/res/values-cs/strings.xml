@@ -148,14 +148,12 @@
     <string name="charset_most_special_characters">Většina speciálních znaků</string>
     <string name="title_activity_about">O aplikaci NewPipe</string>
     <string name="title_licenses">Licence třetích stran</string>
-    <string name="copyright" formatted="true">© %1$s od %2$s pod %3$s</string>
     <string name="tab_about">O aplikaci a dotazy</string>
     <string name="tab_licenses">Licence</string>
     <string name="app_description">Svobodné a lehké streamování pro Android.</string>
     <string name="view_on_github">Zobrazit na GitHubu</string>
     <string name="app_license_title">Licence NewPipe</string>
     <string name="contribution_encouragement">Ať máte nápady na překlad, designové změny, pročištění kódu nebo velké změny – pomoc je vždy vítána. Čím více, tím lépe!</string>
-    <string name="read_full_license">Přečíst licenci</string>
     <string name="contribution_title">Přispějte</string>
     <string name="title_activity_history">Historie</string>
     <string name="action_history">Historie</string>
@@ -220,7 +218,6 @@
     <string name="controls_add_to_playlist_title">Přidat do</string>
     <string name="detail_drag_description">Táhnout pro přeskupení</string>
     <string name="create">Vytvořit</string>
-    <string name="dismiss">Zahodit</string>
     <string name="rename">Přejmenovat</string>
     <string name="always_ask_open_action">Vždy se zeptat</string>
     <string name="create_playlist">Nový playlist</string>
@@ -253,10 +250,7 @@
     <string name="auto_queue_summary">Pokračovat konečnou (neopakující se) frontu playbacku připojením souvisejícího streamu</string>
     <string name="file">Soubor</string>
     <string name="invalid_directory">Neexistující složka</string>
-    <string name="invalid_source">Neexistující zdroj souboru/obsahu</string>
-    <string name="invalid_file">Soubor neexistuje nebo chybí oprávnění k jeho čtení či zápisu</string>
     <string name="file_name_empty_error">Název souboru nesmí být prázdný</string>
-    <string name="error_occurred_detail">Došlo k chybě: %1$s</string>
     <string name="import_title">Importovat</string>
     <string name="import_from">Importovat z</string>
     <string name="export_to">Exportovat do</string>
@@ -302,7 +296,6 @@
     <string name="clear_search_history_summary">Vymaže historii vyhledávaných klíčových slov</string>
     <string name="delete_search_history_alert">Vymazat celkovou historii vyhledávání\?</string>
     <string name="search_history_deleted">Historie vyhledávání smazána</string>
-    <string name="one_item_deleted">Jedna položka smazána.</string>
     <string name="app_license">NewPipe je copyleftovaný svobodný software: můžete jej jakkoli používat, studovat, sdílet a vylepšovat. Redistribuovat a/nebo upravovat jej můžete pod podmínkami licence GNU General Public License zveřejněné nadací Free Software Foundation, buď ve verzi 3, nebo v jakékoli novější verzi (záleží na vás).</string>
     <string name="channels">Kanály</string>
     <string name="playlists">Playlisty</string>
@@ -600,7 +593,6 @@
     <string name="night_theme_title">Noční motiv</string>
     <string name="disable_media_tunneling_summary">Vypněte media-tunelling, pokud během přehrávání zaznamenáte temnou obrazovku nebo zadrhávání.</string>
     <string name="disable_media_tunneling_title">Vypnout media-tunelling</string>
-    <string name="open_website_license">Přejít na website</string>
     <string name="metadata_privacy_internal">Interní</string>
     <string name="metadata_privacy_private">Soukromé</string>
     <string name="metadata_privacy_unlisted">Neuvedeno v seznamu</string>
@@ -691,7 +683,6 @@
     <string name="loading_stream_details">Načítám podrobnosti o streamu…</string>
     <string name="notifications_disabled">Oznámení jsou vypnuta</string>
     <string name="get_notified">Přijímat oznámení</string>
-    <string name="enumeration_comma">,</string>
     <plurals name="new_streams">
         <item quantity="one">%s nový stream</item>
         <item quantity="few">%s nové streamy</item>
@@ -884,7 +875,6 @@
     <string name="export_subscriptions_title">Exportovat odběry</string>
     <string name="import_subscriptions_summary">Importovat odběry z předchozího exportu .json</string>
     <string name="export_subscriptions_summary">Exportovat odběry do souboru .json</string>
-    <string name="import_from_previous_export">Importovat z předchozího exportu</string>
     <string name="api23_requirement_dialog_title">NewPipe ukončuje podporu systému Android 5</string>
     <string name="api23_requirement_dialog_message">NewPipe bohužel využívá několik knihoven, které již nepodporují Android 5.0 a 5.1. Příští verze NewPipe proto bude bohužel fungovat pouze na zařízeních s Androidem 6 nebo novějším. Více se dozvíte v tomto blogovém příspěvku.</string>
     <string name="api23_requirement_dialog_blogpost">Blogový příspěvek</string>

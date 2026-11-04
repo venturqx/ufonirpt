@@ -49,7 +49,6 @@
     <string name="delete_item_search_history">Vai tiešām vēlaties izdzēst šo vaicājumu no meklēšanas vēstures?</string>
     <string name="action_history">Vēsture</string>
     <string name="title_activity_history">Vēsture</string>
-    <string name="read_full_license">Lasīt licenci</string>
     <string name="app_license">NewPipe — bez autortiesību ierobežojumiem (copyleft) licencēta brīva, pieejama bezmaksas, programmatūra: jūs variet izmantot, pētīt, dalīties un uzlabot to jebkurā brīdī pēc saviem ieskatiem. Tieši jūs variet to izplatīt un/vai modificēt saskaņā ar GNU General Public License noteikumiem, ko publicējusi Free Software Foundation, vai nu zem licences 3. versijas, vai (pēc jūsu izvēles) jebkuras jaunākas versijas noteikumiem.</string>
     <string name="app_license_title">NewPipe Licence</string>
     <string name="read_privacy_policy">Lasīt konfidencialitātes politiku</string>
@@ -78,7 +77,6 @@
     <string name="recaptcha_request_toast">reCAPTCHA izaicinājums dots</string>
     <string name="subtitle_activity_recaptcha">Nospiediet \"Pabeigts\", kad to atrisinat</string>
     <string name="title_activity_recaptcha">reCAPTCHA izaicinājums</string>
-    <string name="one_item_deleted">1 vienums dzēsts.</string>
     <string name="msg_popup_permission">Šī atļauja ir nepieciešama, lai\nvarētu atskaņot multimediju uznirstošajā logā</string>
     <string name="no_available_dir">Lūdzu nosakiet lejupielādes mapi iestatījumos vēlāk</string>
     <string name="msg_copied">Nokopēts uz starpliktuvi</string>
@@ -91,7 +89,6 @@
     <string name="msg_name">Datnes nosaukums</string>
     <string name="ok">Labi</string>
     <string name="rename">Pārsaukt</string>
-    <string name="dismiss">Noraidīt</string>
     <string name="checksum">Kontrolsumma</string>
     <string name="delete">Dzēst</string>
     <string name="create">Izveidot</string>
@@ -169,10 +166,7 @@
     <string name="restore_defaults">Atjaunot noklusējuma vērtības</string>
     <string name="saved_tabs_invalid_json">Nevarēja nolasīt saglabātās cilnes, tādēļ izmanto noklusējuma</string>
     <string name="no_streams_available_download">Neviens video nav pieejams lejupielādei</string>
-    <string name="error_occurred_detail">Notika kļūda: %1$s</string>
     <string name="file_name_empty_error">Datnes nosaukums nevar būt tukšs</string>
-    <string name="invalid_file">Datne neeksistē vai nav dota atļauja to lasīt vai rakstīt</string>
-    <string name="invalid_source">Tāda datne/saturs neeksistē</string>
     <string name="invalid_directory">Tāda mape neeksistē</string>
     <string name="missing_file">Datne pārvietota vai dzēsta</string>
     <string name="audio_streams_empty">Netika atrasts audio</string>
@@ -402,7 +396,6 @@
     <string name="video_player">Atvērt video atskaņotājā</string>
     <string name="preferred_open_action_settings_title">Vēlamā kopīgotās saites atvēršanas darbība</string>
     <string name="trending">Tendences</string>
-    <string name="copyright">© %1$s no %2$s zem %3$s</string>
     <string name="download_failed">Lejupielāde neizdevās</string>
     <string name="enqueue">Pievienot rindai</string>
     <string name="paused">Pausēts</string>
@@ -605,7 +598,6 @@
     <string name="description_select_disable">Izslēgt teksta atlasīšanu video aprakstā</string>
     <string name="metadata_privacy_internal">Iekšeji</string>
     <string name="detail_heart_img_view_description">Autors piekrīt</string>
-    <string name="open_website_license">Atvērt vietni</string>
     <string name="tablet_mode_title">Planšetes režīms</string>
     <string name="low_quality_smaller">Zemas kvalitātes (mazāks)</string>
     <string name="metadata_privacy">Privātums</string>
@@ -716,7 +708,6 @@
     <string name="you_successfully_subscribed">Jūs tagad esiet šī kanāla abonents</string>
     <string name="metadata_banners">Banneri</string>
     <string name="metadata_subscribers">Abonenti</string>
-    <string name="enumeration_comma">,</string>
     <string name="toggle_all">Pārslēgt visus</string>
     <string name="unknown_quality">Nepazīstama kvalitāte</string>
     <string name="feed_show_watched">Noskatītos/noklausītos</string>
@@ -825,7 +816,6 @@
     <string name="permission_display_over_apps_message">Lai varētu izmantot uznirstošo atskaņotāju, lūdzu, atlasiet %1$s šajā Android iestatījumu izvēlnē un iespējojiet %2$s.</string>
     <string name="import_subscriptions_title">Ievietot abonementus</string>
     <string name="export_subscriptions_title">Izgūt abonementus</string>
-    <string name="import_from_previous_export">Ievietot no iepriekšējās izgūšanas</string>
     <plurals name="export_subscriptions">
         <item quantity="zero">Izgūst %d abonementus…</item>
         <item quantity="one">Izgūst %d abonementu…</item>

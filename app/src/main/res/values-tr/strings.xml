@@ -103,14 +103,12 @@
     <string name="best_resolution">En iyi çözünürlük</string>
     <string name="title_activity_about">NewPipe Hakkında</string>
     <string name="title_licenses">Üçüncü Taraf Lisansları</string>
-    <string name="copyright" formatted="true">© %1$s, %2$s tarafından %3$s altında</string>
     <string name="tab_about">Hakkında ve SSS</string>
     <string name="tab_licenses">Lisanslar</string>
     <string name="app_description">Android\'de özgür ve hafif bir oynatıcı.</string>
     <string name="view_on_github">GitHub\'da Görüntüle</string>
     <string name="app_license_title">NewPipe\'ın Lisansı</string>
     <string name="contribution_encouragement">Fikirleriniz; çeviri, tasarım değişiklikleri, kod temizliği ya da gerçek köklü kod değişikleri olsun yardımınıza her zaman açığız. Ne kadar çok yapılırsa o kadar iyi olur!</string>
-    <string name="read_full_license">Lisansı oku</string>
     <string name="contribution_title">Katkıda bulunun</string>
     <string name="settings_category_downloads_title">İndir</string>
     <string name="settings_file_charset_title">Dosya adlarında izin verilen karakterler</string>
@@ -213,7 +211,6 @@
     <string name="controls_add_to_playlist_title">Ekle</string>
     <string name="detail_drag_description">Yeniden düzenlemek için sürükleyin</string>
     <string name="create">Oluştur</string>
-    <string name="dismiss">Dışla</string>
     <string name="rename">Yeniden adlandır</string>
     <string name="always_ask_open_action">Her zaman sor</string>
     <string name="create_playlist">Yeni Oynatma Listesi</string>
@@ -242,10 +239,7 @@
     <string name="auto_queue_summary">İlgili bir akış ekleyerek sonlanacak (yinelemeyen) oynatma sırasını sürdür</string>
     <string name="file">Dosya</string>
     <string name="invalid_directory">Böylesi klasör yok</string>
-    <string name="invalid_source">Böyle bir dosya/içerik kaynağı yok</string>
-    <string name="invalid_file">Dosya yok ya da okuma veya yazma izni bulunmuyor</string>
     <string name="file_name_empty_error">Dosya adı boş olamaz</string>
-    <string name="error_occurred_detail">Hata oluştu: %1$s</string>
     <string name="import_title">İçe aktar</string>
     <string name="import_from">Şuradan içe aktar</string>
     <string name="export_to">Şuraya dışa aktar</string>
@@ -295,7 +289,6 @@
     <string name="clear_search_history_summary">Aramada kullanılan anahtar kelimelerin geçmişini siler</string>
     <string name="delete_search_history_alert">Tüm arama geçmişi silinsin mi\?</string>
     <string name="search_history_deleted">Arama geçmişi silindi</string>
-    <string name="one_item_deleted">1 öge silindi.</string>
     <string name="app_license">NewPipe, telif müsaadeli özgür yazılımdır: İstediğiniz gibi kullanabilir, öğrenebilir, paylaşabilir ve geliştirebilirsiniz. Özellikle, Özgür Yazılım Vakfı tarafından yayımlanan GNU Genel Kamu Lisansı 3. sürümü veya (isterseniz) daha sonraki sürümleri koşulları altında yeniden dağıtabilir ve/veya değiştirebilirsiniz.</string>
     <string name="import_settings">Ayarları da içe aktarmak istiyor musunuz?</string>
     <string name="privacy_policy_title">NewPipe\'ın Gizlilik İlkesi</string>
@@ -604,7 +597,6 @@
     <string name="description_select_disable">Açıklamadaki metni seçmeyi devre dışı bırak</string>
     <string name="description_select_enable">Açıklamadaki metni seçmeyi etkinleştir</string>
     <string name="description_select_note">Artık, açıklamadaki metni seçebilirsiniz. Seçim kipindeyken sayfanın titreyebileceğini ve bağlantıların tıklanamayacağını unutmayın.</string>
-    <string name="open_website_license">Web sitesini aç</string>
     <string name="account_terminated">Hesap sonlandırıldı</string>
     <string name="feed_load_error_fast_unknown">Hızlı besleme kipi bununla ilgili daha çok bilgi sağlamıyor.</string>
     <string name="feed_load_error_terminated">Yazarın hesabı sonlandırılmış.
@@ -681,7 +673,6 @@
     <string name="streams_notifications_interval_title">Denetleme sıklığı</string>
     <string name="any_network">Herhangi bir ağ</string>
     <string name="delete_downloaded_files_confirm">İndirilen tüm dosyalar diskten silinsin mi\?</string>
-    <string name="enumeration_comma">,</string>
     <string name="toggle_all">Tümünü değiştir</string>
     <string name="percent">Yüzde</string>
     <string name="semitone">Ara ton</string>
@@ -864,7 +855,6 @@
     <string name="export_subscriptions_title">Abonelikleri dışarı aktar</string>
     <string name="import_subscriptions_summary">Abonelikleri önceki dışarı aktarmadaki .json dosyası ile içeri aktar</string>
     <string name="export_subscriptions_summary">Aboneliklerini bir .json dosyasında dışarı aktar</string>
-    <string name="import_from_previous_export">Önceki dışarı aktarmadan içe aktar</string>
     <string name="api23_requirement_dialog_title">NewPipe, Android 5 desteğini bırakıyor</string>
     <string name="api23_requirement_dialog_message">NewPipe ne yazık ki Android 5.0 ve 5.1 desteğini bırakan birkaç kitaplığa bağlıdır. Üzücü ki sıradaki NewPipe sürümü yalnızca Android 6 ve üstü aygıtlarda çalışacaktır. Daha çoğunu blog gönderisinde okuyun.</string>
     <string name="api23_requirement_dialog_blogpost">Blog gönderisi</string>
