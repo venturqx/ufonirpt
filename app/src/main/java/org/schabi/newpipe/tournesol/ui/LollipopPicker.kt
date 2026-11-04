@@ -56,6 +56,7 @@ import androidx.compose.ui.graphics.nativeCanvas
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.colorResource
@@ -493,23 +494,53 @@ private fun CriterionScoreHeader(title: String, score: Int) {
             .padding(top = 8.dp, start = 16.dp, end = 16.dp),
         horizontalArrangement = Arrangement.Center
     ) {
-        Text(
-            text = title,
-            color = contentColor.copy(alpha = 0.75f),
-            fontSize = 13.sp,
-            modifier = Modifier.semantics { liveRegion = LiveRegionMode.Polite }
-        )
-        Box(modifier = Modifier.width(48.dp)) {
+        CenteredWithTrailing(
+            trailing = {
+                Box(modifier = Modifier.width(48.dp)) {
+                    Text(
+                        text = score.toString(),
+                        color = scoreColor,
+                        fontSize = 13.sp,
+                        maxLines = 1,
+                        softWrap = false,
+                        modifier = Modifier
+                            .align(Alignment.CenterStart)
+                            .padding(start = 6.dp)
+                    )
+                }
+            }
+        ) {
             Text(
-                text = score.toString(),
-                color = scoreColor,
+                text = title,
+                color = contentColor.copy(alpha = 0.75f),
                 fontSize = 13.sp,
-                maxLines = 1,
-                softWrap = false,
-                modifier = Modifier
-                    .align(Alignment.CenterStart)
-                    .padding(start = 6.dp)
+                modifier = Modifier.semantics { liveRegion = LiveRegionMode.Polite }
             )
+        }
+    }
+}
+
+@Composable
+private fun CenteredWithTrailing(
+    trailing: @Composable () -> Unit,
+    modifier: Modifier = Modifier,
+    content: @Composable () -> Unit
+) {
+    Layout(contents = listOf(content, trailing), modifier = modifier) { (contentMeasurables, trailingMeasurables), constraints ->
+        val loose = constraints.copy(minWidth = 0, minHeight = 0)
+        val trailingPlaceable = trailingMeasurables.first().measure(loose)
+        val side = trailingPlaceable.width
+        val contentConstraints = if (loose.hasBoundedWidth) {
+            loose.copy(maxWidth = (loose.maxWidth - 2 * side).coerceAtLeast(0))
+        } else {
+            loose
+        }
+        val contentPlaceable = contentMeasurables.first().measure(contentConstraints)
+        val width = contentPlaceable.width + 2 * side
+        val height = maxOf(contentPlaceable.height, trailingPlaceable.height)
+        layout(width, height) {
+            contentPlaceable.placeRelative(side, (height - contentPlaceable.height) / 2)
+            trailingPlaceable.placeRelative(side + contentPlaceable.width, (height - trailingPlaceable.height) / 2)
         }
     }
 }
@@ -663,25 +694,26 @@ private fun QualifierRow(
                 fontSize = 13.sp,
                 modifier = Modifier.align(Alignment.CenterStart)
             )
-            Row(
+            CenteredWithTrailing(
                 modifier = Modifier.align(Alignment.Center),
-                verticalAlignment = Alignment.CenterVertically
+                trailing = {
+                    Text(
+                        text = "ⓘ",
+                        color = contentColor.copy(alpha = if (descriptionShown) 0.85f else 0.45f),
+                        fontSize = 12.sp,
+                        modifier = Modifier
+                            .padding(start = 2.dp)
+                            .clip(CircleShape)
+                            .clickable(onClick = onToggleDescription)
+                            .padding(horizontal = 6.dp, vertical = 2.dp)
+                    )
+                }
             ) {
                 Text(
                     text = qualifier,
                     color = contentColor.copy(alpha = 0.9f),
                     fontSize = 13.sp,
                     textAlign = TextAlign.Center
-                )
-                Text(
-                    text = "ⓘ",
-                    color = contentColor.copy(alpha = if (descriptionShown) 0.85f else 0.45f),
-                    fontSize = 12.sp,
-                    modifier = Modifier
-                        .padding(start = 2.dp)
-                        .clip(CircleShape)
-                        .clickable(onClick = onToggleDescription)
-                        .padding(horizontal = 6.dp, vertical = 2.dp)
                 )
             }
             Text(
@@ -725,7 +757,6 @@ private fun DrawScope.drawLollipopHead(
     submitted: Boolean = false,
     touched: Boolean = true,
     iconHighlighted: Boolean = false,
-    belowLabelShift: Float = 0f,
     labelAlwaysBelow: Boolean = false,
     scale: Float = 1f
 ) {
@@ -787,7 +818,7 @@ private fun DrawScope.drawLollipopHead(
     val labelY = if (score >= 0 && !labelAlwaysBelow) {
         cy - circleRadius - textGap
     } else {
-        cy + circleRadius + textSizePx + textGap * 0.3f + belowLabelShift
+        cy + circleRadius + textSizePx + textGap * 0.3f
     }
     drawContext.canvas.nativeCanvas.drawText(txt, cx, labelY, labelPaint)
 
@@ -861,7 +892,7 @@ private fun LollipopHead(
                 stateDescription = score.toString()
             }
     ) {
-        val center = Offset(size.width / 2f, (size.height - indicatorSpacePx - textSizePx) / 2f)
+        val center = Offset(size.width / 2f, indicatorSpacePx + (size.height - indicatorSpacePx - textSizePx) / 2f)
         drawLollipopHead(
             center = center,
             color = color,
@@ -879,7 +910,6 @@ private fun LollipopHead(
             submitted = submitted,
             touched = touched,
             iconHighlighted = selected,
-            belowLabelShift = indicatorSpacePx,
             labelAlwaysBelow = true,
             scale = scale
         )
@@ -888,7 +918,7 @@ private fun LollipopHead(
                 color = color,
                 topLeft = Offset(
                     center.x - indicatorWidthPx / 2f,
-                    center.y + circleRadius + strokeWidth / 2f + indicatorGapPx
+                    center.y - circleRadius - strokeWidth / 2f - indicatorGapPx - indicatorHeightPx
                 ),
                 size = Size(indicatorWidthPx, indicatorHeightPx),
                 cornerRadius = CornerRadius(indicatorHeightPx / 2f)
