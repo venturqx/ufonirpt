@@ -1,4 +1,4 @@
-package org.schabi.newpipe.fragments.detail
+package org.schabi.newpipe.tournesol
 
 data class CompareComparisonVideo(
     val uid: String,

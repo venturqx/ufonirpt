@@ -15,7 +15,8 @@ pluginManagement {
         eachPlugin {
             val id = requested.id.id
             when (id) {
-                "com.android.application" -> {
+                "com.android.application",
+                "com.android.library" -> {
                     useModule("com.android.tools.build:gradle:${requested.version}")
                 }
                 "com.google.devtools.ksp" -> {
@@ -50,6 +51,7 @@ dependencyResolutionManagement {
     }
 }
 include(":app") // androidApp
+include(":tournesol")
 include(":desktopApp")
 include("shared")
 
