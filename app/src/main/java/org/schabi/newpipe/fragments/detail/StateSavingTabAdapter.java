@@ -140,6 +140,11 @@ public final class StateSavingTabAdapter extends FragmentStatePagerAdapter {
         fragmentTitleList.add(title);
     }
 
+    public void addFragment(final Fragment fragment, final String title, final int position) {
+        fragmentList.add(position, fragment);
+        fragmentTitleList.add(position, title);
+    }
+
     public void clearAllItems() {
         fragmentList.clear();
         fragmentTitleList.clear();

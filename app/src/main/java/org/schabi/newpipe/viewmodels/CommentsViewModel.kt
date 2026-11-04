@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
+import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineDispatcher
@@ -12,6 +13,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.BufferOverflow
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -25,6 +27,7 @@ import kotlinx.coroutines.flow.transformLatest
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.yield
 import org.schabi.newpipe.extractor.comments.CommentsInfo
+import org.schabi.newpipe.extractor.comments.CommentsInfoItem
 import org.schabi.newpipe.paging.CommentsSource
 import org.schabi.newpipe.ui.components.video.comment.CommentInfo
 import org.schabi.newpipe.util.KEY_URL
@@ -85,7 +88,7 @@ class CommentsViewModel(
         .stateIn(scope, SharingStarted.Lazily, Resource.Loading)
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    val comments = uiState
+    val comments: Flow<PagingData<CommentsInfoItem>> = uiState
         .filterIsInstance<Resource.Success<CommentInfo>>()
         .flatMapLatest {
             Pager(PagingConfig(pageSize = 20, enablePlaceholders = false)) {
