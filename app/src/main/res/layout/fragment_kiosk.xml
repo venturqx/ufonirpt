@@ -50,7 +50,7 @@
                 android:layout_gravity="center"
                 android:layout_marginBottom="10dp"
                 android:fontFamily="monospace"
-                android:text="(?ų-ų)?"
+                android:text="(╯°-°)╯"
                 android:textSize="35sp"
                 tools:ignore="HardcodedText,UnusedAttribute" />
 

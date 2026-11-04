@@ -224,7 +224,6 @@
     <string name="clear_views_history_title">Clear watch history</string>
     <string name="clear_views_history_summary">Deletes the history of played streams and the playback positions</string>
     <string name="delete_view_history_alert">Delete entire watch history?</string>
-    <string name="delete_view_history_description">Your watching history will be permanently erased</string>
     <string name="watch_history_deleted">Watch history deleted</string>
     <string name="clear_playback_states_title">Delete playback positions</string>
     <string name="clear_playback_states_summary">Deletes all playback positions</string>
@@ -255,10 +254,7 @@
     <string name="audio_streams_empty">No audio streams found</string>
     <string name="missing_file">File moved or deleted</string>
     <string name="invalid_directory">No such folder</string>
-    <string name="invalid_source">No such file/content source</string>
-    <string name="invalid_file">The file doesn\'t exist or permission to read or write to it is lacking</string>
     <string name="file_name_empty_error">Filename cannot be empty</string>
-    <string name="error_occurred_detail">An error occurred: %1$s</string>
     <string name="no_streams_available_download">No streams available to download</string>
     <string name="saved_tabs_invalid_json">Could not read saved tabs, so using default ones</string>
     <string name="restore_defaults">Restore defaults</string>
@@ -288,7 +284,6 @@
     <string name="detail_dislikes_img_view_description">Dislikes</string>
     <string name="comments_tab_description">Comments</string>
     <string name="related_items_tab_description">Related items</string>
-    <string name="compare_tab_description">Compare</string>
     <string name="tournesol_tab_description">Tournesol</string>
     <string name="manifesto_tab_description">Manifesto</string>
     <string name="description_tab_description">Description</string>
@@ -348,7 +343,6 @@
     <string name="delete_file">Delete file</string>
     <string name="delete_entry">Delete entry</string>
     <string name="checksum">Checksum</string>
-    <string name="dismiss">Dismiss</string>
     <string name="rename">Rename</string>
     <!-- Msg -->
     <string name="msg_name">Filename</string>
@@ -363,7 +357,6 @@
     <string name="no_available_dir">Please define a download folder later in settings</string>
     <string name="no_dir_yet">No download folder set yet, choose the default download folder now</string>
     <string name="msg_popup_permission">This permission is needed to\nopen in popup mode</string>
-    <string name="one_item_deleted">1 item deleted.</string>
     <!-- reCAPTCHA -->
     <string name="title_activity_recaptcha">reCAPTCHA challenge</string>
     <string name="subtitle_activity_recaptcha">Press \"Done\" when solved</string>
@@ -380,7 +373,6 @@
     <!-- About -->
     <string name="title_activity_about">About NewPipe</string>
     <string name="title_licenses">Third-party Licenses</string>
-    <string name="copyright">© %1$s by %2$s under %3$s</string>
     <string name="tab_about">About \u0026 FAQ</string>
     <string name="tab_licenses">Licenses</string>
     <string name="app_description">Libre lightweight streaming on Android.</string>
@@ -397,7 +389,6 @@
     <string name="read_privacy_policy">Read privacy policy</string>
     <string name="app_license_title">NewPipe\'s License</string>
     <string name="app_license">NewPipe is copyleft libre software: You can use, study, share, and improve it at will. Specifically you can redistribute and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</string>
-    <string name="read_full_license">Read license</string>
     <string name="faq_title">Frequently asked questions</string>
     <string name="faq_description">If you are having trouble using the app, be sure to check out these answers to common questions!</string>
     <string name="faq">View on website</string>
@@ -408,8 +399,6 @@
     <string name="history_sort_date">Date</string>
     <string name="history_sort_views">Views</string>
     <!-- Content -->
-    <string name="recommendation_algorithm_title">Recommendation Algorithm</string>
-    <string name="recommendation_algorithm_summary">Choose the service used for recommendations</string>
     <string name="recommendation_algorithm_key">recommendation_algorithm_key</string>
     <string name="recommendation_algorithm_youtube">YouTube</string>
     <string name="recommendation_algorithm_tournesol">Tournesol</string>
@@ -428,10 +417,8 @@
     <string name="no_playlist_bookmarked_yet">No playlist bookmarks yet</string>
     <string name="select_a_kiosk">Select a kiosk</string>
     <string name="filter_tournesol">Filter Tournesol</string>
-    <string name="filter_content">Content</string>
     <string name="filter_languages">Languages</string>
     <string name="filter_date">Date</string>
-    <string name="include_low_score_videos">Include low score videos</string>
     <string name="include_low_score_videos_short">Low score allowed</string>
     <string name="date_since_forever">No restriction</string>
     <string name="date_last_year">Less than 1 year</string>
@@ -446,8 +433,6 @@
     <string name="date_short_year">1Y</string>
     <string name="filter_advanced">Advanced</string>
     <string name="filter_duration">Duration</string>
-    <string name="filter_duration_min">Min: %1$s</string>
-    <string name="filter_duration_max">Max: %1$s</string>
     <string name="filter_duration_no_limit">No limit</string>
     <string name="filter_duration_minutes">%1$d min</string>
     <string name="filter_criteria">Criteria weight</string>
@@ -461,35 +446,41 @@
     <string name="filter_criteria_diversity_inclusion">Diversity &amp; inclusion</string>
     <string name="filter_criteria_better_habits">Better habits</string>
     <string name="filter_criteria_backfire_risk">Resilience to backfiring</string>
-    <string name="filter_unsafe_short">More</string>
-    <string name="apply">Apply</string>
+    <string name="filter_weights_enable">Enable weighting</string>
+    <string name="filter_weight_ignore">Ignore</string>
+    <string name="filter_weight_not_important">Not important</string>
+    <string name="filter_weight_neutral">Neutral</string>
+    <string name="filter_weight_important">Important</string>
+    <string name="filter_weight_crucial">Crucial</string>
 
     <!-- Language names for Tournesol filter -->
     <string name="language_english">English</string>
-    <string name="language_french">Francais</string>
-    <string name="language_spanish">Espanol</string>
+    <string name="language_french">Français</string>
+    <string name="language_spanish">Español</string>
     <string name="language_german">Deutsch</string>
     <string name="language_italian">Italiano</string>
-    <string name="language_portuguese">Portugues</string>
+    <string name="language_portuguese">Português</string>
     <string name="tournesol_hi_greeting">Hi</string>
-    <string name="tournesol_hi_user">Hi %1$s,</string>
     <string name="tournesol_login_title">Log in to Tournesol</string>
     <string name="tournesol_username_hint">Username</string>
     <string name="tournesol_password_hint">Password</string>
     <string name="tournesol_login_button">Login</string>
     <string name="tournesol_register_button">Register</string>
     <string name="tournesol_logout_button">Logout</string>
-    <string name="tournesol_login_action">Log in to Tournesol</string>
     <string name="tournesol_login_missing_fields">Please enter username and password</string>
     <string name="tournesol_login_in_progress">Extracting and logging in...</string>
     <string name="tournesol_login_success">Login successful</string>
     <string name="tournesol_login_failed">Login failed</string>
-    <string name="tournesol_login_failed_with_message">Login failed: %1$s</string>
-    <string name="tournesol_auth_cancelled">Tournesol auth cancelled</string>
-    <string name="tournesol_score_label">%1$s</string>
-    <string name="tournesol_detail_contributors">%1$d contributors</string>
+    <string name="tournesol_login_invalid_credentials">Incorrect username or password</string>
+    <plurals name="tournesol_detail_contributors">
+        <item quantity="one">%1$d contributor</item>
+        <item quantity="other">%1$d contributors</item>
+    </plurals>
     <string name="tournesol_detail_comparisons">%1$d comparisons</string>
-    <string name="tournesol_detail_unsafe_warning">⚠ Flagged as unsafe</string>
+    <string name="tournesol_detail_scores_header">Scores</string>
+    <string name="tournesol_detail_criteria_header">Criteria</string>
+    <string name="tournesol_detail_not_rated">Not rated on Tournesol yet</string>
+    <string name="tournesol_detail_load_error">Couldn\'t load the Tournesol score</string>
     <string name="tournesol_criteria_reliability">Reliable &amp; not misleading</string>
     <string name="tournesol_criteria_importance">Important &amp; actionable</string>
     <string name="tournesol_criteria_engaging">Engaging &amp; thought-provoking</string>
@@ -499,6 +490,9 @@
     <string name="tournesol_criteria_diversity_inclusion">Diversity &amp; inclusion</string>
     <string name="tournesol_criteria_backfire_risk">Resilient to backfire risks</string>
     <string name="tournesol_criteria_better_habits">Encourages better habits</string>
+    <string name="tournesol_page_first">First page</string>
+    <string name="tournesol_page_previous">Previous page</string>
+    <string name="tournesol_page_next">Next page</string>
     <string name="export_complete_toast">Exported</string>
     <string name="import_complete_toast">Imported</string>
     <string name="no_valid_zip_file">No valid ZIP file</string>
@@ -507,39 +501,15 @@
     <string name="import_settings">Do you want to also import settings?</string>
     <string name="error_unable_to_load_comments">Could not load comments</string>
     <string name="compare_title">Compare</string>
-    <string name="compare_instruction_text">%1$s should be more recommended than %2$s.</string>
-    <string name="compare_current_video_header">Current video</string>
-    <string name="compare_last_viewed_header">Last viewed video</string>
     <string name="compare_loading_history">Loading history...</string>
     <string name="compare_history_unavailable">History unavailable</string>
     <string name="compare_history_empty">No videos in history</string>
     <string name="compare_no_comparisons_available">No comparisons available</string>
-    <string name="compare_score_label">Score: %1$d</string>
-    <string name="compare_action_button">Compare</string>
     <string name="compare_see_history">Your comparisons</string>
     <string name="compare_you_submitted">You submitted %1$d comparisons.</string>
-    <string name="compare_see_stats">Tournesol stats</string>
-    <string name="compare_submit_label">Submit</string>
-    <string name="compare_submitting_label">Submitting</string>
-    <string name="compare_submitted_label">Submitted</string>
-    <string name="compare_change_label">Change</string>
-    <string name="compare_update_label">Update</string>
-    <string name="compare_submit_more_label">Submit more</string>
-    <string name="compare_more_criteria_title">More criteria</string>
-    <string name="compare_submit_with_score">%1$s %2$d</string>
-    <string name="compare_login_label">Login</string>
-    <string name="compare_logged_in_label">Logged in</string>
-    <string name="compare_previous_video">Previous video</string>
-    <string name="compare_next_video">Next video</string>
-    <string name="compare_swipe_hint">&lt;&lt; SWIPE &gt;&gt;</string>
     <string name="compare_thumbnail_description">Video thumbnail</string>
-    <string name="compare_score_accessibility">Comparison score: %1$d from %2$d to %3$d</string>
-    <string name="compare_score_no">NO</string>
-    <string name="compare_score_yes">YES</string>
-    <string name="compare_item_info">Title: %1$s\nURL: %2$s</string>
-    <string name="compare_current_unavailable">Current video unavailable</string>
-    <string name="compare_current_label">CURRENT</string>
     <string name="compare_login_required">Tournesol login required</string>
+    <string name="compare_session_expired">Session expired. Please log in again.</string>
     <string name="compare_greeting">Hi %1$s,</string>
     <string name="compare_greeting_comparisons">You\'ve made %1$d comparisons!</string>
     <string name="compare_login_prompt">You need to login to compare:</string>
@@ -547,10 +517,11 @@
     <string name="compare_submitted">Comparison submitted</string>
     <string name="compare_score_updated">Comparison updated</string>
     <string name="compare_more_submitted">Additional criteria submitted</string>
-    <string name="compare_already_submitted">Comparison already submitted</string>
+    <string name="compare_score_state_left">%1$d, left video %2$s</string>
+    <string name="compare_score_state_right">%1$d, right video %2$s</string>
+    <string name="compare_score_state_even">%1$d, %2$s</string>
+    <string name="compare_score_confirm">confirm score</string>
     <string name="compare_failed">Compare failed</string>
-    <string name="compare_failed_with_message">Compare failed: %1$s</string>
-    <string name="compare_select_criteria">Select at least one criterion</string>
     <string name="compare_criteria_largely_recommended">Largely recommended</string>
     <string name="compare_compact_initial_prompt">Please start rating by sliding up and down the %1$s icon.</string>
     <string name="compare_criteria_desc_largely_recommended">Overall, should be recommended widely to a broad audience.</string>
@@ -574,6 +545,61 @@
     <string name="compare_criteria_backfire_risk">Backfire risk</string>
     <string name="compare_randomize_left">Randomize left video</string>
     <string name="compare_randomize_right">Randomize right video</string>
+    <string name="compare_no_pair">No videos to compare right now</string>
+    <string name="compare_vs">VS</string>
+    <string name="compare_history_previous">Previous video in history</string>
+    <string name="compare_history_next">Next video in history</string>
+    <string name="compare_playing">Playing</string>
+    <string name="compare_cancel">CANCEL</string>
+    <string name="compare_slide_up_to_cancel">Slide up to %1$s.</string>
+    <string name="compare_goal_daily">Your daily</string>
+    <string name="compare_goal_weekly">Weekly collective</string>
+    <string name="compare_submit_extras">SUBMIT ALL</string>
+    <string name="compare_resubmit_extras">RESUBMIT</string>
+    <string name="compare_submitting_extras">SUBMITTING…</string>
+    <string name="compare_submitted_extras">SUBMITTED</string>
+    <string name="compare_status_please_rate">Please rate</string>
+    <string name="compare_status_submitting_main">Submitting main</string>
+    <string name="compare_status_submitted_main">Sent</string>
+    <string name="compare_status_rating_extra">%1$d/%2$d optional</string>
+    <string name="compare_status_submitted_extra">%1$d/%2$d</string>
+    <string name="compare_question_largely_recommended">Should be recommended..?</string>
+    <string name="compare_question_reliability">Is more reliable..?</string>
+    <string name="compare_question_pedagogy">Is more pedagogical..?</string>
+    <string name="compare_question_importance">Is more important..?</string>
+    <string name="compare_question_layman_friendly">Is more accessible..?</string>
+    <string name="compare_question_entertaining_relaxing">Is more entertaining..?</string>
+    <string name="compare_question_engaging">Is more engaging..?</string>
+    <string name="compare_question_diversity_inclusion">Is more inclusive..?</string>
+    <string name="compare_question_better_habits">Encourages better habits..?</string>
+    <string name="compare_question_backfire_risk">Does not backfire..?</string>
+    <string name="compare_qualifier_largely_recommended_even"><![CDATA[<b>just as</b> recommended]]></string>
+    <string name="compare_qualifier_largely_recommended_slight"><![CDATA[<b>slightly more</b> recommended]]></string>
+    <string name="compare_qualifier_largely_recommended_strong"><![CDATA[<b>much more</b> recommended]]></string>
+    <string name="compare_qualifier_reliability_even"><![CDATA[<b>just as</b> reliable]]></string>
+    <string name="compare_qualifier_reliability_slight"><![CDATA[<b>slightly more</b> reliable]]></string>
+    <string name="compare_qualifier_reliability_strong"><![CDATA[<b>much more</b> reliable]]></string>
+    <string name="compare_qualifier_pedagogy_even"><![CDATA[<b>just as</b> pedagogical]]></string>
+    <string name="compare_qualifier_pedagogy_slight"><![CDATA[<b>slightly more</b> pedagogical]]></string>
+    <string name="compare_qualifier_pedagogy_strong"><![CDATA[<b>much more</b> pedagogical]]></string>
+    <string name="compare_qualifier_importance_even"><![CDATA[<b>just as</b> important]]></string>
+    <string name="compare_qualifier_importance_slight"><![CDATA[<b>slightly more</b> important]]></string>
+    <string name="compare_qualifier_importance_strong"><![CDATA[<b>much more</b> important]]></string>
+    <string name="compare_qualifier_layman_friendly_even"><![CDATA[<b>just as</b> accessible]]></string>
+    <string name="compare_qualifier_layman_friendly_slight"><![CDATA[<b>slightly more</b> accessible]]></string>
+    <string name="compare_qualifier_layman_friendly_strong"><![CDATA[<b>much more</b> accessible]]></string>
+    <string name="compare_qualifier_entertaining_relaxing_even"><![CDATA[<b>just as</b> entertaining]]></string>
+    <string name="compare_qualifier_entertaining_relaxing_slight"><![CDATA[<b>slightly more</b> entertaining]]></string>
+    <string name="compare_qualifier_entertaining_relaxing_strong"><![CDATA[<b>much more</b> entertaining]]></string>
+    <string name="compare_qualifier_engaging_even"><![CDATA[<b>just as</b> engaging]]></string>
+    <string name="compare_qualifier_engaging_slight"><![CDATA[<b>slightly more</b> engaging]]></string>
+    <string name="compare_qualifier_engaging_strong"><![CDATA[<b>much more</b> engaging]]></string>
+    <string name="compare_qualifier_diversity_inclusion_even"><![CDATA[<b>just as</b> inclusive]]></string>
+    <string name="compare_qualifier_diversity_inclusion_slight"><![CDATA[<b>slightly more</b> inclusive]]></string>
+    <string name="compare_qualifier_diversity_inclusion_strong"><![CDATA[<b>much more</b> inclusive]]></string>
+    <string name="compare_qualifier_goodness_even"><![CDATA[<b>as good</b>]]></string>
+    <string name="compare_qualifier_goodness_slight"><![CDATA[<b>slightly better</b>]]></string>
+    <string name="compare_qualifier_goodness_strong"><![CDATA[<b>much better</b>]]></string>
     <string name="select_a_feed_group">Select a feed group</string>
     <string name="no_feed_group_created_yet">No feed group created yet</string>
     <!-- Kiosk Names -->
@@ -683,7 +709,6 @@
     <string name="export_subscriptions_title">Export subscriptions</string>
     <string name="import_subscriptions_summary">Import subscriptions from a previous .json export"</string>
     <string name="export_subscriptions_summary">Export your subscriptions to a .json file</string>
-    <string name="import_from_previous_export">Import from previous export</string>
     <string name="subscriptions_import_unsuccessful">Could not import subscriptions</string>
     <string name="subscriptions_export_unsuccessful">Could not export subscriptions</string>
     <string name="import_youtube_instructions">Import YouTube subscriptions from Google takeout:
@@ -726,10 +751,6 @@
         <item>360p</item>
         <item>240p</item>
         <item>144p</item>
-    </string-array>
-    <string-array name="high_resolution_limit_data_usage_description_list">
-        <item>2160p</item>
-        <item>1440p</item>
     </string-array>
     <!-- Notifications settings -->
     <string name="enable_streams_notifications_title">New streams notifications</string>
@@ -963,7 +984,6 @@
     <string name="metadata_subscribers">Subscribers</string>
     <string name="detail_pinned_comment_view_description">Pinned comment</string>
     <string name="detail_heart_img_view_description">Hearted by creator</string>
-    <string name="open_website_license">Open website</string>
     <string name="tablet_mode_title">Tablet mode</string>
     <string name="on">On</string>
     <string name="off">Off</string>
@@ -973,7 +993,6 @@
     <string name="notifications_disabled">Notifications are disabled</string>
     <string name="get_notified">Get notified</string>
     <string name="you_successfully_subscribed">You now subscribed to this channel</string>
-    <string name="enumeration_comma">,</string>
     <string name="toggle_all">Toggle all</string>
     <string name="streams_not_yet_supported_removed">Streams which are not yet supported by the downloader are not shown</string>
     <string name="audio_track_present_in_video">An audio track should be already present in this stream</string>
@@ -1049,9 +1068,7 @@
     <string name="auto_queue_description">Next</string>
     <string name="newpipe_extractor_description">NewPipeExtractor is a library for extracting things from streaming sites. It is a core component of NewPipe, but could be used independently.</string>
     <string name="history_sort_label">Sort by</string>
-    <string name="clear_history_description">Button to clear watch history</string>
     <string name="playlist_content_description">Thumbnail for playlist %1$s</string>
-    <string name="stream_content_description">Thumbnail for stream %1$s</string>
     <plurals name="comments">
         <item quantity="one">%d comment</item>
         <item quantity="other">%d comments</item>
@@ -1070,6 +1087,7 @@
     <string name="unsupported_content_in_country">This content is not available for the currently selected content country.\n\nChange your selection from \"Settings > Content > Default content country\".</string>
 
     <!-- Manifesto screen -->
+    <string name="manifesto_disclaimer">Ufonirpt is not affiliated with NewPipe nor tournesol.app.</string>
     <string name="manifesto_hero_title">Tournesol: why? how?</string>
     <string name="manifesto_hero_body">Today, the content we consume on major platforms is chosen by mechanisms called \'recommendation algorithms\' or \'recommendation AIs\'.</string>
 
@@ -1103,8 +1121,8 @@
     <string name="manifesto_s3_p3">This is quite possible, provided we develop recommendation AIs based on citizens\' thoughtful judgments, and not on the interests of digital giants.</string>
 
     <string name="manifesto_tournesol_title">The Tournesol project</string>
-    <string name="manifesto_tournesol_body_prefix">The Tournesol project develops alternative and more democratic recommendation AIs, which rely on your judgments and your interests. Come try the platform on </string>
-    <string name="manifesto_tournesol_body_suffix"> !</string>
+    <string name="manifesto_tournesol_body_prefix">The Tournesol project develops alternative and more democratic recommendation AIs, which rely on your judgments and your interests. Come try the platform on\u0020</string>
+    <string name="manifesto_tournesol_body_suffix">!</string>
     <string name="manifesto_tournesol_body2">Beyond that, the Tournesol association brings together volunteer citizens, researchers, content creators, developers. Its purpose is to defend the three principles proposed in this manifesto.</string>
 
     <string name="manifesto_help_title">This manifesto speaks to you and you want to help us?</string>
@@ -1117,10 +1135,9 @@
     <string name="manifesto_help_regular_title">More regularly</string>
     <string name="manifesto_help_regular_detail">Introduce yourself by email or on the dedicated Discord channel (#intros): communication, research, funding requests or development strategy, we always need motivated people. Or attend a Tournesol presentation, organized once every two months.</string>
     <string name="manifesto_help_more_title">Even more?</string>
-    <string name="manifesto_help_more_prefix">Find out more on </string>
+    <string name="manifesto_help_more_prefix">Find out more on\u0020</string>
 
     <string name="manifesto_further_title">To go further</string>
-    <string name="manifesto_further_link">[link]</string>
 
     <string name="manifesto_notes_title">Notes</string>
     <string name="manifesto_note1">According to the Facebook Files, an internal Facebook/Meta study shows that Instagram contributes to degrading teenage girls\' mental health. In the United States, 57% of teenage girls report experiencing persistent sadness or despair, compared to 36% in 2011, and 30% reveal they have considered suicide, compared to 19% in 2011. According to psychologists, the hypothesis of constant access to social networks best explains this mental health crisis.</string>

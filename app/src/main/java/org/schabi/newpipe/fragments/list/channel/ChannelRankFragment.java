@@ -20,14 +20,11 @@ import org.schabi.newpipe.fragments.list.BaseListInfoFragment;
 import org.schabi.newpipe.fragments.list.playlist.PlaylistControlViewHolder;
 import org.schabi.newpipe.player.playqueue.KioskPlayQueue;
 import org.schabi.newpipe.player.playqueue.PlayQueue;
+import org.schabi.newpipe.tournesol.TournesolKioskQuery;
 import org.schabi.newpipe.ui.emptystate.EmptyStateUtil;
 import org.schabi.newpipe.util.ExtractorHelper;
 import org.schabi.newpipe.util.PlayButtonHelper;
-import org.schabi.newpipe.util.TournesolHelper;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -52,19 +49,8 @@ public class ChannelRankFragment extends BaseListInfoFragment<StreamInfoItem, Ki
         final ChannelRankFragment instance = new ChannelRankFragment();
         instance.serviceId = serviceId;
         instance.channelName = channelName;
-        instance.url = buildRankUrl(channelName);
+        instance.url = TournesolKioskQuery.forUploader(channelName).toUrl();
         return instance;
-    }
-
-    private static String buildRankUrl(@NonNull final String uploader) {
-        final String encoded;
-        try {
-            encoded = URLEncoder.encode(uploader, StandardCharsets.UTF_8.name());
-        } catch (final UnsupportedEncodingException ignored) {
-            // UTF-8 is always available, but keep a safe fallback.
-            return TournesolHelper.KIOSK_ID + "?languages=&uploader=" + uploader + "&unsafe=true";
-        }
-        return TournesolHelper.KIOSK_ID + "?languages=&uploader=" + encoded + "&unsafe=true";
     }
 
     @Override

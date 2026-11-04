@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="tournesol_feed_edge_padding">8dp</dimen>
+    <dimen name="tournesol_feed_control_min_height">48dp</dimen>
+    <dimen name="tournesol_feed_control_horizontal_padding">8dp</dimen>
+
+    <style name="Widget.NewPipe.Chip.Filter.Feed">
+        <item name="chipMinHeight">32dp</item>
+        <item name="chipMinTouchTargetSize">48dp</item>
+        <item name="ensureMinTouchTargetSize">true</item>
+        <item name="chipStartPadding">4dp</item>
+        <item name="chipEndPadding">4dp</item>
+        <item name="textStartPadding">8dp</item>
+        <item name="textEndPadding">8dp</item>
+        <item name="iconStartPadding">2dp</item>
+    </style>
+</resources>

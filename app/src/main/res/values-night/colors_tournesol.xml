@@ -1,4 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="tournesol_divider">#1FFFFFFF</color>
+    <color name="tournesol_surface">#0F0F0F</color>
+    <color name="tournesol_surface_section">#14161A</color>
+    <color name="tournesol_surface_band">#181818</color>
+    <color name="tournesol_chip_bg_unselected">#1E2128</color>
+    <color name="tournesol_overlay_surface">#0B0B0B</color>
+    <color name="tournesol_overlay_card">#131313</color>
+    <color name="tournesol_overlay_outline">#2A2A2A</color>
+    <color name="tournesol_outline">#2A2D35</color>
+
+    <color name="tournesol_content">#FFFFFF</color>
+    <color name="tournesol_content_muted">#B8FFFFFF</color>
+    <color name="tournesol_on_surface">#F3F3F3</color>
+    <color name="tournesol_on_overlay">#EDEDED</color>
+    <color name="tournesol_chip_text_unselected">#D4D8DE</color>
+    <color name="tournesol_action_btn">#D4D8DE</color>
+    <color name="tournesol_section_header">#DBB222</color>
+    <color name="tournesol_score">#FFCA1D</color>
+    <color name="tournesol_accent_shade">#00000000</color>
+    <color name="tournesol_skeleton">#14FFFFFF</color>
 </resources>
